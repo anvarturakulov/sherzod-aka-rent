@@ -92,6 +92,7 @@ const Journal = memo<JournalProps>(({ className, ...props }): JSX.Element => {
         createDefaultJournalFilterRules(),
     );
     const [filterModalOpen, setFilterModalOpen] = useState(false);
+    const [toolsReturnFilter, setToolsReturnFilter] = useState<'ALL' | 'OPEN' | 'CLOSED'>('ALL');
     const [tablePage, setTablePage] = useState(1);
     const [journalMetaRequested, setJournalMetaRequested] = useState(false);
     const filterKey = useMemo(() => JSON.stringify(filterRules), [filterRules]);
@@ -107,6 +108,7 @@ const Journal = memo<JournalProps>(({ className, ...props }): JSX.Element => {
     const dashboardUsers = role && dashboardUsersList.includes(role);
     const showOrderColumn = showsOrderInJournal(contentName);
     const showToolsRentalColumns = showsToolsRentalInJournal(contentName);
+    const showToolsReturnFilter = contentName === DocumentType.TransferToolsToClient;
 
     const docFieldOptions = useMemo(() => {
         if (!contentName || contentName === 'ALL_DOCUMENTS') return null;
@@ -179,6 +181,7 @@ const Journal = memo<JournalProps>(({ className, ...props }): JSX.Element => {
         setJournalMetaRequested(false);
         setFilterRules(createDefaultJournalFilterRules());
         setFilterModalOpen(false);
+        setToolsReturnFilter('ALL');
     }, [contentName]);
 
     const allDocumentsOrgOptions = useMemo(() => {
@@ -233,16 +236,29 @@ const Journal = memo<JournalProps>(({ className, ...props }): JSX.Element => {
         activeTab,
     );
 
-    const filteredDocuments = useMemo(
-        () =>
-            applyJournalAdvancedFilter(baseFilteredDocuments, filterRules, {
-                references,
-                enterprises,
-                mainData,
-                ordersById,
-            }),
-        [baseFilteredDocuments, filterRules, references, enterprises, mainData, ordersById],
-    );
+    const filteredDocuments = useMemo(() => {
+        const advanced = applyJournalAdvancedFilter(baseFilteredDocuments, filterRules, {
+            references,
+            enterprises,
+            mainData,
+            ordersById,
+        });
+        if (!showToolsReturnFilter || toolsReturnFilter === 'ALL') return advanced;
+        return advanced.filter((doc) =>
+            toolsReturnFilter === 'CLOSED'
+                ? doc.toolsFullyReturned === true
+                : doc.toolsFullyReturned !== true,
+        );
+    }, [
+        baseFilteredDocuments,
+        filterRules,
+        references,
+        enterprises,
+        mainData,
+        ordersById,
+        showToolsReturnFilter,
+        toolsReturnFilter,
+    ]);
 
     const filteredDocumentsLength = filteredDocuments?.length ?? 0;
     const journalTotalPages = Math.max(
@@ -255,7 +271,7 @@ const Journal = memo<JournalProps>(({ className, ...props }): JSX.Element => {
     const openOnLastPageRef = useRef(true);
     useEffect(() => {
         openOnLastPageRef.current = true;
-    }, [contentName, url, activeTab, filterKey, checkboxKey]);
+    }, [contentName, url, activeTab, filterKey, checkboxKey, toolsReturnFilter]);
 
     useEffect(() => {
         if (isLoadingDocuments || isValidatingDocuments || isRefreshingJournal) return;
@@ -371,6 +387,37 @@ const Journal = memo<JournalProps>(({ className, ...props }): JSX.Element => {
                         <LoadingIco className={loadingStyles.loadingIco} />
                     ) : (
                         <>
+                            {showToolsReturnFilter && (
+                                <div className={styles.tabs}>
+                                    <button
+                                        type="button"
+                                        className={cn(styles.tab, {
+                                            [styles.tabActive]: toolsReturnFilter === 'ALL',
+                                        })}
+                                        onClick={() => setToolsReturnFilter('ALL')}
+                                    >
+                                        Все
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={cn(styles.tab, {
+                                            [styles.tabActive]: toolsReturnFilter === 'OPEN',
+                                        })}
+                                        onClick={() => setToolsReturnFilter('OPEN')}
+                                    >
+                                        Только открытые
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={cn(styles.tab, {
+                                            [styles.tabActive]: toolsReturnFilter === 'CLOSED',
+                                        })}
+                                        onClick={() => setToolsReturnFilter('CLOSED')}
+                                    >
+                                        Только закрытые
+                                    </button>
+                                </div>
+                            )}
                             {shouldShowTabs && (
                                 <div className={styles.tabs}>
                                     <button

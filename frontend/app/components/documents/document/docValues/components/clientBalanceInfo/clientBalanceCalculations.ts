@@ -19,6 +19,11 @@ export type ClientBalanceDocumentValues = {
 
 const parseNum = (value: unknown): number => Number(value) || 0;
 
+/** Сумма доставки партии, которую ещё нужно провести. Уже проведённая в итог не входит. */
+export const getChargeableDeliverySum = (
+  docValues: { deliverySum?: number; partyDeliveryCharged?: boolean } | undefined | null,
+): number => (docValues?.partyDeliveryCharged ? 0 : parseNum(docValues?.deliverySum));
+
 const sumCostTotal = (items: DocTableItem[]): number =>
   items.reduce(
     (sum, item) => sum + (parseNum(item.costTotal) || parseNum(item.total)),
@@ -62,10 +67,9 @@ export const getDocumentBalanceValues = (
     const advance = getTransferAdvanceSum(docValues);
     const toolsSum = getTransferToolsSum(docTableItems);
     const saleTotal = sumTotal(getSaleItems(docTableItems || []));
-    const deliverySum = parseNum(docValues?.deliverySum);
     const defectCost = parseNum(docValues?.defectCost);
     const changeToClient = parseNum(docValues?.changeToClient);
-    const s40Income = saleTotal + deliverySum + defectCost + changeToClient;
+    const s40Income = saleTotal + defectCost + changeToClient;
     return {
       s40: { income: s40Income > 0 ? s40Income : null, expense: advance },
       s12: { income: toolsSum > 0 ? toolsSum : null, expense: null },
@@ -93,13 +97,21 @@ export const getDocumentBalanceValues = (
     const saleTotal = sumTotal(getSaleItems(items));
     const tovarTotal = sumTotal(getTovarItems(items));
     const returnCostTotal = sumReturnCostTotal(items);
-    const deliverySum = parseNum(docValues?.deliverySum);
+    const deliverySum = getChargeableDeliverySum(docValues);
+    const returnDeliverySum = parseNum(docValues?.returnDeliverySum);
     const defectCost = parseNum(docValues?.defectCost);
     const changeToClient = parseNum(docValues?.changeToClient);
 
     return {
       s40: {
-        income: returnTotal + saleTotal + tovarTotal + deliverySum + defectCost + changeToClient,
+        income:
+          returnTotal +
+          saleTotal +
+          tovarTotal +
+          deliverySum +
+          returnDeliverySum +
+          defectCost +
+          changeToClient,
         expense: payment,
       },
       s12: { income: 0, expense: returnCostTotal },
@@ -131,6 +143,9 @@ export type ReceiveToolsOperationsSummary = {
   payments: number;
   defectCost: number;
   deliverySum: number;
+  chargeableDeliverySum: number;
+  partyDeliveryCharged: boolean;
+  returnDeliverySum: number;
   changeToClient: number;
 };
 
@@ -146,6 +161,9 @@ export const getReceiveToolsOperationsSummary = (
     payments: getTransferAdvanceSum(docValues),
     defectCost: parseNum(docValues?.defectCost),
     deliverySum: parseNum(docValues?.deliverySum),
+    chargeableDeliverySum: getChargeableDeliverySum(docValues),
+    partyDeliveryCharged: Boolean(docValues?.partyDeliveryCharged),
+    returnDeliverySum: parseNum(docValues?.returnDeliverySum),
     changeToClient: parseNum(docValues?.changeToClient),
   };
 };
@@ -158,7 +176,8 @@ export const computeOperationsAfterBalance = (
   summary.rentIncome +
   summary.saleIncome +
   summary.tovarIncome +
-  summary.deliverySum +
+  summary.chargeableDeliverySum +
+  summary.returnDeliverySum +
   summary.defectCost +
   summary.changeToClient -
   summary.payments;

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { Op, Transaction } from "sequelize";
+import { col, fn, Op, Transaction } from "sequelize";
 import { Document } from "src/documents/document.model";
 import { Schet } from "src/interfaces/report.interface";
 import { StocksService } from "src/stocks/stocks.service";
@@ -282,6 +282,92 @@ export class ClientToolBatchesService {
       where: { receiveDocId },
       transaction,
     });
+  }
+
+  /**
+   * Передачи, по которым есть партии и весь арендный инструмент возвращён
+   * (сумма openQty равна нулю). Документы без партий в набор не попадают.
+   */
+  async findFullyReturnedTransferDocIds(
+    transferDocIds: number[],
+  ): Promise<Set<number>> {
+    const ids = [
+      ...new Set(
+        transferDocIds.map((id) => Number(id)).filter((id) => id > 0),
+      ),
+    ];
+    if (!ids.length) return new Set();
+
+    const rows = (await this.batchModel.findAll({
+      attributes: [
+        "transferDocId",
+        [fn("SUM", col("openQty")), "openSum"],
+        [fn("COUNT", col("id")), "batchCount"],
+      ],
+      where: { transferDocId: { [Op.in]: ids } },
+      group: ["transferDocId"],
+      raw: true,
+    })) as unknown as Array<{
+      transferDocId: number | string;
+      openSum: number | string | null;
+      batchCount: number | string | null;
+    }>;
+
+    const closed = new Set<number>();
+    for (const row of rows) {
+      const count = Number(row.batchCount);
+      const openSum = Number(row.openSum);
+      if (count > 0 && Number.isFinite(openSum) && openSum <= 0.0001) {
+        closed.add(Number(row.transferDocId));
+      }
+    }
+    return closed;
+  }
+
+  /**
+   * Проведённые возвраты, которые списали партии этих выдач.
+   * Ключ — id выдачи, значение — уникальные id документов возврата.
+   */
+  async findReceiveDocIdsByTransfer(
+    transferDocIds: number[],
+  ): Promise<Map<number, number[]>> {
+    const ids = [
+      ...new Set(
+        transferDocIds.map((id) => Number(id)).filter((id) => id > 0),
+      ),
+    ];
+    if (!ids.length) return new Map();
+
+    const rows = await this.consumptionModel.findAll({
+      attributes: ["receiveDocId"],
+      include: [
+        {
+          model: ClientToolOpenBatch,
+          attributes: ["transferDocId"],
+          where: { transferDocId: { [Op.in]: ids } },
+          required: true,
+        },
+      ],
+    });
+
+    const byTransfer = new Map<number, Set<number>>();
+    for (const row of rows) {
+      const transferDocId = Number(row.batch?.transferDocId);
+      const receiveDocId = Number(row.receiveDocId);
+      if (!transferDocId || !receiveDocId) continue;
+      let receiveIds = byTransfer.get(transferDocId);
+      if (!receiveIds) {
+        receiveIds = new Set();
+        byTransfer.set(transferDocId, receiveIds);
+      }
+      receiveIds.add(receiveDocId);
+    }
+
+    const result = new Map<number, number[]>();
+    for (const [transferDocId, receiveIds] of byTransfer) {
+      result.set(transferDocId, [...receiveIds]);
+    }
+    return result;
   }
 
   async findOpenBatchesForClient(

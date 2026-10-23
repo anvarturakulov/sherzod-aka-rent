@@ -54,6 +54,10 @@ export interface DocValuesCreationAttrs {
   partnerId?: number;
   delivererId?: number;
   deliverySum?: number;
+  returnDeliverySum?: number;
+  deliveryChargedOnTransfer?: boolean;
+  partyDeliveryCharged?: boolean;
+  paidInFull?: boolean;
   defectCost?: number;
   returnDateTime?: bigint;
   cashReceived?: number;
@@ -366,6 +370,38 @@ export class DocValues extends Model<DocValues, DocValuesCreationAttrs> {
   })
   @Column({ type: DataType.FLOAT, allowNull: true })
   deliverySum?: number;
+
+  @ApiProperty({
+    example: 30000,
+    description: "Возврат — плата за рейс, когда инструмент забирают",
+    required: false,
+  })
+  @Column({ type: DataType.FLOAT, allowNull: true })
+  returnDeliverySum?: number;
+
+  @ApiProperty({
+    example: false,
+    description: "Доставка уже проведена на передаче (старые документы)",
+    required: false,
+  })
+  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false })
+  deliveryChargedOnTransfer?: boolean;
+
+  @ApiProperty({
+    example: false,
+    description: "Доставка партии уже в долге, на возврате повторно не проводится",
+    required: false,
+  })
+  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false })
+  partyDeliveryCharged?: boolean;
+
+  @ApiProperty({
+    example: false,
+    description: "Возврат инструментов оплачен полностью",
+    required: false,
+  })
+  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false })
+  paidInFull?: boolean;
 
   @ApiProperty({
     example: 25000,

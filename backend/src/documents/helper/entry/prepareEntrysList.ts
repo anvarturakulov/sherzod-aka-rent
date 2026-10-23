@@ -191,17 +191,19 @@ export const prepareEntrysList = async (
           appendEntries(results, advanceEntry);
 
           if (document.documentType === DocumentType.TransferToolsToClient) {
-            const deliveryEntry = await prepareEntry(
-              document,
-              "deliveryEntry",
-              null,
-              isGlobalDocument,
-              isSender,
-              referencesService,
-              settingsService,
-              stocksService,
-            );
-            appendEntries(results, deliveryEntry);
+            if (document.docValues?.deliveryChargedOnTransfer) {
+              const deliveryEntry = await prepareEntry(
+                document,
+                "deliveryEntry",
+                null,
+                isGlobalDocument,
+                isSender,
+                referencesService,
+                settingsService,
+                stocksService,
+              );
+              appendEntries(results, deliveryEntry);
+            }
 
             const defectCostEntry = await prepareEntry(
               document,

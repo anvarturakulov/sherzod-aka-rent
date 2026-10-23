@@ -520,6 +520,44 @@ export class DocValuesDto {
   deliverySum?: number | null;
 
   @ApiProperty({
+    example: 30000,
+    description: "Возврат — плата за рейс, когда инструмент забирают",
+    required: false,
+  })
+  @Transform(transformOptionalPaymentNumber)
+  @IsOptional()
+  @ValidateIf((o, v) => v !== undefined && v !== null)
+  @IsNumber({}, { message: "returnDeliverySum - должно быть номером" })
+  returnDeliverySum?: number | null;
+
+  @ApiProperty({
+    example: false,
+    description: "Доставка уже проведена на передаче. Клиент не меняет это поле.",
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  deliveryChargedOnTransfer?: boolean;
+
+  @ApiProperty({
+    example: false,
+    description: "Доставка партии уже в долге клиента",
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  partyDeliveryCharged?: boolean;
+
+  @ApiProperty({
+    example: false,
+    description: "Возврат инструментов оплачен полностью",
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  paidInFull?: boolean;
+
+  @ApiProperty({
     example: 25000,
     description: "Брак буйича харажатлар",
     required: false,

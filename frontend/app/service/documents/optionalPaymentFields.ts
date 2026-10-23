@@ -9,6 +9,7 @@ import {
 } from '@/app/interfaces/document.interface';
 import {
   computeAfterBalance,
+  getChargeableDeliverySum,
   getDocumentBalanceValues,
   getTransferAdvanceSum,
 } from '@/app/components/documents/document/docValues/components/clientBalanceInfo/clientBalanceCalculations';
@@ -24,6 +25,7 @@ export const OPTIONAL_PAYMENT_DOC_VALUE_KEYS = [
   'changeToClient',
   'debtSum',
   'deliverySum',
+  'returnDeliverySum',
   'defectCost',
 ] as const;
 
@@ -49,6 +51,7 @@ const TOOLS_RECEIVE_OPTIONAL_KEYS: OptionalPaymentDocValueKey[] = [
   'changeToClient',
   'debtSum',
   'deliverySum',
+  'returnDeliverySum',
   'defectCost',
 ];
 
@@ -287,7 +290,7 @@ export const isReceiveToolsPaymentGatePassed = (
 
 const DEBT_SUM_TOLERANCE = 0.01;
 
-/** Итог документа возврата: return + sale + tovar totals + delivery + defect. */
+/** Итог документа возврата: аренда + продажи + доставка к начислению + возврат + брак. */
 export const getReceiveToolsIncomeTotal = (
   docValues: DocValues | Record<string, unknown> | undefined | null,
   docTableItems: DocTableItem[] | undefined | null,
@@ -305,9 +308,10 @@ export const getReceiveToolsIncomeTotal = (
     (sum, item) => sum + (Number(item.total) || 0),
     0,
   );
-  const deliverySum = coerceOptionalPaymentNumber(docValues?.deliverySum) ?? 0;
+  const deliverySum = getChargeableDeliverySum(docValues as DocValues | undefined);
+  const returnDeliverySum = coerceOptionalPaymentNumber(docValues?.returnDeliverySum) ?? 0;
   const defectCost = coerceOptionalPaymentNumber(docValues?.defectCost) ?? 0;
-  return returnTotal + saleTotal + tovarTotal + deliverySum + defectCost;
+  return returnTotal + saleTotal + tovarTotal + deliverySum + returnDeliverySum + defectCost;
 };
 
 /**

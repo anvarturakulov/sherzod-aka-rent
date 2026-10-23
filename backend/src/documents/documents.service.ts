@@ -1,4 +1,11 @@
-import { forwardRef, Inject, Injectable, Logger, BadRequestException } from "@nestjs/common";
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+  BadRequestException,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectConnection, InjectModel } from "@nestjs/sequelize";
 import { Sequelize, Transaction } from "sequelize"; // Импорт из sequelize
 import { Document } from "./document.model";
@@ -82,6 +89,7 @@ export class DocumentsService {
       createdAt: _docValuesCreatedAt,
       updatedAt: _docValuesUpdatedAt,
       calculatedCostTotal: _calculatedCostTotal,
+      deliveryChargedOnTransfer: _deliveryChargedOnTransfer,
       deadlineDate,
       ...rest
     } = docValues;
@@ -506,9 +514,106 @@ export class DocumentsService {
 
     // Трансформируем документы: для получателя показываем documentTypeForReceiver
     // И вычисляем сумму для документов с табличной частью
-    return documents.map((doc) =>
+    const mapped = documents.map((doc) =>
       this.transformDocumentForViewer(doc, enterpriseId),
     );
+
+    if (documentType !== DocumentType.TransferToolsToClient) {
+      return mapped;
+    }
+
+    const closedIds =
+      await this.clientToolBatchesService.findFullyReturnedTransferDocIds(
+        mapped
+          .map((doc) => Number(doc.id))
+          .filter((id) => Number.isFinite(id) && id > 0),
+      );
+
+    const receiveByTransfer =
+      await this.clientToolBatchesService.findReceiveDocIdsByTransfer([
+        ...closedIds,
+      ]);
+    const paidByReceiveId = await this.findPaidInFullByReceiveDoc(
+      [...receiveByTransfer.values()].flat(),
+    );
+
+    return mapped.map((doc) => {
+      const id = Number(doc.id);
+      const toolsFullyReturned = closedIds.has(id);
+      const receiveIds = (receiveByTransfer.get(id) || []).filter((receiveId) =>
+        paidByReceiveId.has(receiveId),
+      );
+      return {
+        ...doc,
+        toolsFullyReturned,
+        toolsReturnsPaidInFull:
+          toolsFullyReturned &&
+          receiveIds.length > 0 &&
+          receiveIds.every((receiveId) => paidByReceiveId.get(receiveId) === true),
+      };
+    });
+  }
+
+  /** Неудалённые возвраты: id документа → стоит ли «Оплачен полностью». */
+  private async findPaidInFullByReceiveDoc(
+    receiveDocIds: number[],
+  ): Promise<Map<number, boolean>> {
+    const ids = [
+      ...new Set(
+        receiveDocIds.map((id) => Number(id)).filter((id) => id > 0),
+      ),
+    ];
+    const paidByReceiveId = new Map<number, boolean>();
+    if (!ids.length) return paidByReceiveId;
+
+    const receiveDocs = await this.documentRepository.findAll({
+      where: {
+        id: { [Op.in]: ids },
+        docStatus: { [Op.ne]: DocSTATUS.DELETED },
+      },
+      attributes: ["id"],
+      include: [{ model: DocValues, attributes: ["paidInFull"] }],
+    });
+    for (const doc of receiveDocs) {
+      paidByReceiveId.set(Number(doc.id), doc.docValues?.paidInFull === true);
+    }
+    return paidByReceiveId;
+  }
+
+  /**
+   * Только колонка docvalues.paidInFull.
+   * Статус, проводки и блокировка документа не меняются — в том числе у уже проведённого возврата.
+   */
+  async setReceivePaidInFull(id: number, paidInFull: boolean) {
+    const document = await this.documentRepository.findOne({
+      where: { id },
+      include: [DocValues],
+    });
+
+    if (!document) {
+      throw new NotFoundException(`Document with id ${id} not found`);
+    }
+
+    if (document.documentType !== DocumentType.ReceiveToolsFromClient) {
+      throw new BadRequestException(
+        "Отметка «Оплачен полностью» доступна только для возврата инструментов",
+      );
+    }
+
+    if (document.docStatus === DocSTATUS.DELETED) {
+      throw new BadRequestException("Нельзя отметить удалённый документ");
+    }
+
+    if (!document.docValues) {
+      throw new BadRequestException("У документа нет значений");
+    }
+
+    await document.docValues.update({ paidInFull: paidInFull === true });
+
+    return {
+      id: Number(document.id),
+      paidInFull: document.docValues.paidInFull === true,
+    };
   }
 
   async getAllDocsByDate(
@@ -2810,6 +2915,18 @@ export class DocumentsService {
       enterpriseId,
     } as Document;
 
+    if (documentType === DocumentType.ReceiveToolsFromClient) {
+      (tempDoc as Document & {
+        sourceTransferDeliveries?: Array<{
+          docId: number;
+          deliverySum: number;
+          delivererId: number | null;
+          alreadyCharged: boolean;
+        }>;
+      }).sourceTransferDeliveries =
+        await this.loadSourceTransferDeliveries(tempDoc);
+    }
+
     // Используем стандартную логику prepareEntrysList
     // Передаем force=true, так как документ уже в статусе PROVEDEN и нам нужно создать проводки
     return await prepareEntrysList(
@@ -3304,9 +3421,51 @@ export class DocumentsService {
     return this.attachTransferDocComments(rows);
   }
 
+  private async loadSourceTransferDeliveries(document: Document) {
+    const docIds = [
+      ...new Set(
+        (document.docTableItems || [])
+          .filter((item) => (item.tableType || "return") === "return")
+          .map((item) => Number(item.sourceTransferDocId))
+          .filter((id) => Number.isFinite(id) && id > 0),
+      ),
+    ];
+    if (!docIds.length) {
+      return [];
+    }
+
+    const values = await this.docValuesRepository.findAll({
+      where: { docId: { [Op.in]: docIds } },
+      attributes: [
+        "docId",
+        "deliverySum",
+        "delivererId",
+        "deliveryChargedOnTransfer",
+      ],
+    });
+
+    return values.map((value) => ({
+      docId: Number(value.docId),
+      deliverySum: Number(value.deliverySum) || 0,
+      delivererId: value.delivererId ? Number(value.delivererId) : null,
+      alreadyCharged: Boolean(value.deliveryChargedOnTransfer),
+    }));
+  }
+
   private async attachTransferDocComments<
     T extends { sourceTransferDocId: number },
-  >(rows: T[]): Promise<Array<T & { transferDocComment: string }>> {
+  >(
+    rows: T[],
+  ): Promise<
+    Array<
+      T & {
+        transferDocComment: string;
+        deliverySum: number;
+        delivererId: number | null;
+        deliveryChargedOnTransfer: boolean;
+      }
+    >
+  > {
     const docIds = [
       ...new Set(
         rows
@@ -3314,23 +3473,38 @@ export class DocumentsService {
           .filter((id) => Number.isFinite(id) && id > 0),
       ),
     ];
+    const emptyDelivery = {
+      transferDocComment: "",
+      deliverySum: 0,
+      delivererId: null as number | null,
+      deliveryChargedOnTransfer: false,
+    };
     if (!docIds.length) {
-      return rows.map((row) => ({ ...row, transferDocComment: "" }));
+      return rows.map((row) => ({ ...row, ...emptyDelivery }));
     }
 
     const values = await this.docValuesRepository.findAll({
       where: { docId: { [Op.in]: docIds } },
-      attributes: ["docId", "comment"],
+      attributes: [
+        "docId",
+        "comment",
+        "deliverySum",
+        "delivererId",
+        "deliveryChargedOnTransfer",
+      ],
     });
-    const commentByDocId = new Map(
-      values.map((value) => [Number(value.docId), value.comment || ""]),
-    );
+    const byDocId = new Map(values.map((value) => [Number(value.docId), value]));
 
-    return rows.map((row) => ({
-      ...row,
-      transferDocComment:
-        commentByDocId.get(Number(row.sourceTransferDocId)) || "",
-    }));
+    return rows.map((row) => {
+      const value = byDocId.get(Number(row.sourceTransferDocId));
+      return {
+        ...row,
+        transferDocComment: value?.comment || "",
+        deliverySum: Number(value?.deliverySum) || 0,
+        delivererId: value?.delivererId ? Number(value.delivererId) : null,
+        deliveryChargedOnTransfer: Boolean(value?.deliveryChargedOnTransfer),
+      };
+    });
   }
 
   async resolvePartnerToolsStorage(

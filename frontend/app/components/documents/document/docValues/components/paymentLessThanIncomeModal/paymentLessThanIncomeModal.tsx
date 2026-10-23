@@ -56,7 +56,7 @@ export default function PaymentLessThanIncomeModal({
           </p>
           <ul className={styles.optionsList}>
             <li>Наличные + Карта + (Курс × USD) + В долг</li>
-            <li>≥ Итог (возврат/продажа + доставка + брак)</li>
+            <li>≥ Итог (аренда/продажа + доставка + возврат + брак)</li>
           </ul>
         </div>
 

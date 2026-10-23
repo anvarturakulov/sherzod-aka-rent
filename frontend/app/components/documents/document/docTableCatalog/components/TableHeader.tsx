@@ -120,7 +120,7 @@ const TableHeader = memo<TableHeaderProps>(({
 {isCalculating ? '⏳ Рассчитываем...' : '🧮 Заполнить материалы'}
               </button>
             )}
-            {isTransferToolsToClient && onOpenPicker && (
+            {(isTransferToolsToClient || isSaleEquipment) && onOpenPicker && (
               <button
                 type="button"
                 className={styles.actionBtn}

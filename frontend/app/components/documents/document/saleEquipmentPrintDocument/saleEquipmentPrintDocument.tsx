@@ -15,6 +15,7 @@ const thCenter = { ...cellBorder, textAlign: 'center' as const };
 export type SaleEquipmentPrintDocumentProps = {
   document: DocumentModel;
   clientName?: string;
+  clientPhone?: string;
   warehouseName?: string;
   itemNames: Record<number, string>;
   itemComments?: Record<number, string>;
@@ -22,7 +23,7 @@ export type SaleEquipmentPrintDocumentProps = {
 };
 
 const SaleEquipmentPrintDocument = forwardRef<HTMLDivElement, SaleEquipmentPrintDocumentProps>(
-  ({ document, clientName, warehouseName, itemNames, itemComments = {}, copyCount = 1 }, ref) => {
+  ({ document, clientName, clientPhone, warehouseName, itemNames, itemComments = {}, copyCount = 1 }, ref) => {
     const items = (document.docTableItems || []).filter((item) => Number(item.analiticId) > 0);
     const totalCount = items.reduce((sum, item) => sum + (Number(item.count) || 0), 0);
     const { usd: totalUsd, som: totalSom } = splitSaleEquipmentTotals(items, itemComments);
@@ -48,7 +49,10 @@ const SaleEquipmentPrintDocument = forwardRef<HTMLDivElement, SaleEquipmentPrint
         </h2>
         <p>Дата: {formatDisplayDate(document.date)}</p>
         <p>Склад: {warehouseName || '—'}</p>
-        <p>Покупатель: {clientName || '—'}</p>
+        <p>
+          Покупатель: {clientName || '—'}
+          {clientPhone?.trim() ? `, ${clientPhone.trim()}` : ''}
+        </p>
         {document.docValues?.comment ? <p>Комментарий: {document.docValues.comment}</p> : null}
         <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: compact ? 8 : 16 }}>
           <thead>

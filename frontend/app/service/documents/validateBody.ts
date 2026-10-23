@@ -207,9 +207,9 @@ export const getValidateBodyError = (body: DocumentModel): string | null => {
         return 'Количество брака/продажи превышает количество возврата';
       }
     }
-    const deliverySum = Number(body.docValues?.deliverySum || 0);
-    if (deliverySum > 0 && !Number(body.docValues?.delivererId || 0)) {
-      return 'Выберите доставщика для доставки';
+    const returnDeliverySum = Number(body.docValues?.returnDeliverySum || 0);
+    if (returnDeliverySum > 0 && !Number(body.docValues?.delivererId || 0)) {
+      return 'Выберите шофёра для возврата';
     }
     for (const saleItem of getSaleItems(allItems)) {
       const price = Number(saleItem.price) || 0;

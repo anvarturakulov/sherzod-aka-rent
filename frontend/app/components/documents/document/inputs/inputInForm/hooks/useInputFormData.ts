@@ -33,6 +33,7 @@ const OPTIONAL_PAYMENT_CONTROLS: NameControl[] = [
   'changeToClient',
   'debtSum',
   'deliverySum',
+  'returnDeliverySum',
   'defectCost',
 ];
 

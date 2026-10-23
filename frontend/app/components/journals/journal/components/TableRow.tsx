@@ -458,9 +458,20 @@ export const TableRow = memo<TableRowProps>(({
                     </td>
                 )}
                 <td className={cn(className, {
-                    [styles.exitCompleted]: item.docValues?.exitCompleted === true
+                    [styles.exitCompleted]: item.docValues?.exitCompleted === true,
+                    [styles.toolsFullyReturnedClient]:
+                        contentName === DocumentType.TransferToolsToClient &&
+                        item.toolsFullyReturned === true,
                 })}>{getNameReference(references, item.docValues?.receiverId)}</td>
-                <td>{getNameReference(references, item.docValues?.senderId)}</td>
+                <td className={cn({
+                    [styles.paidInFullSender]:
+                        item.documentType === DocumentType.ReceiveToolsFromClient &&
+                        item.docValues?.paidInFull === true,
+                    [styles.toolsReturnsPaidInFullSender]:
+                        contentName === DocumentType.TransferToolsToClient &&
+                        item.toolsFullyReturned === true &&
+                        item.toolsReturnsPaidInFull === true,
+                })}>{getNameReference(references, item.docValues?.senderId)}</td>
                 {/* Для ALL_DOCUMENTS всегда показываем Аналитика колонку, но заполняем только для документов с аналитикой */}
                 {(contentName === 'ALL_DOCUMENTS' || isDocumentWithAnalitic(item.documentType)) && (
                     <td>

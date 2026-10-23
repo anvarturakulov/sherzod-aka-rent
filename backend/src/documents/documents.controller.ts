@@ -23,6 +23,7 @@ import { RolesGuard } from "src/auth/roles.guard";
 import { UserRoles } from "src/interfaces/user.interface";
 import { DocumentType } from "src/interfaces/document.interface";
 import { UpdateCreateDocumentDto } from "./dto/updateCreateDocument.dto";
+import { SetPaidInFullDto } from "./dto/setPaidInFull.dto";
 import { Request } from "express";
 import { UsersService } from "src/users/users.service";
 import { ReferencesService } from "src/references/references.service";
@@ -380,6 +381,42 @@ export class DocumentsController {
         error.message || "Ошибка при обновлении документа",
       );
     }
+  }
+
+  @ApiOperation({
+    summary: "Отметить возврат оплаченным полностью без перепроведения",
+  })
+  @ApiResponse({ status: 200 })
+  @Roles(
+    UserRoles.ADMINGLOBAL,
+    UserRoles.HEADCOMPANY,
+    UserRoles.GLAVBUX,
+    UserRoles.KASSIR,
+    UserRoles.KASSIRGLOBAL,
+    UserRoles.ZAVSKLAD,
+  )
+  @UseGuards(RolesGuard)
+  @Patch(":id/paid-in-full")
+  async setPaidInFull(
+    @Param("id") id: string,
+    @Body() dto: SetPaidInFullDto,
+    @CurrentUser() user: any,
+  ) {
+    const documentId = Number(id);
+    if (!Number.isFinite(documentId) || documentId <= 0) {
+      throw new BadRequestException("Некорректный id документа");
+    }
+
+    const existing = await this.documentsService.getDocumentById(documentId);
+    if (!existing) {
+      throw new NotFoundException(DOCUMENT_NOT_FOUND_ERROR);
+    }
+    assertZavskladDocumentAccess(user?.role, existing.documentType);
+
+    return this.documentsService.setReceivePaidInFull(
+      documentId,
+      dto.paidInFull,
+    );
   }
 
   @ApiOperation({ summary: "Открыть новый документ" })

@@ -26,6 +26,7 @@ import MaterialsTable from './components/MaterialsTable';
 import ReceiveToolsTables from './components/ReceiveToolsTables';
 import TransferToolsSaleTable from './components/TransferToolsSaleTable';
 import TransferToolsPickerModal from './components/transferToolsPickerModal/transferToolsPickerModal';
+import SaleEquipmentPickerModal from './components/saleEquipmentPickerModal/saleEquipmentPickerModal';
 import FormworkPlannerModal from './components/formworkPlannerModal/formworkPlannerModal';
 import { 
   calculateMaterialsForProducts, 
@@ -50,6 +51,7 @@ export const DocTableCatalog = ({
   const [isCalculating, setIsCalculating] = useState(false);
   const [replaceRowContext, setReplaceRowContext] = useState<ReplaceRowContext | null>(null);
   const [transferPickerOpen, setTransferPickerOpen] = useState(false);
+  const [saleEquipmentPickerOpen, setSaleEquipmentPickerOpen] = useState(false);
   const [formworkOpen, setFormworkOpen] = useState(false);
   const { data: references } = useAllReferences(user?.token);
   const enterpriseId = currentDocument?.enterpriseId || user?.enterpriseId;
@@ -194,6 +196,16 @@ export const DocTableCatalog = ({
       return;
     }
     setTransferPickerOpen(true);
+  }, [currentDocument, enterpriseId, setMainData]);
+
+  const handleOpenSaleEquipmentPicker = useCallback(() => {
+    if (!currentDocument) return;
+    const { error } = getTransferToolsPreviewParams(currentDocument, enterpriseId ?? null);
+    if (error) {
+      showMessage(error, 'error', setMainData);
+      return;
+    }
+    setSaleEquipmentPickerOpen(true);
   }, [currentDocument, enterpriseId, setMainData]);
 
   const handleOpenCatalogForRow = useCallback((documentRowIndex: number) => {
@@ -506,7 +518,9 @@ export const DocTableCatalog = ({
         onOpenPicker={
           currentDocument?.documentType === DocumentType.TransferToolsToClient
             ? handleOpenTransferPicker
-            : undefined
+            : currentDocument?.documentType === DocumentType.SaleEquipment
+              ? handleOpenSaleEquipmentPicker
+              : undefined
         }
         onOpenFormwork={
           showFormworkPlanner && (isTransferTools || isOrderTools)
@@ -580,6 +594,18 @@ export const DocTableCatalog = ({
           enterpriseId={enterpriseId ?? null}
           setMainData={setMainData}
           onClose={() => setTransferPickerOpen(false)}
+        />
+      )}
+
+      {currentDocument?.documentType === DocumentType.SaleEquipment && (
+        <SaleEquipmentPickerModal
+          open={saleEquipmentPickerOpen}
+          currentDocument={currentDocument}
+          allDocItems={items || []}
+          token={user?.token}
+          enterpriseId={enterpriseId ?? null}
+          setMainData={setMainData}
+          onClose={() => setSaleEquipmentPickerOpen(false)}
         />
       )}
 

@@ -12,6 +12,9 @@ export interface ReceiveToolsPreviewRow {
   settlementDate: number;
   transferDocNumber: string;
   transferDocComment?: string;
+  deliverySum?: number;
+  delivererId?: number | null;
+  deliveryChargedOnTransfer?: boolean;
   tableType: "return";
   batchId: number;
   billingRole: "PLAIN" | "COLUMN" | "COLUMN_COMPONENT";

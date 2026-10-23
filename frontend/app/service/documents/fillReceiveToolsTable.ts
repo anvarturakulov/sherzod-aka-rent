@@ -93,6 +93,54 @@ export const groupReceiveToolsPreviewByTransfer = (
     );
 };
 
+export interface PartyDeliverySource {
+  sourceTransferDocId: number;
+  deliverySum?: number;
+  deliveryChargedOnTransfer?: boolean;
+}
+
+const roundMoney = (n: number) => Math.round(n * 100) / 100;
+
+/** Сумма доставки по каждой передаче в строках возврата — один раз. */
+export const resolvePartyDelivery = (
+  docTableItems: DocumentModel['docTableItems'],
+  sources: PartyDeliverySource[],
+): { deliverySum: number; partyDeliveryCharged: boolean } => {
+  const ids = new Set<number>();
+  for (const item of getReturnItems(docTableItems || [])) {
+    const id = Number(item.sourceTransferDocId);
+    if (id > 0) ids.add(id);
+  }
+
+  const byId = new Map<number, PartyDeliverySource>();
+  for (const source of sources) {
+    const id = Number(source.sourceTransferDocId);
+    if (!id || byId.has(id)) continue;
+    byId.set(id, source);
+  }
+
+  let chargeable = 0;
+  let alreadyChargedSum = 0;
+  for (const id of ids) {
+    const source = byId.get(id);
+    const sum = Number(source?.deliverySum) || 0;
+    if (sum <= 0) continue;
+    if (source?.deliveryChargedOnTransfer) {
+      alreadyChargedSum = roundMoney(alreadyChargedSum + sum);
+    } else {
+      chargeable = roundMoney(chargeable + sum);
+    }
+  }
+
+  if (chargeable > 0) {
+    return { deliverySum: chargeable, partyDeliveryCharged: false };
+  }
+  if (alreadyChargedSum > 0) {
+    return { deliverySum: alreadyChargedSum, partyDeliveryCharged: true };
+  }
+  return { deliverySum: 0, partyDeliveryCharged: false };
+};
+
 export const fillReceiveToolsFromTransfer = (
   currentDocument: DocumentModel,
   setMainData: Function | undefined,
@@ -120,10 +168,17 @@ export const fillReceiveToolsFromTransfer = (
     buildReceiveToolsReturnRow(row, Number(row.count) || 0, returnDateTime),
   );
   const tovarItems = getTovarItems(currentDocument.docTableItems || []);
+  const docTableItems = [...normalizedReturnRows, ...tovarItems];
+  const partyDelivery = resolvePartyDelivery(docTableItems, previewRows);
 
   setMainData?.('currentDocument', {
     ...currentDocument,
-    docTableItems: [...normalizedReturnRows, ...tovarItems],
+    docTableItems,
+    docValues: {
+      ...currentDocument.docValues,
+      deliverySum: partyDelivery.deliverySum || undefined,
+      partyDeliveryCharged: partyDelivery.partyDeliveryCharged,
+    },
   });
   return true;
 };

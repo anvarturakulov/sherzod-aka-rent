@@ -23,6 +23,7 @@ export const NUMERIC_CONTROLS: NameControl[] = [
   'changeToClient',
   'debtSum',
   'deliverySum',
+  'returnDeliverySum',
   'defectCost',
 ] as const;
 

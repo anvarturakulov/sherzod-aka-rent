@@ -43,6 +43,7 @@ export function getToolsRentalAmountsLines(item: DocumentModel): string[] {
   pushNonZeroAmount(lines, 'Продажа', toolsSaleSum(item));
   pushNonZeroAmount(lines, 'Товар', tovarSaleSum(item));
   pushNonZeroAmount(lines, 'Доставка', dv?.deliverySum);
+  pushNonZeroAmount(lines, 'Возврат', dv?.returnDeliverySum);
   pushNonZeroAmount(lines, 'Брак', dv?.defectCost);
   pushNonZeroAmount(lines, 'Наличные', dv?.initialPayment);
   pushNonZeroAmount(lines, 'Пластик', dv?.cashFromPartner);

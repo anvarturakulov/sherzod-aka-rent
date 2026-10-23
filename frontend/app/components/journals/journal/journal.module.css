@@ -330,6 +330,21 @@
     color: white !important;
 }
 
+.toolsFullyReturnedClient {
+    background-color: #ffff00;
+    color: #111;
+}
+
+.paidInFullSender {
+    background-color: #2ea822 !important;
+    color: #0d3318 !important;
+}
+
+.toolsReturnsPaidInFullSender {
+    background-color: #2ea822 !important;
+    color: #0d3318 !important;
+}
+
 .tabs {
     display: flex;
     gap: 8px;

@@ -19,6 +19,7 @@ const thCenter = { ...cellBorder, textAlign: 'center' as const };
 export type TransferToolsPrintDocumentProps = {
   document: DocumentModel;
   clientName?: string;
+  clientPhone?: string;
   contractBasis?: string;
   toolNames: Record<number, string>;
   toolArticles?: Record<number, string>;
@@ -33,6 +34,7 @@ const TransferToolsPrintDocument = forwardRef<HTMLDivElement, TransferToolsPrint
     {
       document,
       clientName,
+      clientPhone,
       contractBasis,
       toolNames,
       toolArticles = {},
@@ -107,6 +109,10 @@ const TransferToolsPrintDocument = forwardRef<HTMLDivElement, TransferToolsPrint
         ) : null}
         <p>Дата постановки на учёт: {formatDisplayDateTime(document.date)}</p>
         <p>Клиент: {clientName || '—'}</p>
+        {clientPhone?.trim() ? <p>Телефон: {clientPhone.trim()}</p> : null}
+        {document.docValues?.comment?.trim() ? (
+          <p>Комментарий: {document.docValues.comment.trim()}</p>
+        ) : null}
         <p>
           Суточная аренда: {numberValue(totalDailyRent)} сум
           {showExtraCharge && (

@@ -24,10 +24,12 @@ import {
 } from '@/app/service/documents/receiveToolsRent';
 import { PrintCopiesWithTearOff } from '../printCopies/printCopies';
 import { sortToolRowsByArticle } from '@/app/service/documents/sortToolsByArticle';
+import { getReceiveToolsIncomeTotal } from '@/app/service/documents/optionalPaymentFields';
 
 export type ReceiveToolsPrintDocumentProps = {
   document: DocumentModel;
   clientName?: string;
+  clientPhone?: string;
   warehouseName?: string;
   delivererName?: string;
   contractBasis?: string;
@@ -37,24 +39,26 @@ export type ReceiveToolsPrintDocumentProps = {
   showClientGoodsSale?: boolean;
   showExtraCharge?: boolean;
   panelTotals?: FormworkPanelTotals;
+  transferComment?: string;
 };
 
 const cellStyle = { border: '1.5px solid #000', padding: 6 };
+const cellCenter = { ...cellStyle, textAlign: 'center' as const };
+const cellRight = { ...cellStyle, textAlign: 'right' as const };
 
 const ReceiveToolsPrintDocument = forwardRef<HTMLDivElement, ReceiveToolsPrintDocumentProps>(
   (
     {
       document,
       clientName,
-      warehouseName,
-      delivererName,
-      contractBasis,
+      clientPhone,
       toolNames,
       toolArticles = {},
       copyCount = 1,
       showClientGoodsSale = true,
       showExtraCharge = true,
       panelTotals,
+      transferComment,
     },
     ref,
   ) => {
@@ -89,18 +93,72 @@ const ReceiveToolsPrintDocument = forwardRef<HTMLDivElement, ReceiveToolsPrintDo
     };
     const returnDateTime = getReceiveToolsReturnDateTime(document);
     const compact = copyCount >= 2;
-    const showDelivery =
-      showExtraCharge && Number(document.docValues?.deliverySum || 0) > 0;
+    const deliverySum = Number(document.docValues?.deliverySum || 0);
+    const returnDeliverySum = Number(document.docValues?.returnDeliverySum || 0);
+    const showDelivery = deliverySum > 0;
+    const showReturnDelivery = returnDeliverySum > 0;
     const showDefect =
       showExtraCharge && Number(document.docValues?.defectCost || 0) > 0;
-    const showExtras = showDelivery || showDefect;
+    const phone = (clientPhone ?? '').trim();
+    const comment = (transferComment ?? '').trim();
+    const clientFields = [
+      { label: 'Клиент', value: clientName || '—' },
+      ...(phone ? [{ label: 'Телефон', value: phone }] : []),
+      ...(comment ? [{ label: 'Комментарий', value: comment }] : []),
+    ];
+    const amountPairs: { label: string; value: string; breakBefore?: boolean }[] = [
+      { label: 'Доход от аренды', value: `${numberValue(totalRent)} сум` },
+    ];
+    if (panels.areaM2 > 0) {
+      amountPairs.push({
+        label: 'Опалубка',
+        value: `${formatPanelAreaM2(panels.areaM2)} м², сумма: ${numberValue(panels.rentTotal)} сум`,
+      });
+    }
+    if (panels.columnCount > 0 || panels.columnRentTotal !== 0) {
+      amountPairs.push({
+        label: 'Колонна',
+        value: `${formatReturnQty(panels.columnCount)} шт., сумма: ${numberValue(panels.columnRentTotal)} сум`,
+      });
+    }
+    if (panels.restRentTotal !== 0) {
+      amountPairs.push({
+        label: 'Остальные',
+        value: `${numberValue(panels.restRentTotal)} сум`,
+      });
+    }
+    if (showDelivery) {
+      amountPairs.push({
+        label: 'Доставка',
+        value: `${numberValue(deliverySum)} сум`,
+        breakBefore: true,
+      });
+    }
+    if (showReturnDelivery) {
+      amountPairs.push({
+        label: 'Возврат',
+        value: `${numberValue(returnDeliverySum)} сум`,
+      });
+    }
+    if (showDefect) {
+      amountPairs.push({
+        label: 'Расходы по браку',
+        value: `${numberValue(document.docValues?.defectCost ?? 0)} сум`,
+      });
+    }
+    amountPairs.push({
+      label: 'Всего',
+      value: `${numberValue(
+        getReceiveToolsIncomeTotal(document.docValues, document.docTableItems),
+      )} сум`,
+    });
+    const valueStyle = { fontWeight: 600 } as const;
 
-    const renderSimpleTable = (title: string, rows: DocTableItem[]) => (
-      <>
-        <h3 style={{ marginTop: compact ? 8 : undefined }}>{title}</h3>
-        {rows.length === 0 ? (
-          <p>—</p>
-        ) : (
+    const renderSimpleTable = (title: string, rows: DocTableItem[]) => {
+      if (rows.length === 0) return null;
+      return (
+        <>
+          <h3 style={{ marginTop: compact ? 8 : undefined }}>{title}</h3>
           <table
             style={{
               width: '100%',
@@ -131,9 +189,9 @@ const ReceiveToolsPrintDocument = forwardRef<HTMLDivElement, ReceiveToolsPrintDo
               ))}
             </tbody>
           </table>
-        )}
-      </>
-    );
+        </>
+      );
+    };
 
     const renderReturnTable = () => (
       <>
@@ -152,12 +210,11 @@ const ReceiveToolsPrintDocument = forwardRef<HTMLDivElement, ReceiveToolsPrintDo
               <tr>
                 <th style={cellStyle}>№</th>
                 <th style={cellStyle}>Наименование</th>
-                <th style={cellStyle}>Олинган сана</th>
-                <th style={cellStyle}>Количество</th>
-                <th style={cellStyle}>Сутки</th>
-                <th style={cellStyle}>Тариф</th>
-                <th style={cellStyle}>Цена</th>
-                <th style={cellStyle}>Сумма</th>
+                <th style={cellCenter}>Дата получения</th>
+                <th style={cellCenter}>Количество</th>
+                <th style={cellCenter}>Сутки</th>
+                <th style={cellCenter}>Тариф</th>
+                <th style={cellRight}>Сумма</th>
               </tr>
             </thead>
             <tbody>
@@ -167,16 +224,21 @@ const ReceiveToolsPrintDocument = forwardRef<HTMLDivElement, ReceiveToolsPrintDo
                   <td style={cellStyle}>
                     {toolNames[item.analiticId] || item.analiticId}
                   </td>
-                  <td style={cellStyle}>{formatDisplayDateTime(Number(item.settlementDate)) || '—'}</td>
-                  <td style={cellStyle}>{item.count}</td>
-                  <td style={cellStyle}>
+                  <td style={cellCenter}>{formatDisplayDateTime(Number(item.settlementDate)) || '—'}</td>
+                  <td style={cellCenter}>{item.count}</td>
+                  <td style={cellCenter}>
                     {formatRentHours(getReceiveToolsRentDays(item, returnDateTime))}
                   </td>
-                  <td style={cellStyle}>{numberValue(item.hourlyTariff ?? 0)}</td>
-                  <td style={cellStyle}>{numberValue(item.price ?? 0)}</td>
-                  <td style={cellStyle}>{numberValue(item.total ?? 0)}</td>
+                  <td style={cellCenter}>{numberValue(item.hourlyTariff ?? 0)}</td>
+                  <td style={cellRight}>{numberValue(item.total ?? 0)}</td>
                 </tr>
               ))}
+              <tr>
+                <td style={{ ...cellRight, fontWeight: 700 }} colSpan={6}>
+                  Итого
+                </td>
+                <td style={{ ...cellRight, fontWeight: 700 }}>{numberValue(totalRent)}</td>
+              </tr>
             </tbody>
           </table>
         )}
@@ -230,106 +292,69 @@ const ReceiveToolsPrintDocument = forwardRef<HTMLDivElement, ReceiveToolsPrintDo
           fontSize: compact ? 11 : 14,
         }}
       >
-        <h2 style={{ textAlign: 'center', fontSize: compact ? 16 : undefined, margin: '0 0 8px' }}>
+        <h2
+          style={{
+            textAlign: 'center',
+            fontSize: compact ? 16 : 22,
+            fontWeight: 700,
+            letterSpacing: compact ? '0.06em' : '0.12em',
+            textTransform: 'uppercase',
+            margin: 0,
+            paddingBottom: compact ? 6 : 8,
+          }}
+        >
           Акт приёма инструмента
         </h2>
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr 1fr',
-            columnGap: compact ? 12 : 20,
-            rowGap: compact ? 2 : 4,
-            marginBottom: compact ? 6 : 8,
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 12,
+            padding: compact ? '4px 0' : '6px 0',
+            borderBottom: '1px solid #000',
             lineHeight: 1.35,
           }}
         >
-          <div>
-            <b>№</b> {document.id}
-          </div>
-          <div>
-            <b>Дата:</b> {formatDisplayDateTime(returnDateTime)}
-          </div>
-          <div>
-            <b>Клиент:</b> {clientName || '—'}
-          </div>
-          <div>
-            <b>Склад:</b> {warehouseName || '—'}
-          </div>
-          <div style={{ gridColumn: 'span 2' }}>
-            <b>Основание:</b> {contractBasis || '—'}
-          </div>
-          <div>
-            <b>Доход от аренды:</b> {numberValue(totalRent)} сум
-          </div>
-          {panels.areaM2 > 0 && (
-            <div>
-              <b>Опалубка:</b> {formatPanelAreaM2(panels.areaM2)} м², сумма:{' '}
-              {numberValue(panels.rentTotal)} сум
-            </div>
-          )}
-          {(panels.columnCount > 0 || panels.columnRentTotal !== 0) && (
-            <div>
-              <b>Колонна:</b> {formatReturnQty(panels.columnCount)} шт., сумма:{' '}
-              {numberValue(panels.columnRentTotal)} сум
-            </div>
-          )}
-          {panels.restRentTotal !== 0 && (
-            <div>
-              <b>Остальные:</b> {numberValue(panels.restRentTotal)} сум
-            </div>
-          )}
+          <span>
+            № <span style={valueStyle}>{document.id}</span>
+          </span>
+          <span style={valueStyle}>{formatDisplayDateTime(returnDateTime)}</span>
+        </div>
+        <div
+          style={{
+            padding: compact ? '4px 0' : '6px 0',
+            borderBottom: '1px solid #000',
+            lineHeight: 1.4,
+          }}
+        >
+          {clientFields.map((field, index) => (
+            <span key={field.label}>
+              {index > 0 ? <span style={{ margin: '0 0.65em' }}>·</span> : null}
+              {field.label}: <span style={valueStyle}>{field.value}</span>
+            </span>
+          ))}
         </div>
         <div
           style={{
             display: 'flex',
             flexWrap: 'wrap',
-            columnGap: compact ? 16 : 24,
+            columnGap: compact ? 18 : 28,
             rowGap: compact ? 2 : 4,
-            marginBottom: showExtras ? (compact ? 2 : 4) : compact ? 8 : 12,
-            lineHeight: 1.35,
+            margin: compact ? '6px 0 8px' : '8px 0 12px',
+            lineHeight: 1.4,
           }}
         >
-          <span>
-            <b>Наличные:</b> {numberValue(document.docValues?.initialPayment ?? 0)}
-          </span>
-          <span>
-            <b>Карта:</b> {numberValue(document.docValues?.cashFromPartner ?? 0)}
-          </span>
-          <span>
-            <b>USD:</b> {numberValue(document.docValues?.usd ?? 0)} (курс:{' '}
-            {numberValue(document.docValues?.currency ?? 0)})
-          </span>
-          <span>
-            <b>Сдача:</b> {numberValue(document.docValues?.changeToClient ?? 0)}
-          </span>
-          <span>
-            <b>В долг:</b> {numberValue(document.docValues?.debtSum ?? 0)}
-          </span>
+          {amountPairs.map((pair) => (
+            <React.Fragment key={pair.label}>
+              {pair.breakBefore ? (
+                <span style={{ flexBasis: '100%', height: 0 }} />
+              ) : null}
+              <span>
+                {pair.label} <span style={valueStyle}>{pair.value}</span>
+              </span>
+            </React.Fragment>
+          ))}
         </div>
-        {showExtras && (
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              columnGap: compact ? 16 : 24,
-              rowGap: compact ? 2 : 4,
-              marginBottom: compact ? 8 : 12,
-              lineHeight: 1.35,
-            }}
-          >
-            {showDelivery && (
-              <span>
-                <b>Доставка:</b> {numberValue(document.docValues?.deliverySum ?? 0)} сум
-                {delivererName ? ` (${delivererName})` : ''}
-              </span>
-            )}
-            {showDefect && (
-              <span>
-                <b>Расходы по браку:</b> {numberValue(document.docValues?.defectCost ?? 0)} сум
-              </span>
-            )}
-          </div>
-        )}
 
         {renderReturnTable()}
         {renderSimpleTable('Брак', brakItems)}
@@ -338,7 +363,7 @@ const ReceiveToolsPrintDocument = forwardRef<HTMLDivElement, ReceiveToolsPrintDo
 
         <div
           style={{
-            marginTop: compact ? 48 : 64,
+            marginTop: compact ? 88 : 128,
             paddingBottom: compact ? 16 : 0,
             display: 'flex',
             justifyContent: 'space-between',

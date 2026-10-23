@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { ClientToolBatchesService } from "./clientToolBatches.service";
 
 const mockTransaction = { LOCK: { UPDATE: "UPDATE" } } as any;
@@ -142,5 +143,80 @@ describe("ClientToolBatchesService.consumeBatchesOnReceivePosted", () => {
         mockTransaction,
       ),
     ).rejects.toThrow(/missing 1/);
+  });
+});
+
+describe("ClientToolBatchesService.findFullyReturnedTransferDocIds", () => {
+  let service: ClientToolBatchesService;
+  let batchModel: { findAll: jest.Mock };
+
+  beforeEach(() => {
+    batchModel = { findAll: jest.fn() };
+    service = new ClientToolBatchesService(
+      batchModel as any,
+      {} as any,
+      {} as any,
+    );
+  });
+
+  it("returns only transfers whose batches sum to zero open qty", async () => {
+    batchModel.findAll.mockResolvedValue([
+      { transferDocId: "10", openSum: "0", batchCount: "2" },
+      { transferDocId: 11, openSum: 0.00005, batchCount: 1 },
+      { transferDocId: 12, openSum: 1, batchCount: 1 },
+      { transferDocId: 13, openSum: 0, batchCount: 0 },
+    ]);
+
+    const closed = await service.findFullyReturnedTransferDocIds([10, 11, 12, 13, 0]);
+
+    expect([...closed].sort((a, b) => a - b)).toEqual([10, 11]);
+    const query = batchModel.findAll.mock.calls[0][0];
+    expect(query.group).toEqual(["transferDocId"]);
+    expect(query.raw).toBe(true);
+    expect(query.where.transferDocId[Op.in]).toEqual([10, 11, 12, 13]);
+  });
+
+  it("skips the query when there are no transfer ids", async () => {
+    const closed = await service.findFullyReturnedTransferDocIds([]);
+    expect(closed.size).toBe(0);
+    expect(batchModel.findAll).not.toHaveBeenCalled();
+  });
+});
+
+describe("ClientToolBatchesService.findReceiveDocIdsByTransfer", () => {
+  let service: ClientToolBatchesService;
+  let consumptionModel: { findAll: jest.Mock };
+
+  beforeEach(() => {
+    consumptionModel = { findAll: jest.fn() };
+    service = new ClientToolBatchesService(
+      {} as any,
+      consumptionModel as any,
+      {} as any,
+    );
+  });
+
+  it("groups unique receive documents by transfer", async () => {
+    consumptionModel.findAll.mockResolvedValue([
+      { receiveDocId: 501, batch: { transferDocId: 10 } },
+      { receiveDocId: "501", batch: { transferDocId: "10" } },
+      { receiveDocId: 502, batch: { transferDocId: 10 } },
+      { receiveDocId: 503, batch: { transferDocId: 11 } },
+      { receiveDocId: 0, batch: { transferDocId: 11 } },
+    ]);
+
+    const map = await service.findReceiveDocIdsByTransfer([10, 11, 0]);
+
+    expect(map.get(10)?.sort((a, b) => a - b)).toEqual([501, 502]);
+    expect(map.get(11)).toEqual([503]);
+    const query = consumptionModel.findAll.mock.calls[0][0];
+    expect(query.include[0].required).toBe(true);
+    expect(query.include[0].where.transferDocId[Op.in]).toEqual([10, 11]);
+  });
+
+  it("skips the query when there are no transfer ids", async () => {
+    const map = await service.findReceiveDocIdsByTransfer([]);
+    expect(map.size).toBe(0);
+    expect(consumptionModel.findAll).not.toHaveBeenCalled();
   });
 });

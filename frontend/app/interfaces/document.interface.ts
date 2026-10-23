@@ -114,6 +114,9 @@ export interface ReceiveToolsPreviewRow {
     settlementDate: number;
     transferDocNumber: string;
     transferDocComment?: string;
+    deliverySum?: number;
+    delivererId?: number | null;
+    deliveryChargedOnTransfer?: boolean;
     tableType: 'return';
     batchId?: number;
     billingRole?: 'PLAIN' | 'COLUMN' | 'COLUMN_COMPONENT';
@@ -184,6 +187,14 @@ export interface DocValues {
     partnerId?: number,
     delivererId?: number,
     deliverySum?: number,
+    /** Плата за рейс, когда инструмент забирают. На форме — «Возврат». */
+    returnDeliverySum?: number,
+    /** Доставка партии уже проведена на передаче, повторно в долг не входит. */
+    partyDeliveryCharged?: boolean,
+    /** Служебный признак старой передачи. Сервер его не перезаписывает. */
+    deliveryChargedOnTransfer?: boolean,
+    /** Ручная отметка: возврат инструментов оплачен полностью. */
+    paidInFull?: boolean,
     defectCost?: number,
     returnDateTime?: number,
     cashReceived?: number,
@@ -228,6 +239,10 @@ export interface DocumentModel {
     documentTypeForReceiver?: DocumentType | null,
     isLocked?: boolean,
     rejectionReason?: string | null,
+    /** Передача инструментов полностью возвращена (только журнал TransferToolsToClient). */
+    toolsFullyReturned?: boolean,
+    /** Все проведённые возвраты этой выдачи отмечены «Оплачен полностью». */
+    toolsReturnsPaidInFull?: boolean,
 };
 
 export interface OptionsForDocument {
@@ -292,7 +307,7 @@ export type NameControl = 'count' | 'price' | 'total' |
                           'comment' | 'cashFromPartner' | 
                           'balance' | 'currency' | 'usd' | 
                           'finPerson' | 'driver' | 'deadlineDate' | 'initialPayment' | 'contractNumber' | 'remainCount' |
-                          'cashReceived' | 'plasticReceived' | 'changeToClient' | 'debtSum' | 'debtComment' | 'deliverySum' | 'defectCost'
+                          'cashReceived' | 'plasticReceived' | 'changeToClient' | 'debtSum' | 'debtComment' | 'deliverySum' | 'returnDeliverySum' | 'defectCost'
 
 export type NameDocs = 'sd' | 'ds'
 

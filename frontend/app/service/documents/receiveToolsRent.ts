@@ -126,7 +126,10 @@ export function buildReceiveToolsReturnRow(
       rentHours: days,
       settlementDate,
       sourceTransferDocId: source.sourceTransferDocId,
-      sourceBatchId: 'batchId' in source ? source.batchId : source.sourceBatchId,
+      sourceBatchId:
+        'batchId' in source
+          ? (source as ReceiveToolsPreviewRow).batchId
+          : (source as DocTableItem).sourceBatchId,
       billingRole: source.billingRole,
       assemblyRowKey:
         source.billingRole === 'COLUMN' || source.billingRole === 'COLUMN_COMPONENT'

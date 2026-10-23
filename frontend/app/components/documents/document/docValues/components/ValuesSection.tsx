@@ -2,7 +2,7 @@ import React, { memo, useCallback, useMemo, useEffect, useState } from 'react';
 import cn from 'classnames';
 import { SelectReferenceInForm } from '../../selects/selectReferenceInForm/selectReferenceInForm';
 import { InputInForm } from '../../inputs/inputInForm/inputInForm';
-import { DocumentType, DocSTATUS } from '@/app/interfaces/document.interface';
+import { DocumentType, DocSTATUS, getReturnItems } from '@/app/interfaces/document.interface';
 import { getPriceAndBalance } from '@/app/service/documents/getPriceBalance';
 import { addItems } from '../doc.values.functions';
 import { defaultDocumentTableItem } from '@/app/context/app.context.helpers.constants';
@@ -13,7 +13,7 @@ import { useAppContext } from '@/app/context/app.context';
 import { DocTableCatalog } from '../../docTableCatalog/docTableCatalog';
 import { getDocumentTypeByComeOut } from './helpers/getDocumentTypeByComeOut';
 import { getStorageIdForDocument } from '@/app/service/documents/getStorageIdForDocument';
-import useSWR from 'swr';
+import useSWR, { mutate as globalMutate } from 'swr';
 import { getEnterprises } from '@/app/service/enterprises/getEnterprises';
 import { isGlobalRole } from '@/app/utils/roleHelpers';
 import { getDataForSwr } from '@/app/service/common/getDataForSwr';
@@ -32,6 +32,11 @@ import { ClientOperationsSummary } from './clientBalanceInfo/clientOperationsSum
 import { SelectDeliverer } from '../../selects/selectDeliverer/selectDeliverer';
 import CartIco from '../../docTableCatalog/ico/cart.svg';
 import { useToolsDocumentBlockSettings } from '@/app/service/settings/useToolsDocumentBlockSettings';
+import { paidInFullSaveError, setDocumentPaidInFull } from '@/app/service/documents/setDocumentPaidInFull';
+import { showMessage } from '@/app/service/common/showMessage';
+
+/** Временно скрыты «Расчёт с клиентом» и «Остаток клиента» на передаче и возврате. */
+const SHOW_TRANSFER_RETURN_CLIENT_SETTLEMENT = false;
 
 interface ValuesSectionProps {
   options: any;
@@ -111,6 +116,21 @@ const ValuesSection = memo<ValuesSectionProps>(({
     contentName === DocumentType.TransferToolsToClient ||
     contentName === DocumentType.ReceiveToolsFromClient;
   const { showExtraCharge } = useToolsDocumentBlockSettings(needsToolsBlockSettings);
+  const deliveryFromPartyEditable = useMemo(() => {
+    const ids = new Set<number>();
+    for (const item of getReturnItems(currentDocument?.docTableItems || [])) {
+      const id = Number(item.sourceTransferDocId);
+      if (id > 0) ids.add(id);
+    }
+    return ids.size === 1 && !currentDocument?.docValues?.partyDeliveryCharged;
+  }, [currentDocument?.docTableItems, currentDocument?.docValues?.partyDeliveryCharged]);
+  const isTransferOrReturnTools =
+    contentName === DocumentType.TransferToolsToClient ||
+    contentName === DocumentType.TransferSubleaseToolsToClient ||
+    contentName === DocumentType.ReceiveToolsFromClient ||
+    contentName === DocumentType.ReceiveSubleaseToolsFromClient;
+  const showClientSettlement =
+    !isTransferOrReturnTools || SHOW_TRANSFER_RETURN_CLIENT_SETTLEMENT;
   const isLeaveOnlyOneMaterial = documentType === DocumentType.LeaveOnlyOneMaterial;
   // Документы, в которых можно привязать orderId (списание S20 / приход / продажа).
   // Заказ обязателен только для LeaveOnlyOneMaterial; для остальных пусто = без заказа.
@@ -282,6 +302,54 @@ const ValuesSection = memo<ValuesSectionProps>(({
       },
     });
   }, [setMainData, currentDocument]);
+
+  const [paidInFullSaving, setPaidInFullSaving] = useState(false);
+
+  const handlePaidInFullChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!setMainData || !currentDocument || paidInFullSaving) return;
+
+    const nextPaid = e.target.checked;
+    const snapshot = currentDocument;
+    const applyPaid = (paid: boolean) => {
+      setMainData('currentDocument', {
+        ...snapshot,
+        docValues: {
+          ...snapshot.docValues,
+          paidInFull: paid,
+        },
+      });
+    };
+
+    applyPaid(nextPaid);
+
+    const isPostedReturn =
+      snapshot.documentType === DocumentType.ReceiveToolsFromClient &&
+      snapshot.docStatus === DocSTATUS.PROVEDEN &&
+      Number(snapshot.id) > 0;
+    if (!isPostedReturn) return;
+
+    const token = mainData?.users?.user?.token;
+    if (!token) {
+      applyPaid(snapshot.docValues?.paidInFull === true);
+      showMessage('Нет токена пользователя', 'error', setMainData);
+      return;
+    }
+
+    setPaidInFullSaving(true);
+    try {
+      await setDocumentPaidInFull(Number(snapshot.id), nextPaid, token);
+      globalMutate(
+        (key) => typeof key === 'string' && key.includes('/api/documents/'),
+        undefined,
+        { revalidate: true },
+      ).catch(() => undefined);
+    } catch (error) {
+      applyPaid(snapshot.docValues?.paidInFull === true);
+      showMessage(paidInFullSaveError(error), 'error', setMainData);
+    } finally {
+      setPaidInFullSaving(false);
+    }
+  }, [setMainData, currentDocument, mainData?.users?.user?.token, paidInFullSaving]);
 
   // Проверяем, нужно ли показывать analiticId для ComeCashFromClients на основе isOffice у receiver
   const shouldShowAnaliticForComeCashFromClients = useMemo(() => {
@@ -597,6 +665,18 @@ const ValuesSection = memo<ValuesSectionProps>(({
         </button>
       )}
 
+      {contentName === DocumentType.ReceiveToolsFromClient && (
+        <label className={styles.paidInFullRow}>
+          <input
+            type="checkbox"
+            checked={currentDocument?.docValues?.paidInFull === true}
+            disabled={paidInFullSaving}
+            onChange={handlePaidInFullChange}
+          />
+          Оплачен полностью
+        </label>
+      )}
+
       {options.tableIsVisible && (
         <DocTableCatalog items={currentDocument.docTableItems} typeDocumentByComeOut={typeDocumentByComeOut} />
       )}
@@ -668,9 +748,18 @@ const ValuesSection = memo<ValuesSectionProps>(({
                 label="Сумма доставки"
                 labelPosition="top"
                 visible={true}
+                readOnly={!deliveryFromPartyEditable}
+              />
+              <InputInForm
+                nameControl="returnDeliverySum"
+                type="number"
+                label="Возврат"
+                labelPosition="top"
+                visible={true}
               />
               <SelectDeliverer
-                visible={Number(currentDocument?.docValues?.deliverySum || 0) > 0}
+                label="Шофёр"
+                visible={Number(currentDocument?.docValues?.returnDeliverySum || 0) > 0}
               />
               <InputInForm
                 nameControl="defectCost"
@@ -682,6 +771,7 @@ const ValuesSection = memo<ValuesSectionProps>(({
             </div>
           </div>
           )}
+          {showClientSettlement && (
           <div className={styles.toolsPaymentSection}>
             <div className={styles.toolsPaymentTitleBox}>
               <div className={styles.toolsPaymentTitle}>
@@ -690,6 +780,7 @@ const ValuesSection = memo<ValuesSectionProps>(({
             </div>
             <ClientOperationsSummary />
           </div>
+          )}
           {contentName === DocumentType.ReceiveSubleaseToolsFromClient && (
             <div className={styles.toolsPaymentSection}>
               <div className={styles.toolsPaymentTitleBox}>
@@ -782,6 +873,7 @@ const ValuesSection = memo<ValuesSectionProps>(({
             </div>
           </div>
           )}
+          {showClientSettlement && (
           <div className={styles.toolsPaymentSection}>
             <div className={styles.toolsPaymentTitleBox}>
               <div className={styles.toolsPaymentTitle}>
@@ -790,6 +882,7 @@ const ValuesSection = memo<ValuesSectionProps>(({
             </div>
             <ClientBalanceInfo />
           </div>
+          )}
         </>
       )}
 

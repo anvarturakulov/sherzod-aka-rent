@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { useReactToPrint } from 'react-to-print';
-import { DocumentModel } from '@/app/interfaces/document.interface';
+import { DocumentModel, getReturnItems } from '@/app/interfaces/document.interface';
 import { ReferenceModel } from '@/app/interfaces/reference.interface';
 import { useAllReferences } from '@/app/components/lists/referencesList/hooks/useReferencesData';
 import { useAppContext } from '@/app/context/app.context';
 import { rentalContractsApi } from '@/app/service/rentalContracts/rentalContracts.service';
 import { formatRentalContractBasis } from '@/app/interfaces/rentalContract.interface';
+import { fetchDocumentById } from '@/app/service/documents/getDocumentById';
 import ReceiveToolsPrintDocument from '../../../receiveToolsPrintDocument/receiveToolsPrintDocument';
 import {
   askPrintCopyCount,
@@ -16,6 +17,30 @@ import {
 } from '../../../printCopies/printCopies';
 import { useToolsDocumentBlockSettings } from '@/app/service/settings/useToolsDocumentBlockSettings';
 import { getFormworkPanelTotals } from '@/app/service/documents/formworkPanelArea';
+
+const loadTransferComments = async (
+  items: DocumentModel['docTableItems'],
+  token: string | undefined,
+): Promise<string> => {
+  const ids = [
+    ...new Set(
+      getReturnItems(items || [])
+        .map((item) => Number(item.sourceTransferDocId))
+        .filter((id) => Number.isFinite(id) && id > 0),
+    ),
+  ];
+  if (!ids.length || !token) return '';
+
+  const docs = await Promise.all(ids.map((id) => fetchDocumentById(id, token)));
+  const comments: string[] = [];
+  for (const doc of docs) {
+    const comment = (doc?.docValues?.comment ?? '').trim();
+    if (comment && !comments.includes(comment)) {
+      comments.push(comment);
+    }
+  }
+  return comments.join(' · ');
+};
 
 export const useReceiveToolsPrint = () => {
   const printRef = useRef<HTMLDivElement>(null);
@@ -35,6 +60,7 @@ export const useReceiveToolsPrint = () => {
 
   const [printBasisOverride, setPrintBasisOverride] = useState<string | null>(null);
   const [copyCount, setCopyCount] = useState(DEFAULT_PRINT_COPIES);
+  const [transferComment, setTransferComment] = useState('');
   const [shouldPrint, setShouldPrint] = useState(false);
 
   const contractBasis =
@@ -56,9 +82,14 @@ export const useReceiveToolsPrint = () => {
     [currentDocument?.docTableItems, references],
   );
 
-  const clientName = references?.find(
+  const clientRef = references?.find(
     (r: ReferenceModel) => r.id === currentDocument?.docValues?.senderId,
-  )?.name;
+  );
+  const clientName = clientRef?.name;
+  const clientPhone = [clientRef?.refValues?.phone, clientRef?.refValues?.phone2]
+    .map((phone) => (phone ?? '').trim())
+    .filter(Boolean)
+    .join(', ');
   const warehouseName = references?.find(
     (r: ReferenceModel) => r.id === currentDocument?.docValues?.receiverId,
   )?.name;
@@ -75,7 +106,7 @@ export const useReceiveToolsPrint = () => {
     if (!shouldPrint) return;
     setShouldPrint(false);
     printFn();
-  }, [shouldPrint, contractBasis, copyCount, printFn]);
+  }, [shouldPrint, contractBasis, copyCount, transferComment, printFn]);
 
   const handlePrint = useCallback(async () => {
     const n = askPrintCopyCount();
@@ -83,14 +114,17 @@ export const useReceiveToolsPrint = () => {
 
     setCopyCount(n);
 
+    const commentPromise = loadTransferComments(currentDocument?.docTableItems, token);
+    let basis = '';
     if (token && clientId > 0) {
       const fresh = await mutate();
-      setPrintBasisOverride(formatRentalContractBasis(fresh));
-    } else {
-      setPrintBasisOverride('');
+      basis = formatRentalContractBasis(fresh);
     }
+    const comment = await commentPromise;
+    setPrintBasisOverride(basis);
+    setTransferComment(comment);
     setShouldPrint(true);
-  }, [token, clientId, mutate]);
+  }, [token, clientId, mutate, currentDocument?.docTableItems]);
 
   const PrintContent = currentDocument ? (
     <div style={{ display: 'none' }}>
@@ -98,6 +132,7 @@ export const useReceiveToolsPrint = () => {
         ref={printRef}
         document={currentDocument as DocumentModel}
         clientName={clientName}
+        clientPhone={clientPhone}
         warehouseName={warehouseName}
         delivererName={delivererName}
         contractBasis={contractBasis}
@@ -107,6 +142,7 @@ export const useReceiveToolsPrint = () => {
         showClientGoodsSale={showClientGoodsSale}
         showExtraCharge={showExtraCharge}
         panelTotals={panelTotals}
+        transferComment={transferComment}
       />
     </div>
   ) : null;

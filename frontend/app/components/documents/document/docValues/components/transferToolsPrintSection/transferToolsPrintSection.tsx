@@ -51,9 +51,14 @@ export const useTransferToolsPrint = () => {
     return { toolNames: names, toolArticles: articles };
   }, [references]);
 
-  const clientName = references?.find(
+  const clientRef = references?.find(
     (r: ReferenceModel) => r.id === currentDocument?.docValues?.receiverId,
-  )?.name;
+  );
+  const clientName = clientRef?.name;
+  const clientPhone = [clientRef?.refValues?.phone, clientRef?.refValues?.phone2]
+    .map((phone) => (phone ?? '').trim())
+    .filter(Boolean)
+    .join(', ');
 
   const printFn = useReactToPrint({
     contentRef: printRef,
@@ -87,6 +92,7 @@ export const useTransferToolsPrint = () => {
         ref={printRef}
         document={currentDocument as DocumentModel}
         clientName={clientName}
+        clientPhone={clientPhone}
         contractBasis={contractBasis}
         toolNames={toolNames}
         toolArticles={toolArticles}

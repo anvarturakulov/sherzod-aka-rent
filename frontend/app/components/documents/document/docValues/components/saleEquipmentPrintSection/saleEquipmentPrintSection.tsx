@@ -41,9 +41,14 @@ export const useSaleEquipmentPrint = () => {
     return map;
   }, [references]);
 
-  const clientName = references?.find(
+  const clientRef = references?.find(
     (ref: ReferenceModel) => ref.id === currentDocument?.docValues?.receiverId,
-  )?.name;
+  );
+  const clientName = clientRef?.name;
+  const clientPhone = [clientRef?.refValues?.phone, clientRef?.refValues?.phone2]
+    .map((phone) => (phone ?? '').trim())
+    .filter(Boolean)
+    .join(', ');
 
   const warehouseName = references?.find(
     (ref: ReferenceModel) => ref.id === currentDocument?.docValues?.senderId,
@@ -73,6 +78,7 @@ export const useSaleEquipmentPrint = () => {
         ref={printRef}
         document={currentDocument as DocumentModel}
         clientName={clientName}
+        clientPhone={clientPhone}
         warehouseName={warehouseName}
         itemNames={itemNames}
         itemComments={itemComments}

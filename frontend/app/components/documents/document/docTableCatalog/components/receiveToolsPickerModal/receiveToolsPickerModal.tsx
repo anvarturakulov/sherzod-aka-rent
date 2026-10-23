@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { DocTableItem, DocumentModel } from '@/app/interfaces/document.interface';
+import { DocTableItem, DocumentModel, ReceiveToolsPreviewRow } from '@/app/interfaces/document.interface';
 import { useAllReferences } from '@/app/components/lists/referencesList/hooks/useReferencesData';
 import { numberValue } from '@/app/service/common/converters';
 import { fetchReceiveToolsPreview } from '@/app/service/documents/fetchReceiveToolsPreview';
@@ -11,6 +11,7 @@ import {
   PickerSelectionRow,
 } from '@/app/service/documents/applyReceiveToolsPicker';
 import { showMessage } from '@/app/service/common/showMessage';
+import { resolvePartyDelivery } from '@/app/service/documents/fillReceiveToolsTable';
 import { getReceiveToolsReturnDateTime } from '@/app/service/documents/receiveToolsRent';
 import styles from './receiveToolsPickerModal.module.css';
 
@@ -45,6 +46,7 @@ export default function ReceiveToolsPickerModal({
 }: ReceiveToolsPickerModalProps) {
   const { data: references } = useAllReferences(token);
   const [rows, setRows] = useState<PickerSelectionRow[]>([]);
+  const [previewRows, setPreviewRows] = useState<ReceiveToolsPreviewRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [applyError, setApplyError] = useState<string | null>(null);
@@ -64,11 +66,13 @@ export default function ReceiveToolsPickerModal({
     try {
       const preview = await fetchReceiveToolsPreview(currentDocument, token, enterpriseId);
       const pickerRows = buildPickerRowsFromPreview(preview, allDocItems);
+      setPreviewRows(preview);
       setRows(pickerRows);
     } catch (error: any) {
       const message =
         error?.response?.data?.message || error?.message || 'Ошибка загрузки';
       setLoadError(message);
+      setPreviewRows([]);
       setRows([]);
     } finally {
       setLoading(false);
@@ -79,6 +83,7 @@ export default function ReceiveToolsPickerModal({
     if (open) {
       loadPreview();
     } else {
+      setPreviewRows([]);
       setRows([]);
       setLoadError(null);
       setApplyError(null);
@@ -148,9 +153,15 @@ export default function ReceiveToolsPickerModal({
       return;
     }
 
+    const partyDelivery = resolvePartyDelivery(result.docTableItems, previewRows);
     setMainData?.('currentDocument', {
       ...currentDocument,
       docTableItems: result.docTableItems,
+      docValues: {
+        ...currentDocument.docValues,
+        deliverySum: partyDelivery.deliverySum || undefined,
+        partyDeliveryCharged: partyDelivery.partyDeliveryCharged,
+      },
     });
 
     const updatedCount = rows.filter((r) => (Number(r.returnQty) || 0) > 0).length;

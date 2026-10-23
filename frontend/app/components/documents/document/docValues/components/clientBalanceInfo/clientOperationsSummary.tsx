@@ -97,7 +97,13 @@ export const ClientOperationsSummary = (): JSX.Element | null => {
       value: summary.defectCost,
       sign: '+',
     },
-    { key: 'delivery', label: 'Доставка', value: summary.deliverySum, sign: '+' },
+    {
+      key: 'delivery',
+      label: summary.partyDeliveryCharged ? 'Доставка (уже в долге)' : 'Доставка',
+      value: summary.deliverySum,
+      sign: summary.partyDeliveryCharged ? undefined : '+',
+    },
+    { key: 'returnDelivery', label: 'Возврат', value: summary.returnDeliverySum, sign: '+' },
     {
       key: 'changeToClient',
       label: 'Сдача',

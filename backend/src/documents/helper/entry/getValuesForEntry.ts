@@ -132,6 +132,68 @@ const SALE_TOVAR_PAYMENT_DESCRIPTION = "товар сотувидан тушум
 const TOOLS_DELIVERY_DESCRIPTION = "етказиб бериш хақи";
 const TOOLS_DEFECT_COST_DESCRIPTION = "брак буйича харажат";
 
+export interface SourceTransferDelivery {
+  docId: number;
+  deliverySum: number;
+  delivererId: number | null;
+  alreadyCharged: boolean;
+}
+
+const buildReceiveToolsDeliveryEntries = (
+  clientId: number | null | undefined,
+  doc: Document,
+  fullDescriptionWithParties: string,
+): ResultgetValuesForEntry[] => {
+  const entries: ResultgetValuesForEntry[] = [];
+  const transfers: SourceTransferDelivery[] =
+    (doc as Document & { sourceTransferDeliveries?: SourceTransferDelivery[] })
+      .sourceTransferDeliveries || [];
+  const fieldSum = parseNumberOrFallback(doc.docValues?.deliverySum, 0);
+  const partyAlreadyCharged = Boolean(doc.docValues?.partyDeliveryCharged);
+  const positive = transfers.filter((item) => item.deliverySum > 0);
+  const uncharged = positive.filter((item) => !item.alreadyCharged);
+
+  if (!partyAlreadyCharged && fieldSum > 0) {
+    if (uncharged.length === 1) {
+      const entry = buildToolsDeliveryEntry(
+        clientId,
+        uncharged[0].delivererId,
+        fieldSum,
+        fullDescriptionWithParties,
+      );
+      if (entry) entries.push(entry);
+    } else if (uncharged.length > 1) {
+      for (const transfer of uncharged) {
+        const entry = buildToolsDeliveryEntry(
+          clientId,
+          transfer.delivererId,
+          transfer.deliverySum,
+          fullDescriptionWithParties,
+        );
+        if (entry) entries.push(entry);
+      }
+    } else if (!positive.some((item) => item.alreadyCharged)) {
+      throw new Error("Доставка: не указан доставщик");
+    }
+  }
+
+  const returnDeliverySum = parseNumberOrFallback(
+    doc.docValues?.returnDeliverySum,
+    0,
+  );
+  if (returnDeliverySum > 0) {
+    const entry = buildToolsDeliveryEntry(
+      clientId,
+      doc.docValues?.delivererId,
+      returnDeliverySum,
+      fullDescriptionWithParties,
+    );
+    if (entry) entries.push(entry);
+  }
+
+  return entries;
+};
+
 const buildToolsDeliveryEntry = (
   clientId: number | null | undefined,
   delivererId: number | null | undefined,
@@ -2156,12 +2218,12 @@ export const getValuesForEntry = async (
           );
         }
         if (entryType === "deliveryEntry" && !tableItem) {
-          return buildToolsDeliveryEntry(
+          const deliveryEntries = buildReceiveToolsDeliveryEntries(
             senderId,
-            doc.docValues?.delivererId,
-            parseNumberOrFallback(doc.docValues?.deliverySum, 0),
+            doc,
             descriptionWithSenderAndAnalitic,
           );
+          return deliveryEntries.length ? deliveryEntries : null;
         }
         if (entryType === "defectCostEntry" && !tableItem) {
           return buildToolsDefectCostEntry(
