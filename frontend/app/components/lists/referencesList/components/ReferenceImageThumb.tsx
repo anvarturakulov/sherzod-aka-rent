@@ -73,7 +73,7 @@ export const ReferenceImageThumb = memo<ReferenceImageThumbProps>(
 
     if (!storedPath) {
       return (
-        <div className={styles.imagePlaceholder} aria-hidden title="Расм йўқ">
+        <div className={styles.imagePlaceholder} aria-hidden title="Нет изображения">
           📦
         </div>
       );
@@ -83,8 +83,8 @@ export const ReferenceImageThumb = memo<ReferenceImageThumbProps>(
       return (
         <div
           className={cn(styles.imagePlaceholder, styles.imagePlaceholderBroken)}
-          title="Расм юкланмади"
-          aria-label="Расм юкланмади"
+          title="Изображение не загружено"
+          aria-label="Изображение не загружено"
         >
           <BrokenImageIcon />
         </div>

@@ -61,12 +61,12 @@ export const AktSverka = ({ className, ...props }: AktSverkaProps): JSX.Element 
     }
 
     if (!dateStart || !dateEnd) {
-      setError('Саналарни танланг');
+      setError('Выберите даты');
       return;
     }
 
     if (!partnerType) {
-      setError('Хамкор турини танланг');
+      setError('Выберите тип контрагента');
       return;
     }
 
@@ -75,7 +75,7 @@ export const AktSverka = ({ className, ...props }: AktSverkaProps): JSX.Element 
       firstReferenceId === undefined ||
       firstReferenceId === 0
     ) {
-      setError('Хамкорни танланг');
+      setError('Выберите контрагента');
       return;
     }
 
@@ -93,7 +93,7 @@ export const AktSverka = ({ className, ...props }: AktSverkaProps): JSX.Element 
       setReportData(data);
     } catch (e: unknown) {
       const message =
-        e instanceof Error ? e.message : 'Маълумот юклашда хатолик юз берди';
+        e instanceof Error ? e.message : 'Ошибка при загрузке данных';
       setError(message);
       setReportData(null);
     } finally {
@@ -136,7 +136,7 @@ export const AktSverka = ({ className, ...props }: AktSverkaProps): JSX.Element 
     <div className={styles.container} {...props}>
       <div className={styles.titleRow}>
         <div className={styles.title}>
-          Солиштирма далолатнома
+          Акт сверки
           {enterpriseName && <span> - {enterpriseName}</span>}
         </div>
         {showBackToBalance && (
@@ -153,7 +153,7 @@ export const AktSverka = ({ className, ...props }: AktSverkaProps): JSX.Element 
       <div className={styles.filters}>
         <SelectPartnerType visible={true} />
         <SelectReference
-          label="Хамкор"
+          label="Контрагент"
           visible={true}
           typeReference={TypeReference.PARTNERS}
           id="firstReferenceId"
@@ -164,15 +164,15 @@ export const AktSverka = ({ className, ...props }: AktSverkaProps): JSX.Element 
           onClick={loadData}
           disabled={loading}
         >
-          {loading ? 'Юкланмокда...' : 'Янгилаш'}
+          {loading ? 'Загрузка...' : 'Обновить'}
         </button>
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
-      {loading && <div className={styles.loading}>Маълумот юкланмокда...</div>}
+      {loading && <div className={styles.loading}>Загрузка данных...</div>}
 
       {!loading && !error && reportData && values.length === 0 && (
-        <div className={styles.loading}>Маълумот мавжуд эмас</div>
+        <div className={styles.loading}>Нет данных</div>
       )}
 
       {!loading && values.length > 0 && (

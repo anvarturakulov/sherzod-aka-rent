@@ -35,25 +35,25 @@ export const Cash = ({className, data, ...props }: CashProps) :JSX.Element => {
             
             
             <div className={styles.title}>
-                 КАССА ЖАДВАЛ (СУМ)
+                 КАССОВАЯ ТАБЛИЦА (сум)
                  {enterpriseName && <span> - {enterpriseName}</span>}
             </div>
             <table className={styles.table}>
                 <thead>
                     <tr>
                         <td className={styles.titleTd}>Цех</td>
-                        <td>Бошлангич колдик</td>
-                        <td>Мижозлар. кирим</td>
-                        <td>Ички корхона. кирим</td>
-                        <td>Силжишдан кирим</td>
-                        <td>Жами кирим</td>
-                        <td>Харажат килинди</td>
-                        <td>Таъминот. берилди</td>
-                        <td>Ички корхонагаберилди</td>
-                        <td>Силжишга чиким</td>
-                        <td>Таъсисчига берилди</td>
-                        <td>Жами чиким</td>
-                        <td>Охирги колдик</td>
+                        <td>Начальный остаток</td>
+                        <td>Приход от клиентов</td>
+                        <td>Приход от внутр. предприятий</td>
+                        <td>Приход от перемещения</td>
+                        <td>Итого приход</td>
+                        <td>Израсходовано</td>
+                        <td>Выдано поставщикам</td>
+                        <td>Выдано внутреннему предприятию</td>
+                        <td>Расход на перемещение</td>
+                        <td>Выдано учредителю</td>
+                        <td>Итого расход</td>
+                        <td>Конечный остаток</td>
                     </tr>
                 </thead>
                 {   
@@ -65,7 +65,7 @@ export const Cash = ({className, data, ...props }: CashProps) :JSX.Element => {
                 }
                 <thead>
                     <tr>
-                        <td>Жами (СУМ)</td>
+                        <td>Итого (СУМ)</td>
                         <td className={styles.totalTd}>{numberValue(totalByKey('startBalans', nonUsdData))}</td>
                         <td className={styles.totalTd}>{numberValue(totalByKey('incomeFromClients', nonUsdData))}</td>
                         <td className={styles.totalTd}>{numberValue(totalByKey('incomeFromDepartments', nonUsdData))}</td>
@@ -83,25 +83,25 @@ export const Cash = ({className, data, ...props }: CashProps) :JSX.Element => {
             </table>
 
             <div className={styles.title}>
-                 КАССА ЖАДВАЛ (Валютный)
+                 КАССОВАЯ ТАБЛИЦА (валюта)
                  {enterpriseName && <span> - {enterpriseName}</span>}
             </div>
             <table className={styles.table}>
                 <thead>
                     <tr>
                         <td className={styles.titleTd}>Цех</td>
-                        <td>Бошлангич колдик</td>
-                        <td>Мижозлар. кирим</td>
-                        <td>Ички корх. кирим</td>
-                        <td>Силжишдан кирим</td>
-                        <td>Жами кирим</td>
-                        <td>Харажат килинди</td>
-                        <td>Таъминот. берилди</td>
-                        <td>Ички корхонага берилди</td>
-                        <td>Майдалашга чиким</td>
-                        <td>Таъсисчига берилди</td>
-                        <td>Жами чиким</td>
-                        <td>Охирги колдик</td>
+                        <td>Начальный остаток</td>
+                        <td>Приход от клиентов</td>
+                        <td>Приход от внутр. предприятий</td>
+                        <td>Приход от перемещения</td>
+                        <td>Итого приход</td>
+                        <td>Израсходовано</td>
+                        <td>Выдано поставщикам</td>
+                        <td>Выдано внутреннему предприятию</td>
+                        <td>Расход на размен</td>
+                        <td>Выдано учредителю</td>
+                        <td>Итого расход</td>
+                        <td>Конечный остаток</td>
                     </tr>
                 </thead>
                 {   
@@ -113,7 +113,7 @@ export const Cash = ({className, data, ...props }: CashProps) :JSX.Element => {
                 }
                 <thead>
                     <tr>
-                        <td>Жами (USD)</td>
+                        <td>Итого (USD)</td>
                         <td className={styles.totalTd}>{numberValue(totalByKey('startBalans', usdData))}</td>
                         <td className={styles.totalTd}>{numberValue(totalByKey('incomeFromClients', usdData))}</td>
                         <td className={styles.totalTd}>{numberValue(totalByKey('incomeFromDepartments', usdData))}</td>

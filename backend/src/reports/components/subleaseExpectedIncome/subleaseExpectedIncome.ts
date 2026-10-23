@@ -1,10 +1,8 @@
 import { SubleaseToolBatchesService } from "src/subleaseToolBatches/subleaseToolBatches.service";
 import { ReferencesService } from "src/references/references.service";
+import { rentCalendarDays } from "src/common/appTime";
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
-
-/** Same minimum as receive-tools / rental expected income (`MIN_RENT_HOURS`). */
-const MIN_RENT_HOURS = 24;
 
 export type SubleaseExpectedIncomeToolRow = {
   toolId: number;
@@ -87,9 +85,7 @@ export async function subleaseExpectedIncome(
 
     const hourlyTariff = Number(batch.hourlyTariff) || 0;
     const partnerHourlyTariff = Number(batch.partnerHourlyTariff) || 0;
-    const rentHours = round2(
-      Math.max(MIN_RENT_HOURS, (asOf - settlementDate) / 3_600_000),
-    );
+    const rentHours = rentCalendarDays(settlementDate, asOf);
     const clientRentSum = round2(rentHours * hourlyTariff * openQty);
     const partnerCostSum = round2(rentHours * partnerHourlyTariff * openQty);
     const margin = round2(clientRentSum - partnerCostSum);

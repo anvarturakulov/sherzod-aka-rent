@@ -4,6 +4,7 @@ import { Maindata } from '@/app/context/app.context.interfaces';
 import { checkInterEnterprise } from './checkInterEnterprise';
 import { DocumentType } from '@/app/interfaces/document.interface';
 import {
+  isReceiveToolsPaymentCheckEnabled,
   isReceiveToolsPaymentFilled,
   isReceiveToolsPaymentGatePassed,
 } from './optionalPaymentFields';
@@ -45,7 +46,10 @@ export const  setProvodkaToDocument = async (
     postedDocumentType = document?.documentType;
 
     if (document) {
-      if (document.documentType === DocumentType.ReceiveToolsFromClient) {
+      if (
+        document.documentType === DocumentType.ReceiveToolsFromClient &&
+        (await isReceiveToolsPaymentCheckEnabled(token))
+      ) {
         const clientId = Number(document.docValues?.senderId || 0);
         let paymentGatePassed = false;
 
@@ -71,7 +75,7 @@ export const  setProvodkaToDocument = async (
 
         if (!paymentGatePassed) {
           if (setMainData) {
-            showMessage('Тулов тулдирилмаган', 'error', setMainData);
+            showMessage('Оплата не заполнена', 'error', setMainData);
           }
           return;
         }
@@ -89,7 +93,7 @@ export const  setProvodkaToDocument = async (
       // Если документ должен быть межпредприятийным, но еще не помечен как таковой
       if (interEnterpriseCheck.isInterEnterprise && !document.isInterEnterprise) {
         if (setMainData) {
-          showMessage('Бу хужжат оралика документ. Аввал хужжатни жўнатиш керак.', 'error', setMainData);
+          showMessage('Это промежуточный документ. Сначала отправьте документ.', 'error', setMainData);
         }
         return;
       }
@@ -97,7 +101,7 @@ export const  setProvodkaToDocument = async (
       // Если документ уже межпредприятийный, не позволяем проводить напрямую
       if (document.isInterEnterprise) {
         if (setMainData) {
-          showMessage('Оралика хужжатни тўғридан-тўғри ўтказиб бўлмайди. Аввал хужжатни жўнатиш керак.', 'error', setMainData);
+          showMessage('Промежуточный документ нельзя провести напрямую. Сначала отправьте документ.', 'error', setMainData);
         }
         return;
       }
@@ -117,7 +121,7 @@ export const  setProvodkaToDocument = async (
   try {
     await axios.patch(uri, temp, config);
     if (setMainData) {
-      showMessage(`Хужжат холати узгартирилди`, 'success', setMainData);
+      showMessage(`Статус документа изменён`, 'success', setMainData);
       setMainData('updateDataForDocumentJournal', true);
     }
     await maybeAlertReadyRentalOrders(mainData, setMainData, postedDocumentType);

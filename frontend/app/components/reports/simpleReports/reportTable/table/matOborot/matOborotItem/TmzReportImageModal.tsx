@@ -94,11 +94,11 @@ export function TmzReportImageModal({ isOpen, onClose, title, imageSlots }: Prop
             <h2 id="tmz-report-img-title" className={styles.title}>
               {title}
             </h2>
-            <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Ёпиш">
+            <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Закрыть">
               ×
             </button>
           </div>
-          <p className={styles.subtitle}>ТМЗ расмлари</p>
+          <p className={styles.subtitle}>Изображения ТМЦ</p>
           <div className={styles.grid}>
             {imageSlots.map((filename, i) => (
               <figure key={i} className={styles.slot}>
@@ -108,7 +108,7 @@ export function TmzReportImageModal({ isOpen, onClose, title, imageSlots }: Prop
                       type="button"
                       className={styles.slotOpenBtn}
                       onClick={() => setZoomedFilename(filename)}
-                      aria-label={`Катта кўриш: расм ${SLOT_LABELS[i]}`}
+                      aria-label={`Увеличить: изображение ${SLOT_LABELS[i]}`}
                     >
                       <SlotImage filename={filename} baseUrl={base} />
                     </button>
@@ -135,10 +135,10 @@ export function TmzReportImageModal({ isOpen, onClose, title, imageSlots }: Prop
             className={styles.lightboxInner}
             role="dialog"
             aria-modal="true"
-            aria-label="Катта расм"
+            aria-label="Увеличенное изображение"
             onClick={(e) => e.stopPropagation()}
           >
-            <button type="button" className={styles.lightboxClose} onClick={closeZoom} aria-label="Ёпиш">
+            <button type="button" className={styles.lightboxClose} onClick={closeZoom} aria-label="Закрыть">
               ×
             </button>
             {/* eslint-disable-next-line @next/next/no-img-element */}

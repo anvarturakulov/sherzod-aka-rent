@@ -8,6 +8,7 @@ import { SubleaseToolBatchConsumption } from "./subleaseToolBatchConsumption.mod
 import { SubleaseToolOpenBatch } from "./subleaseToolOpenBatch.model";
 import { SubleaseReceivePreviewRow } from "./subleaseReceivePreview.types";
 import { planSubleaseFifoConsumptions } from "./subleaseToolBatches.fifo";
+import { isZonedCalendarDayAfter, rentCalendarDays } from "src/common/appTime";
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
@@ -420,14 +421,14 @@ export class SubleaseToolBatchesService {
     for (const batch of batches) {
       const openQty = Number(batch.openQty);
       if (openQty <= 0) continue;
+      if (isZonedCalendarDayAfter(Number(batch.settlementDate), returnDateTime)) {
+        continue;
+      }
 
-      const hours = Math.max(
-        24,
-        (returnDateTime - Number(batch.settlementDate)) / 3_600_000,
-      );
-      const rentSum = round2(hours * batch.hourlyTariff * openQty);
+      const days = rentCalendarDays(Number(batch.settlementDate), returnDateTime);
+      const rentSum = round2(days * batch.hourlyTariff * openQty);
       const partnerRentSum = round2(
-        hours * batch.partnerHourlyTariff * openQty,
+        days * batch.partnerHourlyTariff * openQty,
       );
 
       rows.push({

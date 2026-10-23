@@ -7,58 +7,58 @@ export function getInlineReferenceModalTitle(
   if (isEdit) {
     switch (typeReference) {
       case TypeReference.PARTNERS:
-        return 'Хамкорни таҳрирлаш';
+        return 'Редактирование партнёра';
       case TypeReference.WORKERS:
-        return 'Ходимни таҳрирлаш';
+        return 'Редактирование сотрудника';
       case TypeReference.DELIVERERS:
-        return 'Доставщикни таҳрирлаш';
+        return 'Редактирование доставщика';
       case TypeReference.CHARGES:
-        return 'Харажатни таҳрирлаш';
+        return 'Редактирование расхода';
       case TypeReference.SERVICES:
-        return 'Хизматни таҳрирлаш';
+        return 'Редактирование услуги';
       case TypeReference.MEDIATORS:
-        return 'Воситачини таҳрирлаш';
+        return 'Редактирование посредника';
       case TypeReference.TMZ_SHORT_NAME:
-        return 'Қисқа номни таҳрирлаш';
+        return 'Редактирование краткого наименования';
       case TypeReference.TMZ_SIZE:
-        return 'Ўлчамни таҳрирлаш';
+        return 'Редактирование размера';
       case TypeReference.TMZ_COLOR:
-        return 'Рангни таҳрирлаш';
+        return 'Редактирование цвета';
       case TypeReference.TMZ_TEXTURE:
-        return 'Текстурани таҳрирлаш';
+        return 'Редактирование текстуры';
       case TypeReference.TMZ_MANUFACTURE:
-        return 'Ишлаб чиқарувчини таҳрирлаш';
+        return 'Редактирование производителя';
       case TypeReference.TMZ_UNIT:
-        return 'Ўлчов бирлигини таҳрирлаш';
+        return 'Редактирование единицы измерения';
       default:
-        return 'Таҳрирлаш';
+        return 'Редактирование';
     }
   }
 
   switch (typeReference) {
     case TypeReference.PARTNERS:
-      return 'Янги хамкор';
+      return 'Новый партнёр';
     case TypeReference.WORKERS:
-      return 'Янги ходим';
+      return 'Новый сотрудник';
     case TypeReference.DELIVERERS:
-      return 'Янги доставщик';
+      return 'Новый доставщик';
     case TypeReference.CHARGES:
-      return 'Янги харажат';
+      return 'Новый расход';
     case TypeReference.SERVICES:
-      return 'Янги хизмат';
+      return 'Новая услуга';
     case TypeReference.TMZ_SHORT_NAME:
-      return 'Янги қисқа ном';
+      return 'Новое краткое наименование';
     case TypeReference.TMZ_SIZE:
-      return 'Янги ўлчам';
+      return 'Новый размер';
     case TypeReference.TMZ_COLOR:
-      return 'Янги ранг';
+      return 'Новый цвет';
     case TypeReference.TMZ_TEXTURE:
-      return 'Янги текстура';
+      return 'Новая текстура';
     case TypeReference.TMZ_MANUFACTURE:
-      return 'Янги ишлаб чиқарувчи';
+      return 'Новый производитель';
     case TypeReference.TMZ_UNIT:
-      return 'Янги ўлчов бирлиги';
+      return 'Новая единица измерения';
     default:
-      return 'Янги ном';
+      return 'Новый элемент';
   }
 }

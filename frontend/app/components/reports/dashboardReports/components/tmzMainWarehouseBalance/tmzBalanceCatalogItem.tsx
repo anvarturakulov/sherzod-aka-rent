@@ -77,14 +77,14 @@ export const TmzBalanceCatalogItem = memo<TmzBalanceCatalogItemProps>(({
         })}
       >
         <div className={catalogStyles.availableQuantity}>
-          Колдик: <span>{numberValue(qty)} {unitLabel}</span>
+          Остаток: <span>{numberValue(qty)} {unitLabel}</span>
         </div>
         <div className={catalogStyles.availableQuantity}>
           Сумма: <span>{numberValue(sum)} сум</span>
         </div>
         {qty !== 0 && (
           <div className={catalogStyles.availableQuantity}>
-            Нарх: <span>{numberValue(price)} сум</span>
+            Цена: <span>{numberValue(price)} сум</span>
           </div>
         )}
       </div>

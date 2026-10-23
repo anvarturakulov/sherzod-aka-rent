@@ -22,22 +22,22 @@ export const SectionItem = ({className, item, sectionType, ...props }: SectionIt
                             })}>
                                 <Htag tag='h2' className={styles.h2}>{element?.name}</Htag>
                                 <div className={cn(styles.row, styles.rowCount)}>
-                                    <div className={styles.title}>Кун бош. колдик</div>
+                                    <div className={styles.title}>Остаток на начало дня</div>
                                     <div>{numberValue(element?.startBalansCountNon)}</div>
                                 </div>
 
                                 <div className={cn(styles.row, styles.rowCount)}>
-                                    <div className={styles.title}>Ишл. чик. кирим</div>
+                                    <div className={styles.title}>Приход производства</div>
                                     <div>{numberValue(element?.prodCountNon)}</div>
                                 </div>
                                 
                                 <div className={cn(styles.row, styles.rowCount)}>
-                                    <div className={styles.title}>Ички силж. кирим</div>
+                                    <div className={styles.title}>Приход внутр. перемещения</div>
                                     <div>{numberValue(element?.moveIncomeCountNon)}</div>
                                 </div>
                                 
                                 <div className={cn(styles.row, styles.rowCount)}>
-                                    <div className={styles.title}>Сотилган нон</div>
+                                    <div className={styles.title}>Проданный хлеб</div>
                                     <div>
                                         {numberValue(element?.saleCountNon)}
                                         <span>
@@ -46,23 +46,23 @@ export const SectionItem = ({className, item, sectionType, ...props }: SectionIt
                                     </div>
                                 </div>
                                 <div className={cn(styles.row, styles.rowCount)}>
-                                    <div className={styles.title}>Заказга берилган нон</div>
+                                    <div className={styles.title}>Хлеб выданный на заказ</div>
                                     <div>
                                         {numberValue(element?.saleCountOrder)}
                                          
                                     </div>
                                 </div>
                                 <div className={cn(styles.row, styles.rowCount)}>
-                                    <div className={styles.title}>Брак(истем.) нон</div>
+                                    <div className={styles.title}>Брак (списан) хлеб</div>
                                     <div>{numberValue(element?.brakCountNon)}</div>
                                 </div>
                                 <div className={cn(styles.row, styles.rowCount)}>
-                                    <div className={styles.title}>Ички сил. чиким</div>
+                                    <div className={styles.title}>Расход внутр. перемещения</div>
                                     <div>{numberValue(element?.moveOutNon)}</div>
                                 </div>
 
                                 <div className={cn(styles.row, styles.rowCount)}>
-                                    <div className={styles.title}>Зимм. колдик нон</div>
+                                    <div className={styles.title}>Остаток хлеба на руках</div>
                                     <div>{numberValue(element?.endBalansCountNon)}</div>
                                 </div>
                             </div>
@@ -72,65 +72,65 @@ export const SectionItem = ({className, item, sectionType, ...props }: SectionIt
                 
             }
             <div className={styles.sumBox}>
-                <Htag tag='h2' className={cn(styles.h2, styles.bottomTitle)}>Пул буйича</Htag>
+                <Htag tag='h2' className={cn(styles.h2, styles.bottomTitle)}>По деньгам</Htag>
                 <div className={styles.row}>
-                    <div className={styles.title}>Бошлангич колдик</div>
+                    <div className={styles.title}>Начальный остаток</div>
                     <div className={styles.value}>{numberValue(item?.startBalansSumma)}</div>
                 </div>
                 
                 <div className={styles.row}>
-                    <div className={styles.title}>Пул кирим (мижозлардан)</div>
+                    <div className={styles.title}>Денежный приход (от клиентов)</div>
                     <div className={styles.value}>{numberValue(item?.incomeFromClients)}</div>
                 </div>
 
                 <div className={styles.row}>
-                    <div className={styles.title}>Пул кирим (ички корхоналардан)</div>
+                    <div className={styles.title}>Денежный приход (от внутр. предприятий)</div>
                     <div className={styles.value}>{numberValue(item?.incomeFromDepartments)}</div>
                 </div>
 
                 <div className={styles.row}>
-                    <div className={styles.title}>Пул силжишдан кирим</div>
+                    <div className={styles.title}>Приход денег от перемещения</div>
                     <div className={styles.value}>{numberValue(item?.moveIncome)}</div>
                 </div>
 
                 <div className={styles.row}>
-                    <div className={cn(styles.title, styles.totalTitle, styles.blueText)}>ЖАМИ КИРИМ</div>
+                    <div className={cn(styles.title, styles.totalTitle, styles.blueText)}>ИТОГО ПРИХОД</div>
                     <div className={cn(styles.value, styles.totalValue, styles.blueText)}>{numberValue(item?.allIncome)}</div>
                 </div>
 
                 <div className={styles.row}>
-                    <div className={styles.title}>Харажатларга берилди</div>
+                    <div className={styles.title}>Выдано на расходы</div>
                     <div className={styles.value}>{numberValue(item?.outForCharges)}</div>
                 </div>
 
                 <div className={styles.row}>
-                    <div className={styles.title}>Таъминотчиларга берилди</div>
+                    <div className={styles.title}>Выдано поставщикам</div>
                     <div className={styles.value}>{numberValue(item?.outForSuppliers)}</div>
                 </div>
                 
                 <div className={styles.row}>
-                    <div className={styles.title}>Ички корхоналарга берилди</div>
+                    <div className={styles.title}>Выдано внутренним предприятиям</div>
                     <div className={styles.value}>{numberValue(item?.outForDepartments)}</div>
                 </div>
                 
                 <div className={styles.row}>
-                    <div className={styles.title}>Пул силжиш чиким</div>
+                    <div className={styles.title}>Расход денег на перемещение</div>
                     <div className={styles.value}>{numberValue(item?.moveOut)}</div>
                 </div>
 
                 <div className={styles.row}>
-                    <div className={styles.title}>Таъсисчига берилди</div>
+                    <div className={styles.title}>Выдано учредителю</div>
                     <div className={styles.value}>{numberValue(item?.outForFounder)}</div>
                 </div>
                 
 
                 <div className={styles.row}>
-                    <div className={cn(styles.title, styles.totalTitle, styles.redText)}>ЖАМИ ЧИКИМ</div>
+                    <div className={cn(styles.title, styles.totalTitle, styles.redText)}>ИТОГО РАСХОД</div>
                     <div className={cn(styles.value, styles.totalValue, styles.redText)}>{numberValue(item?.allOut)}</div>
                 </div>
 
                 <div className={styles.row}>
-                    <div className={styles.title}>Охирги колдик</div> 
+                    <div className={styles.title}>Конечный остаток</div> 
                     <div className={styles.value}>{numberValue(item?.endBalansSumma)}</div>
                 </div>
             </div>

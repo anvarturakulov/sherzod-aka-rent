@@ -9,7 +9,7 @@ import {
 import { formatDisplayDateTime } from '@/app/utils/formatDisplayDate';
 import { numberValue } from '@/app/service/common/converters';
 import { PrintCopiesWithTearOff } from '../printCopies/printCopies';
-import { getRentTariffTypeLabel } from '@/app/service/documents/rentTariffType';
+import { sortToolRowsByArticle } from '@/app/service/documents/sortToolsByArticle';
 
 const cellBorder = { border: '1.5px solid #000', padding: 6 } as const;
 const cellCenter = { ...cellBorder, textAlign: 'center' as const };
@@ -21,13 +21,34 @@ export type TransferToolsPrintDocumentProps = {
   clientName?: string;
   contractBasis?: string;
   toolNames: Record<number, string>;
+  toolArticles?: Record<number, string>;
   copyCount?: number;
+  showClientGoodsSale?: boolean;
+  showExtraCharge?: boolean;
+  showPriceAndSum?: boolean;
 };
 
 const TransferToolsPrintDocument = forwardRef<HTMLDivElement, TransferToolsPrintDocumentProps>(
-  ({ document, clientName, contractBasis, toolNames, copyCount = 1 }, ref) => {
+  (
+    {
+      document,
+      clientName,
+      contractBasis,
+      toolNames,
+      toolArticles = {},
+      copyCount = 1,
+      showClientGoodsSale = true,
+      showExtraCharge = true,
+      showPriceAndSum = true,
+    },
+    ref,
+  ) => {
     const filled = (document.docTableItems || []).filter((i) => Number(i.analiticId) > 0);
-    const toolItems = getIncomeItems(filled);
+    const toolItems = sortToolRowsByArticle(
+      getIncomeItems(filled),
+      (item) => item,
+      (id) => ({ article: toolArticles[id] || '', name: toolNames[id] || '' }),
+    );
     const saleItems = getSaleItems(filled);
     const deliverySum = Number(document.docValues?.deliverySum || 0);
     const defectCost = Number(document.docValues?.defectCost || 0);
@@ -36,10 +57,6 @@ const TransferToolsPrintDocument = forwardRef<HTMLDivElement, TransferToolsPrint
     const totalCount = toolItems.reduce((s, i) => s + (Number(i.count) || 0), 0);
     const totalDailyRent = toolItems.reduce((s, i) => s + (Number(i.dailyRent) || 0), 0);
     const totalCost = toolItems.reduce((s, i) => s + (Number(i.costTotal) || 0), 0);
-
-    const settlementDate = document.docValues?.settlementDate
-      ? formatDisplayDateTime(Number(document.docValues.settlementDate))
-      : '—';
 
     const usdAmount = Number(document.docValues?.usd) || 0;
     const currency = Number(document.docValues?.currency) || 0;
@@ -50,13 +67,13 @@ const TransferToolsPrintDocument = forwardRef<HTMLDivElement, TransferToolsPrint
 
     const paymentParts: string[] = [];
     if (nakdTotal > 0) {
-      paymentParts.push(`Накд: ${numberValue(nakdTotal)} сўм`);
+      paymentParts.push(`Наличные: ${numberValue(nakdTotal)} сум`);
     }
     if (plastic > 0) {
-      paymentParts.push(`Пластик: ${numberValue(plastic)} сўм`);
+      paymentParts.push(`Карта: ${numberValue(plastic)} сум`);
     }
     if (changeToClient > 0) {
-      paymentParts.push(`Кайтим: ${numberValue(changeToClient)} сўм`);
+      paymentParts.push(`Сдача: ${numberValue(changeToClient)} сум`);
     }
 
     const compact = copyCount >= 2;
@@ -64,8 +81,8 @@ const TransferToolsPrintDocument = forwardRef<HTMLDivElement, TransferToolsPrint
     const molId = Number(document.docValues?.materialResponsiblePersonId) || 0;
     const molName = molId > 0 ? toolNames[molId] || '' : '';
     const topshirdimLine = molName
-      ? `Топширдим: _______________ ${molName}`
-      : 'Топширдим: _______________';
+      ? `Сдал: _______________ ${molName}`
+      : 'Сдал: _______________';
 
     const renderCopy = () => (
       <div
@@ -83,40 +100,41 @@ const TransferToolsPrintDocument = forwardRef<HTMLDivElement, TransferToolsPrint
             margin: '0 0 12px',
           }}
         >
-          Ускуналарни топшириш кабул килиш далолатномаси
+          Акт приёма-передачи инструмента
         </h2>
-        <p style={{ textAlign: 'center' }}>Асос: {contractBasis || '—'}</p>
+        {contractBasis?.trim() ? (
+          <p style={{ textAlign: 'center' }}>Основание: {contractBasis.trim()}</p>
+        ) : null}
+        <p>Дата постановки на учёт: {formatDisplayDateTime(document.date)}</p>
+        <p>Клиент: {clientName || '—'}</p>
         <p>
-          Руйхатга куйиш санаси: {formatDisplayDateTime(document.date)}
-          <span style={{ marginLeft: 40 }}>
-            Ижарани хисоблаш санаси: {settlementDate}
-          </span>
-        </p>
-        <p>Мижоз: {clientName || '—'}</p>
-        <p>Тариф: {getRentTariffTypeLabel(document.docValues?.rentTariffType)}</p>
-        <p>
-          Кунлик ижара: {numberValue(totalDailyRent)} сўм
-          <span style={{ marginLeft: 40 }}>
-            Доставка: {numberValue(deliverySum)} сўм
-          </span>
+          Суточная аренда: {numberValue(totalDailyRent)} сум
+          {showExtraCharge && (
+            <span style={{ marginLeft: 40 }}>
+              Доставка: {numberValue(deliverySum)} сум
+            </span>
+          )}
           {defectCost > 0 && (
             <span style={{ marginLeft: 40 }}>
-              Брак буйича харажатлар: {numberValue(defectCost)} сўм
+              Расходы по браку: {numberValue(defectCost)} сум
             </span>
           )}
         </p>
-        <p>Корхона тел.: +998 97 611 66 98</p>
         {toolItems.length > 0 && (
           <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: compact ? 8 : 16 }}>
             <thead>
               <tr>
                 <th style={thCenter}>№</th>
-                <th style={thCenter}>Номи</th>
-                <th style={thCenter}>Миқдор</th>
-                <th style={thCenter}>Кунлик тариф</th>
-                <th style={thCenter}>Кунлик ижара</th>
-                <th style={thCenter}>Ускуна нархи</th>
-                <th style={thCenter}>Берилаётган ускуналар киймати</th>
+                <th style={thCenter}>Наименование</th>
+                <th style={thCenter}>Количество</th>
+                <th style={thCenter}>Суточный тариф</th>
+                <th style={thCenter}>Суточная аренда</th>
+                {showPriceAndSum && (
+                  <>
+                    <th style={thCenter}>Цена инструмента</th>
+                    <th style={thCenter}>Стоимость выдаваемого инструмента</th>
+                  </>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -128,47 +146,59 @@ const TransferToolsPrintDocument = forwardRef<HTMLDivElement, TransferToolsPrint
                   </td>
                   <td style={cellCenter}>{item.count}</td>
                   <td style={cellRight}>
-                    {numberValue((Number(item.hourlyTariff) || 0) * 24)}
+                    {numberValue(Number(item.hourlyTariff) || 0)}
                   </td>
                   <td style={cellRight}>
                     {numberValue(item.dailyRent ?? 0)}
                   </td>
-                  <td style={cellRight}>
-                    {numberValue(item.costPrice ?? 0)}
-                  </td>
-                  <td style={cellRight}>
-                    {numberValue(item.costTotal ?? 0)}
-                  </td>
+                  {showPriceAndSum && (
+                    <>
+                      <td style={cellRight}>
+                        {numberValue(item.costPrice ?? 0)}
+                      </td>
+                      <td style={cellRight}>
+                        {numberValue(item.costTotal ?? 0)}
+                      </td>
+                    </>
+                  )}
                 </tr>
               ))}
             </tbody>
             <tfoot>
               <tr>
                 <td style={cellBorder} colSpan={2}>
-                  Жами
+                  Итого
                 </td>
                 <td style={cellCenter}>{numberValue(totalCount)}</td>
                 <td style={cellRight} />
                 <td style={cellRight}>{numberValue(totalDailyRent)}</td>
-                <td style={cellRight} />
-                <td style={cellRight}>{numberValue(totalCost)}</td>
+                {showPriceAndSum && (
+                  <>
+                    <td style={cellRight} />
+                    <td style={cellRight}>{numberValue(totalCost)}</td>
+                  </>
+                )}
               </tr>
             </tfoot>
           </table>
         )}
-        {saleItems.length > 0 && (
+        {showClientGoodsSale && saleItems.length > 0 && (
           <>
             <h3 style={{ marginTop: compact ? 12 : 24 }}>
-              Ускуналарга кушимча бериладиган товарлар
+              Товары, выдаваемые вместе с инструментом
             </h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 8 }}>
               <thead>
                 <tr>
                   <th style={thCenter}>№</th>
-                  <th style={thCenter}>Номи</th>
-                  <th style={thCenter}>Миқдор</th>
-                  <th style={thCenter}>Нарх</th>
-                  <th style={thCenter}>Сумма</th>
+                  <th style={thCenter}>Наименование</th>
+                  <th style={thCenter}>Количество</th>
+                  {showPriceAndSum && (
+                    <>
+                      <th style={thCenter}>Цена</th>
+                      <th style={thCenter}>Сумма</th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -179,22 +209,28 @@ const TransferToolsPrintDocument = forwardRef<HTMLDivElement, TransferToolsPrint
                       {toolNames[item.analiticId] || item.analiticId}
                     </td>
                     <td style={cellCenter}>{item.count}</td>
-                    <td style={cellRight}>
-                      {numberValue(item.price ?? 0)}
-                    </td>
-                    <td style={cellRight}>
-                      {numberValue(item.total ?? 0)}
-                    </td>
+                    {showPriceAndSum && (
+                      <>
+                        <td style={cellRight}>
+                          {numberValue(item.price ?? 0)}
+                        </td>
+                        <td style={cellRight}>
+                          {numberValue(item.total ?? 0)}
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>
             </table>
-            <p style={{ marginTop: 8 }}>Жами товар: {numberValue(saleTotal)} сўм</p>
+            {showPriceAndSum && (
+              <p style={{ marginTop: 8 }}>Итого товар: {numberValue(saleTotal)} сум</p>
+            )}
           </>
         )}
         {paymentParts.length > 0 && (
           <div style={{ marginTop: 12 }}>
-            <p style={{ marginBottom: 4 }}>Мижоз туловлари</p>
+            <p style={{ marginBottom: 4 }}>Оплаты клиента</p>
             <p>{paymentParts.join('   |   ')}</p>
           </div>
         )}
@@ -219,7 +255,7 @@ const TransferToolsPrintDocument = forwardRef<HTMLDivElement, TransferToolsPrint
           }}
         >
           <span>{topshirdimLine}</span>
-          <span>Кабул килдим: _______________</span>
+          <span>Принял: _______________</span>
         </div>
       </div>
     );

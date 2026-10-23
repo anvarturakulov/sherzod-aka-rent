@@ -7,7 +7,7 @@ import { useEnterpriseName } from '../../hooks/useEnterpriseName';
 
 export const Norma = ({className, data, currentSection, ...props }: NormaProps) :JSX.Element => {
     const enterpriseName = useEnterpriseName();
-    let title = 'ХОМ АШЁЛАРНИНГ НОРМА БУЙИЧА ЧИКИМИ' 
+    let title = 'СПИСАНИЕ СЫРЬЯ ПО НОРМАМ' 
     
     useEffect(()=> {
     }, [data])

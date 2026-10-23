@@ -12,7 +12,7 @@ interface SelectMediatorProps {
 }
 
 export const SelectMediator = ({
-  label = 'Воситачи',
+  label = 'Посредник',
   visible = true,
   className,
 }: SelectMediatorProps): JSX.Element => {
@@ -78,7 +78,7 @@ export const SelectMediator = ({
         value={currentDocument?.docValues?.mediatorId || ''}
         onChange={handleChange}
       >
-        <option value="">Танланмаган</option>
+        <option value="">Не выбрано</option>
         {(data || []).map((item: ReferenceModel) => (
           <option key={item.id} value={item.id}>
             {item.name}

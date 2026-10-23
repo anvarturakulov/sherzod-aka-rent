@@ -11,5 +11,10 @@ export interface ReceiveToolsPreviewRow {
   sourceTransferDocId: number;
   settlementDate: number;
   transferDocNumber: string;
+  transferDocComment?: string;
   tableType: "return";
+  batchId: number;
+  billingRole: "PLAIN" | "COLUMN" | "COLUMN_COMPONENT";
+  assemblyBatchId?: number | null;
+  normQty?: number | null;
 }

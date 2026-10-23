@@ -41,7 +41,7 @@ export const ReferredByMediatorSelect = ({
 
   return (
     <div className={styles.box}>
-      <div className={styles.label}>Воситачи (ким орқали келган)</div>
+      <div className={styles.label}>Посредник (через кого пришёл)</div>
       <select
         className={cn(styles.select)}
         value={selectValue}

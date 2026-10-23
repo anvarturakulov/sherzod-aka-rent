@@ -16,7 +16,7 @@ export const deleteDocumentPermanent = async (
   try {
     await axios.delete(uri, config);
     if (setMainData) {
-      showMessage('Ҳужжат базадан тўлиқ ўчирилди', 'success', setMainData);
+      showMessage('Документ полностью удалён из базы', 'success', setMainData);
       setMainData('updateDataForDocumentJournal', true);
     }
   } catch (error: any) {
@@ -24,7 +24,7 @@ export const deleteDocumentPermanent = async (
       const message =
         error?.response?.data?.message ||
         error?.message ||
-        'Ҳужжатни тўлиқ ўчиришда хатолик';
+        'Ошибка при полном удалении документа';
       showMessage(String(message), 'error', setMainData);
     }
   }

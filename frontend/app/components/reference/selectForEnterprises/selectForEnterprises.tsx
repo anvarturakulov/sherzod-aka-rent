@@ -41,7 +41,7 @@ export const SelectForEnterprises = ({ label, currentEnterpriseId, setEnterprise
                     value="null"
                     className={styles.chooseMe}
                     key = {-1}
-                    >Танланмаган
+                    >Не выбрано
                 </option>
                 {data && data.length>0  &&
                 data

@@ -3,7 +3,7 @@ import { CashItemProps } from './cashItem.props';
 import styles from './cashItem.module.css';
 import { numberValue } from '@/app/service/common/converters';
 
-/** Как в ДК «Пул маблаглари» (актив): только неотрицательный остаток. */
+/** Как в ДК «Денежные средства» (актив): только неотрицательный остаток. */
 const activeOnly = (v: unknown) => Math.max(0, Number(v) || 0);
 
 export const CashItem = ({className, item, index, ...props }: CashItemProps) :JSX.Element | null => {

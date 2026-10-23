@@ -14,6 +14,7 @@ const TOOLS_DOC_TYPES: DocumentType[] = [
   DocumentType.LeaveTools,
   DocumentType.TransferToolsToClient,
   DocumentType.OrderToolsToClient,
+  DocumentType.SaleEquipment,
   DocumentType.ReceiveToolsFromClient,
   DocumentType.TransferSubleaseToolsToClient,
   DocumentType.ReceiveSubleaseToolsFromClient,
@@ -21,15 +22,15 @@ const TOOLS_DOC_TYPES: DocumentType[] = [
 
 const TableEmptyBox = memo<TableEmptyBoxProps>(({ docType, ...props }) => {
   const emptyText = docType && TOOLS_DOC_TYPES.includes(docType)
-    ? 'Каталогдан ускуналарни танлаб, руйхатга кушинг'
-    : 'Каталогдан товарларни танлаб, буюртмага кушинг';
+    ? 'Выберите инструменты из каталога и добавьте в список'
+    : 'Выберите товары из каталога и добавьте в заказ';
 
   return (
     <div className={cn(styles.emptyBox, {})}>
       <BoxIco className={styles.icoBox}/>
-      <div className={styles.emptyTitle}>Саватча буш</div>
+      <div className={styles.emptyTitle}>Корзина пуста</div>
       <div className={styles.emptyText}>{emptyText}</div>
-      {/* <button className={styles.openCatalogBtn}>Каталогни очиш</button> */}
+      {/* <button className={styles.openCatalogBtn}>Открыть каталог</button> */}
     </div>
   );
 });

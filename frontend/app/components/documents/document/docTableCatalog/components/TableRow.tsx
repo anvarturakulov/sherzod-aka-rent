@@ -12,6 +12,7 @@ import styles from '../docTableCatalog.module.css';
 import { InputInTableForNumbers } from '../../inputs/inputInTableForNumbers/inputInTableForNumbers';
 import { DocumentType, DocSTATUS, documentsWithOwnPrice, shouldComeProductHaveEditablePrice, isReceiveToolsDocument } from '@/app/interfaces/document.interface';
 import { numberValue, formatNumberForDisplay } from '@/app/service/common/converters';
+import { formatDisplayDateTime } from '@/app/utils/formatDisplayDate';
 import { getStorageIdForDocument } from '@/app/service/documents/getStorageIdForDocument';
 import { getSchetForDocumentRow } from '@/app/service/documents/getSchetForDocumentRow';
 import { UserRoles } from '@/app/interfaces/user.interface';
@@ -68,6 +69,13 @@ const TableRow = memo<TableRowProps>(({
   const isReceiveToolsFromClient = isReceiveToolsDocument(
     currentDocument?.documentType,
   );
+  const isSaleEquipment =
+    currentDocument?.documentType === DocumentType.SaleEquipment;
+  const hideNameExtras =
+    currentDocument?.documentType === DocumentType.TransferToolsToClient ||
+    currentDocument?.documentType === DocumentType.TransferSubleaseToolsToClient ||
+    isReceiveToolsFromClient ||
+    isSaleEquipment;
   const isLeaveMaterial =
     currentDocument?.documentType === DocumentType.LeaveMaterial;
   const isLeaveHalfstuff =
@@ -144,6 +152,7 @@ const TableRow = memo<TableRowProps>(({
   }, [item.analiticId, warehouseId, schet, item.count, contextData.document.currentDocument.documentType, item.tableType]);
   
   React.useEffect(() => {
+    if (isSaleEquipment) return;
     // Передаем analiticId и tableType для правильного определения счета
     if (typeof onSubscribe === 'function' && onSubscribe.length > 1) {
       // Если функция принимает 2 параметра (новая версия)
@@ -189,9 +198,13 @@ const TableRow = memo<TableRowProps>(({
     );
   };
 
+  const isColumnComponent = item.billingRole === 'COLUMN_COMPONENT';
+  const isColumnLine = item.billingRole === 'COLUMN';
   const canReplaceNomenclature =
     !!onOpenCatalogForRow &&
-    currentDocument?.docStatus === DocSTATUS.OPEN;
+    currentDocument?.docStatus === DocSTATUS.OPEN &&
+    !isColumnComponent &&
+    !isColumnLine;
 
   const canCopyFromReturn =
     isReturnRow &&
@@ -231,7 +244,7 @@ const TableRow = memo<TableRowProps>(({
           <div
             className={styles.icoCatalog}
             onClick={() => onOpenCatalogForRow!(effectiveDocIndex)}
-            title="Номенклатурани алмаштириш"
+            title="Заменить номенклатуру"
             role="button"
           >
             <CartIco />
@@ -246,12 +259,14 @@ const TableRow = memo<TableRowProps>(({
             <div className={styles.productNameWrap}>
               <div className={styles.productName}>
                 {product?.name || `Товар ID: ${item.analiticId}`}
+                {isColumnLine ? ' (колонна)' : ''}
+                {isColumnComponent ? ' (состав колонны)' : ''}
                 {isLeaveMaterial && (
                   <span className={styles.costPriceInName}>
-                    {` (колдик: ${formatNumberForDisplay(displayBalance)} ${unit})`}
+                    {` (остаток: ${formatNumberForDisplay(displayBalance)} ${unit})`}
                   </span>
                 )}
-                {!showOrderFillHints && (
+                {!showOrderFillHints && !hideNameExtras && (
                   <>
                     <span className={styles.costPriceInName}>{`( т: ${numberValue(item.costPrice)}`}</span>
                     <span className={styles.costPriceInName}>{` т.с: ${numberValue(item.costTotal)})`}</span>
@@ -259,9 +274,9 @@ const TableRow = memo<TableRowProps>(({
                 )}
               </div>
             </div>
-            {(product?.article || canCopyFromReturn) && (
+            {((product?.article && !hideNameExtras) || canCopyFromReturn) && (
               <div className={styles.productSecondaryRow}>
-                {product?.article && (
+                {product?.article && !hideNameExtras && (
                   <div className={styles.productArticle}>Артикул: {product.article}</div>
                 )}
                 {canCopyFromReturn && (
@@ -273,7 +288,7 @@ const TableRow = memo<TableRowProps>(({
                         e.stopPropagation();
                         onCopyToBrak?.();
                       }}
-                      title="Бракга кўчириш"
+                      title="Перенести в брак"
                     >
                       → Брак
                     </button>
@@ -284,21 +299,21 @@ const TableRow = memo<TableRowProps>(({
                         e.stopPropagation();
                         onCopyToSale?.();
                       }}
-                      title="Мижозга сотишга кўчириш"
+                      title="Перенести в продажу клиенту"
                     >
-                      → Сотиш
+                      → Продажа
                     </button>
                   </div>
                 )}
               </div>
             )}
           </div>
-          {stockData && (
+          {stockData && !isSaleEquipment && (
             <div className={styles.stockInfo}>
               <div className={styles.stockQuantity}>
-                Колдик: {formatNumberForDisplay(stockData.totalQuantity)} {product?.refValues?.unit || 'шт'}
+                Остаток: {formatNumberForDisplay(stockData.totalQuantity)} {product?.refValues?.unit || 'шт'}
                 {stockData.totalQuantity > 0 && (
-                  <span className={styles.available}> (бўш: {formatNumberForDisplay(stockData.totalQuantity)} {product?.refValues?.unit || 'шт'})</span>
+                  <span className={styles.available}> (свободно: {formatNumberForDisplay(stockData.totalQuantity)} {product?.refValues?.unit || 'шт'})</span>
                 )}
               </div>
               {/* Индикация состояния остатков */}
@@ -313,8 +328,8 @@ const TableRow = memo<TableRowProps>(({
                     {item.count > stockData.totalQuantity ? '⚠️' : '✅'}
                   </span>
                   {item.count > stockData.totalQuantity ? 
-                    `Зиёд булаяпти ${formatNumberForDisplay(item.count - stockData.totalQuantity)}` :
-                    `Мавжуд: ${formatNumberForDisplay(stockData.totalQuantity - item.count)}`
+                    `Превышение на ${formatNumberForDisplay(item.count - stockData.totalQuantity)}` :
+                    `Доступно: ${formatNumberForDisplay(stockData.totalQuantity - item.count)}`
                   }
                 </div>
               )}
@@ -330,7 +345,8 @@ const TableRow = memo<TableRowProps>(({
       key={effectiveDocIndex}
       className={cn(
         styles.box,
-        isReceiveToolsFromClient && styles.boxReceiveTools,
+        isReceiveToolsFromClient && !isReturnRow && styles.boxReceiveTools,
+        isReturnRow && styles.boxReceiveToolsReturn,
         isOrderFillNoStock && styles.leaveMaterialNoStockRow,
         isOrderFillCapped && styles.leaveMaterialCappedRow,
       )}
@@ -338,7 +354,13 @@ const TableRow = memo<TableRowProps>(({
       {/* Информация о товаре: номер строки, изображение, название, остатки */}
       {renderProductInfo(typeDocumentByComeOut)}
 
-      {isReceiveToolsFromClient && (
+      {isReturnRow && (
+        <div className={styles.totalField}>
+          {formatDisplayDateTime(Number(item.settlementDate)) || '—'}
+        </div>
+      )}
+
+      {isReceiveToolsFromClient && !isReturnRow && (
         <div className={styles.totalField}>
           {isTovarRow
             ? formatNumberForDisplay(displayBalance)
@@ -349,7 +371,12 @@ const TableRow = memo<TableRowProps>(({
       )}
       
       <div className={styles.countWithPlanHint}>
-        <InputInTableForNumbers nameControl='count' type='number' itemIndexInTable={effectiveDocIndex} />
+        <InputInTableForNumbers
+          nameControl='count'
+          type='number'
+          itemIndexInTable={effectiveDocIndex}
+          disabled={isColumnComponent}
+        />
         {isOrderFillNoStock && (
           <div className={styles.leaveMaterialPlanHint} title="Нет остатка на складе">
             нет остатка (план: {formatNumberForDisplay(plannedCount!)})
@@ -375,9 +402,6 @@ const TableRow = memo<TableRowProps>(({
             <>
               <InputInTableForNumbers nameControl="rentHours" type="number" itemIndexInTable={effectiveDocIndex} />
               <InputInTableForNumbers nameControl="hourlyTariff" type="number" itemIndexInTable={effectiveDocIndex} />
-              <div className={styles.totalField}>
-                {numberValue(item.rentSum ?? 0)}
-              </div>
             </>
           ) : (
             <>
@@ -432,11 +456,11 @@ const TableRow = memo<TableRowProps>(({
         className={styles.ico}
         onClick={() => {
           const productName = product?.name || `Товар ID: ${item.analiticId}`;
-          if (window.confirm(`Удалить "${productName}" Товарни хужжатдан учрайми?`)) {
+          if (window.confirm(`Удалить «${productName}» из документа?`)) {
             onDelete(effectiveDocIndex);
           }
         }}
-        title="Товарни учириш"
+        title="Удалить товар"
       >
         <TrashIco />
       </div>

@@ -37,9 +37,14 @@ import {
   getMonthBoundsFromDocDate,
 } from "./helper/osAmortization.helper";
 import { ClientToolBatchesService } from "src/clientToolBatches/clientToolBatches.service";
+import { ToolComponentsService } from "src/toolComponents/tool-components.service";
 import { SubleaseToolBatchesService } from "src/subleaseToolBatches/subleaseToolBatches.service";
 import { PereodicService } from "src/pereodic/pereodic.service";
-import { TransferToolsPreviewRow } from "./transferToolsPreview.types";
+import {
+  TransferColumnPartPreview,
+  TransferColumnPreview,
+  TransferToolsPreviewRow,
+} from "./transferToolsPreview.types";
 import { getRentTariffPriceName } from "./helper/rentTariffType";
 import {
   matchReadyRentalOrders,
@@ -113,6 +118,7 @@ export class DocumentsService {
     private usersService: UsersService,
     private settingsService: SettingsService,
     private clientToolBatchesService: ClientToolBatchesService,
+    private toolComponentsService: ToolComponentsService,
     private subleaseToolBatchesService: SubleaseToolBatchesService,
     private pereodicService: PereodicService,
     @Inject(forwardRef(() => MediatorTelegramNotifierService))
@@ -1173,7 +1179,8 @@ export class DocumentsService {
           }
         } else if (
           hasFilledTableRows &&
-          documentType !== DocumentType.OrderToolsToClient
+          documentType !== DocumentType.OrderToolsToClient &&
+          documentType !== DocumentType.SaleEquipment
         ) {
           throw new Error(
             "Не удалось сформировать проводки по табличной части. Проверьте строки: выбрано ОС, количество и сумма.",
@@ -2947,6 +2954,7 @@ export class DocumentsService {
   ): Promise<void> {
     if (doc.documentType === DocumentType.TransferToolsToClient) {
       await this.assertTransferFromOrderCanPost(doc, transaction);
+      await this.assertColumnIssueStock(doc, transaction);
       return;
     }
     if (doc.documentType === DocumentType.ReceiveToolsFromClient) {
@@ -3266,12 +3274,13 @@ export class DocumentsService {
         clientId,
         enterpriseId,
       );
-    return this.clientToolBatchesService.buildPreviewRows(
+    const rows = await this.clientToolBatchesService.buildPreviewRows(
       batches,
       returnDateTime,
       warehouseId,
       enterpriseId,
     );
+    return this.attachTransferDocComments(rows);
   }
 
   async getSubleaseReceivePreview(
@@ -3288,10 +3297,40 @@ export class DocumentsService {
         partnerId,
         excludeDocId,
       );
-    return this.subleaseToolBatchesService.buildPreviewRows(
+    const rows = await this.subleaseToolBatchesService.buildPreviewRows(
       batches,
       returnDateTime,
     );
+    return this.attachTransferDocComments(rows);
+  }
+
+  private async attachTransferDocComments<
+    T extends { sourceTransferDocId: number },
+  >(rows: T[]): Promise<Array<T & { transferDocComment: string }>> {
+    const docIds = [
+      ...new Set(
+        rows
+          .map((row) => Number(row.sourceTransferDocId))
+          .filter((id) => Number.isFinite(id) && id > 0),
+      ),
+    ];
+    if (!docIds.length) {
+      return rows.map((row) => ({ ...row, transferDocComment: "" }));
+    }
+
+    const values = await this.docValuesRepository.findAll({
+      where: { docId: { [Op.in]: docIds } },
+      attributes: ["docId", "comment"],
+    });
+    const commentByDocId = new Map(
+      values.map((value) => [Number(value.docId), value.comment || ""]),
+    );
+
+    return rows.map((row) => ({
+      ...row,
+      transferDocComment:
+        commentByDocId.get(Number(row.sourceTransferDocId)) || "",
+    }));
   }
 
   async resolvePartnerToolsStorage(
@@ -3396,6 +3435,192 @@ export class DocumentsService {
     );
   }
 
+  async getTransferColumnPreview(
+    warehouseId: number,
+    documentDate: number,
+    enterpriseId: number,
+    rentTariffType?: string | null,
+  ): Promise<TransferColumnPreview[]> {
+    const oneDay = 24 * 60 * 60 * 1000;
+    const targetDate = Number(documentDate) + oneDay;
+    const round2 = (n: number) => Math.round(n * 100) / 100;
+    const priceName = getRentTariffPriceName(rentTariffType);
+    const norms = await this.toolComponentsService.listAll();
+    const byParent = new Map<number, typeof norms>();
+    for (const norm of norms) {
+      const parentId = Number(norm.parentReferenceId);
+      const list = byParent.get(parentId) || [];
+      list.push(norm);
+      byParent.set(parentId, list);
+    }
+    if (!byParent.size) return [];
+
+    const allRefs = await this.referencesService.getAllReferencesFromBase();
+    const toolRefById = new Map(
+      allRefs
+        .filter(
+          (ref) =>
+            ref?.id != null &&
+            ref.typeReference === TypeReference.TMZ &&
+            ref.refValues?.typeTMZ === TypeTMZ.TOOLS &&
+            !ref.isFolder,
+        )
+        .map((ref) => [Number(ref.id), ref] as const),
+    );
+
+    const rows: TransferColumnPreview[] = [];
+    for (const [parentId, parts] of byParent) {
+      if (!toolRefById.has(parentId)) continue;
+      const periodic = await this.pereodicService.getPeredicValueForDate(
+        parentId,
+        priceName,
+        Number(documentDate),
+        enterpriseId,
+      );
+      const rv = toolRefById.get(parentId)?.refValues;
+      const fallbackPrice = Number(
+        priceName === "thirdPrice" ? rv?.thirdPrice : rv?.firstPrice,
+      );
+      const hourlyTariff =
+        Number(periodic) > 0
+          ? Number(periodic)
+          : fallbackPrice > 0
+            ? fallbackPrice
+            : 0;
+
+      const partRows: TransferColumnPartPreview[] = [];
+      for (const part of parts) {
+        const componentId = Number(part.componentReferenceId);
+        let remain = 0;
+        let costPrice = 0;
+        try {
+          const stock = await this.stocksService.getStockByDate(
+            Schet.S11,
+            warehouseId,
+            componentId,
+            targetDate,
+            undefined,
+            enterpriseId,
+          );
+          remain = Number(stock.remainCount) || 0;
+          const remainTotal = Number(stock.remainTotal) || 0;
+          costPrice = remain > 0 ? round2(remainTotal / remain) : 0;
+        } catch {
+          remain = 0;
+        }
+        partRows.push({
+          analiticId: componentId,
+          normQty: Number(part.qty) || 0,
+          remain,
+          costPrice,
+        });
+      }
+      rows.push({ analiticId: parentId, hourlyTariff, parts: partRows });
+    }
+    return rows;
+  }
+
+  private async assertColumnIssueStock(
+    doc: Document,
+    transaction?: Transaction,
+  ): Promise<void> {
+    const rows = doc.docTableItems || [];
+    const columnRows = rows.filter((row) => row.billingRole === "COLUMN");
+    if (!columnRows.length) {
+      if (rows.some((row) => row.billingRole === "COLUMN_COMPONENT")) {
+        throw new BadRequestException("Состав колонны без самой колонны");
+      }
+      const parentIds = [
+        ...new Set(
+          rows
+            .map((row) => Number(row.analiticId))
+            .filter((id) => id > 0),
+        ),
+      ];
+      const hidden = await this.toolComponentsService.listByParentIds(parentIds);
+      if (hidden.length) {
+        throw new BadRequestException(
+          "В документе есть колонна без разложения на состав. Добавьте её из блока «Колонны»",
+        );
+      }
+      return;
+    }
+
+    const norms = await this.toolComponentsService.listByParentIds(
+      columnRows.map((row) => Number(row.analiticId)),
+    );
+    for (const column of columnRows) {
+      const expectedParts = norms.filter(
+        (norm) => Number(norm.parentReferenceId) === Number(column.analiticId),
+      );
+      if (!expectedParts.length) {
+        throw new BadRequestException("У колонны нет нормы состава");
+      }
+      const actualParts = rows.filter(
+        (row) =>
+          row.billingRole === "COLUMN_COMPONENT" &&
+          row.assemblyRowKey &&
+          row.assemblyRowKey === column.assemblyRowKey,
+      );
+      for (const norm of expectedParts) {
+        const need = Math.round(Number(column.count) * Number(norm.qty) * 10000) / 10000;
+        const line = actualParts.find(
+          (row) => Number(row.analiticId) === Number(norm.componentReferenceId),
+        );
+        if (!line || Math.abs(Number(line.count) - need) > 0.001) {
+          throw new BadRequestException(
+            "Состав колонны не совпадает с нормой. Добавьте колонну заново",
+          );
+        }
+      }
+      const costTotal =
+        Math.round(
+          actualParts.reduce((sum, row) => sum + (Number(row.costTotal) || 0), 0) *
+            100,
+        ) / 100;
+      const count = Number(column.count) || 0;
+      const costPrice = count > 0 ? Math.round((costTotal / count) * 100) / 100 : 0;
+      column.costPrice = costPrice;
+      column.costTotal = costTotal;
+      column.price = costPrice;
+      column.total = costTotal;
+      if (typeof column.save === "function") {
+        await column.save({ transaction });
+      }
+    }
+
+    const warehouseId = Number(doc.docValues?.senderId) || 0;
+    const enterpriseId = Number(doc.enterpriseId);
+    if (!warehouseId || !enterpriseId) {
+      throw new BadRequestException("Для выдачи нужен склад");
+    }
+    const demand = new Map<number, number>();
+    for (const row of rows) {
+      if (row.billingRole === "COLUMN") continue;
+      if (row.tableType === "sale" || row.tableType === "tovar") continue;
+      if (!row.analiticId || Number(row.count) <= 0) continue;
+      const toolId = Number(row.analiticId);
+      demand.set(toolId, (demand.get(toolId) || 0) + Number(row.count));
+    }
+    const targetDate = Number(doc.date) + 24 * 60 * 60 * 1000;
+    for (const [toolId, need] of demand) {
+      const stock = await this.stocksService.getStockByDate(
+        Schet.S11,
+        warehouseId,
+        toolId,
+        targetDate,
+        undefined,
+        enterpriseId,
+      );
+      const remain = Number(stock.remainCount) || 0;
+      if (remain + 0.0001 < need) {
+        throw new BadRequestException(
+          `Не хватает детали ID ${toolId}: нужно ${need}, на складе ${remain}`,
+        );
+      }
+    }
+  }
+
   private async assertNoDuplicateAmortizasiyaOsMonth(
     document: Document,
     enterpriseId: number,
@@ -3429,9 +3654,11 @@ export class DocumentsService {
     tableType?: string | null;
     analiticId?: number | null;
     count?: number | null;
+    billingRole?: string | null;
   }): boolean {
     if (!row?.analiticId || Number(row.count) <= 0) return false;
     if (row.tableType === "sale" || row.tableType === "tovar") return false;
+    if (row.billingRole === "COLUMN") return false;
     return true;
   }
 
@@ -3824,7 +4051,7 @@ export class DocumentsService {
         price: costPrice,
         total: costTotal,
         hourlyTariff,
-        dailyRent: Math.round(hourlyTariff * line.qty * 24 * 100) / 100,
+        dailyRent: Math.round(hourlyTariff * line.qty * 100) / 100,
         tableType: "income",
       });
     }

@@ -90,13 +90,13 @@ export function contractStatusClass(status: string): string {
 export function fulfillmentLabel(state: FulfillmentState): string {
   switch (state) {
     case 'FULFILLED':
-      return 'Бажарилган';
+      return 'Выполнено';
     case 'IN_PROGRESS':
-      return 'Жараёнда';
+      return 'В процессе';
     case 'NOT_STARTED':
-      return 'Бошланмаган';
+      return 'Не начато';
     default:
-      return 'Қаторлар йўқ';
+      return 'Нет строк';
   }
 }
 
@@ -121,15 +121,15 @@ function stageLabel(stage: string | null | undefined): string {
 function docStatusLabel(status: string | null | undefined): string {
   switch (status) {
     case 'OPEN':
-      return 'Очиқ';
+      return 'Открыт';
     case 'PENDING':
-      return 'Кутилмоқда';
+      return 'Ожидание';
     case 'PROVEDEN':
-      return 'Ўтказилган';
+      return 'Проведён';
     case 'REJECTED':
-      return 'Рад этилган';
+      return 'Отклонён';
     case 'DELETED':
-      return 'Ўчирилган';
+      return 'Удалён';
     default:
       return status || '';
   }
@@ -138,15 +138,15 @@ function docStatusLabel(status: string | null | undefined): string {
 function saleDocTypeLabel(type: string | null | undefined): string {
   switch (type) {
     case 'SaleTovar':
-      return 'Товар сотуви';
+      return 'Продажа товара';
     case 'SaleMaterial':
-      return 'Материал сотуви';
+      return 'Продажа материала';
     case 'SaleProd':
-      return 'Маҳсулот сотуви';
+      return 'Продажа продукции';
     case 'SaleHalfStuff':
-      return 'ЯТМ сотуви';
+      return 'Продажа ПФ';
     case 'ServicesToClients':
-      return 'Хизмат';
+      return 'Услуга';
     default:
       return type || '';
   }
@@ -178,7 +178,7 @@ export function SaleDocCell({
       data-report-doc-anchor={saleDoc.id}
       className={styles.docLink}
       onClick={() => onOpen(saleDoc.id)}
-      title="Ҳужжатни очиш"
+      title="Открыть документ"
     >
       {`№${saleDoc.id} · ${date}`}
       {type ? `\n${type}` : ''}
@@ -205,13 +205,13 @@ function LineTable({
       </colgroup>
       <thead>
         <tr>
-          <th>Тури</th>
+          <th>Тип</th>
           <th>Номенклатура</th>
-          <th>Сон</th>
-          <th>Нарх</th>
+          <th>Кол-во</th>
+          <th>Цена</th>
           <th>Сумма</th>
           <th>Реализация</th>
-          <th>Ижро</th>
+          <th>Исполнение</th>
         </tr>
       </thead>
       <tbody>{children}</tbody>
@@ -240,7 +240,7 @@ function ItemTable({
           </td>
           <td className={styles.center}>
             <span className={line.fulfilled ? styles.doneYes : styles.doneNo}>
-              {line.fulfilled ? 'Ҳа' : 'Йўқ'}
+              {line.fulfilled ? 'Да' : 'Нет'}
             </span>
           </td>
         </tr>
@@ -258,7 +258,7 @@ export function ContractFulfillmentDetails({
 }) {
   return (
     <>
-      <div className={styles.blockTitle}>Буюртмалар</div>
+      <div className={styles.blockTitle}>Заказы</div>
       {row.orderLines?.length ? (
         <LineTable>
           {row.orderLines.map((line) => (
@@ -297,28 +297,28 @@ export function ContractFulfillmentDetails({
               </td>
               <td className={styles.center}>
                 <span className={line.fulfilled ? styles.doneYes : styles.doneNo}>
-                  {line.fulfilled ? 'Ҳа' : 'Йўқ'}
+                  {line.fulfilled ? 'Да' : 'Нет'}
                 </span>
               </td>
             </tr>
           ))}
         </LineTable>
       ) : (
-        <div className={styles.emptyBlock}>Буюртмалар йўқ</div>
+        <div className={styles.emptyBlock}>Нет заказов</div>
       )}
 
       <div className={styles.blockTitle}>ТМЦ</div>
       {row.itemLines?.length ? (
         <ItemTable rows={row.itemLines} onOpen={onOpenDocument} />
       ) : (
-        <div className={styles.emptyBlock}>ТМЦ қаторлари йўқ</div>
+        <div className={styles.emptyBlock}>Нет строк ТМЦ</div>
       )}
 
-      <div className={styles.blockTitle}>Хизматлар</div>
+      <div className={styles.blockTitle}>Услуги</div>
       {row.serviceLines?.length ? (
         <ItemTable rows={row.serviceLines} onOpen={onOpenDocument} />
       ) : (
-        <div className={styles.emptyBlock}>Хизмат қаторлари йўқ</div>
+        <div className={styles.emptyBlock}>Нет строк услуг</div>
       )}
     </>
   );

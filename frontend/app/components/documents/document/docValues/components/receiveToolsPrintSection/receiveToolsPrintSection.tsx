@@ -14,6 +14,8 @@ import {
   askPrintCopyCount,
   DEFAULT_PRINT_COPIES,
 } from '../../../printCopies/printCopies';
+import { useToolsDocumentBlockSettings } from '@/app/service/settings/useToolsDocumentBlockSettings';
+import { getFormworkPanelTotals } from '@/app/service/documents/formworkPanelArea';
 
 export const useReceiveToolsPrint = () => {
   const printRef = useRef<HTMLDivElement>(null);
@@ -21,6 +23,7 @@ export const useReceiveToolsPrint = () => {
   const { currentDocument } = mainData.document;
   const token = mainData.users.user?.token;
   const { data: references } = useAllReferences(token);
+  const { showClientGoodsSale, showExtraCharge } = useToolsDocumentBlockSettings();
 
   const clientId = Number(currentDocument?.docValues?.senderId) || 0;
   const asOf = Number(currentDocument?.date) || Date.now();
@@ -37,14 +40,21 @@ export const useReceiveToolsPrint = () => {
   const contractBasis =
     printBasisOverride ?? formatRentalContractBasis(activeContract);
 
-  const toolNames = useMemo(() => {
-    const map: Record<number, string> = {};
+  const { toolNames, toolArticles } = useMemo(() => {
+    const names: Record<number, string> = {};
+    const articles: Record<number, string> = {};
     (references || []).forEach((ref: ReferenceModel) => {
       if (ref.id == null) return;
-      map[ref.id] = ref.name;
+      names[ref.id] = ref.name;
+      articles[ref.id] = ref.article || '';
     });
-    return map;
+    return { toolNames: names, toolArticles: articles };
   }, [references]);
+
+  const panelTotals = useMemo(
+    () => getFormworkPanelTotals(currentDocument?.docTableItems, references),
+    [currentDocument?.docTableItems, references],
+  );
 
   const clientName = references?.find(
     (r: ReferenceModel) => r.id === currentDocument?.docValues?.senderId,
@@ -92,7 +102,11 @@ export const useReceiveToolsPrint = () => {
         delivererName={delivererName}
         contractBasis={contractBasis}
         toolNames={toolNames}
+        toolArticles={toolArticles}
         copyCount={copyCount}
+        showClientGoodsSale={showClientGoodsSale}
+        showExtraCharge={showExtraCharge}
+        panelTotals={panelTotals}
       />
     </div>
   ) : null;

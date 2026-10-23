@@ -3,6 +3,7 @@ export interface FifoBatchLike {
   transferDocId: number;
   toolId: number;
   openQty: number;
+  billingRole?: string | null;
 }
 
 export interface FifoConsumptionPlan {
@@ -10,18 +11,35 @@ export interface FifoConsumptionPlan {
   qty: number;
 }
 
+const isPlainBatch = (batch: FifoBatchLike) =>
+  !batch.billingRole || batch.billingRole === "PLAIN";
+
 export const planFifoConsumptions = (
   batches: FifoBatchLike[],
   toolId: number,
   qty: number,
   transferDocId?: number | null,
+  batchId?: number | null,
 ): FifoConsumptionPlan[] => {
   const plans: FifoConsumptionPlan[] = [];
   let left = qty;
 
+  if (batchId) {
+    const index = batches.findIndex((batch) => Number(batch.id) === Number(batchId));
+    const batch = index >= 0 ? batches[index] : undefined;
+    if (!batch || batch.openQty + 0.0001 < qty) {
+      throw new Error(
+        `Insufficient open batches for tool ${toolId}: missing ${qty - (batch?.openQty || 0)}`,
+      );
+    }
+    batch.openQty -= qty;
+    return [{ batchIndex: index, qty }];
+  }
+
   const consumePass = (pinnedId: number | null | undefined) => {
     for (let i = 0; i < batches.length; i++) {
       const batch = batches[i];
+      if (!isPlainBatch(batch)) continue;
       if (batch.toolId !== toolId || batch.openQty <= 0) continue;
       if (pinnedId && batch.transferDocId !== pinnedId) continue;
 

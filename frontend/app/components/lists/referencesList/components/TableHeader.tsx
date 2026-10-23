@@ -53,13 +53,13 @@ export const TableHeader = memo<TableHeaderProps>(({
         onDoubleClick={isTMZ ? onToggleImageSort : undefined}
         title={
           isTMZ
-            ? 'Икки марта босинг: расм бўйича (қўшимча ТМБ тури, ном) / ўчириш'
+            ? 'Двойной клик: по изображению (доп. тип ТМЦ, наименование) / удаление'
             : undefined
         }
       >
         Расм{isTMZ ? imageSortIndicator(imageSort) : null}
       </th>
-      <th className={cn(styles.name, isPartners && styles.namePartners)}>Номи</th>
+      <th className={cn(styles.name, isPartners && styles.namePartners)}>Наименование</th>
       {config && config.columns.map((column, index) => {
         const field = config.fields[index];
         return (
@@ -73,7 +73,7 @@ export const TableHeader = memo<TableHeaderProps>(({
       )}
       {isAdmin && !isTMZ && <th className={styles.enterpriseColumn}>Организация</th>}
       {!isPartners && !isWorks && (!isTMZ || TMZ_LIST_SHOW_COMMENT) && (
-        <th className={styles.comment}>Изох</th>
+        <th className={styles.comment}>Комментарий</th>
       )}
       <th className={styles.rowAction}>...</th>
     </tr>

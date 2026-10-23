@@ -1,8 +1,8 @@
 import { TypeTMZ } from '@/app/interfaces/reference.interface';
 
 export const SELECT_TABLE_LABELS = {
-  DEFAULT_OPTION: 'Тангланг =>>>>',
-  NOT_SELECTED: 'Танланмаган'
+  DEFAULT_OPTION: 'Выберите',
+  NOT_SELECTED: 'Не выбрано'
 } as const;
 
 export const FILTER_CONDITIONS = {
@@ -11,8 +11,8 @@ export const FILTER_CONDITIONS = {
 } as const;
 
 export const DEFAULT_OPTION_DATA = {
-  value: 'Танланмаган',
-  label: 'Тангланг =>>>>',
+  value: 'Не выбрано',
+  label: 'Выберите',
   dataType: null,
   dataId: null
 } as const; 

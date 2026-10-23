@@ -40,24 +40,24 @@ export const Foyda = ({className, data, ...props }: FoydaProps) :JSX.Element => 
           <thead>
             <tr>
               <td className={styles.section}>Цех</td>
-              <td>Ишлаб чикар. нон сони</td>
-              <td>Хамир сони</td>
-              <td>Цехдага сав. нон сони</td>
-              <td>Юк етк. нон сони</td>
-              <td>Умум савдо пули</td>
-              <td>Ун харажати</td>
-              <td>Хом ашёлар хараж.</td>
-              <td>Иш хаки хараж.</td>
-              <td>Коммун ва бошка хараж.</td>
-              <td>Пуллик хараж.</td>
-              <td>Умум - ун харажати</td>
-              <td>Умум - хом ашё харажати</td>
-              <td>Умум - иш хаки</td>
-              <td>Умум - комм. ва бошка хараж</td>
-              <td>Умум - пуллик харажатлар</td>
-              <td>Соф фойда</td>
-              <td>Хом аше нормаси</td>
-              <td>1 та нонга нис. фойда</td>
+              <td>Кол-во произведённого хлеба</td>
+              <td>Кол-во теста</td>
+              <td>Кол-во хлеба, прод. в цехе</td>
+              <td>Кол-во хлеба на доставку</td>
+              <td>Общая сумма продаж</td>
+              <td>Расход муки</td>
+              <td>Расх. сырья</td>
+              <td>Расх. зарплаты</td>
+              <td>Комм. и проч. расх.</td>
+              <td>Денежн. расх.</td>
+              <td>Общ. − расход муки</td>
+              <td>Общ. − расход сырья</td>
+              <td>Общ. − зарплата</td>
+              <td>Общ. − комм. и проч. расх.</td>
+              <td>Общ. − денежные расходы</td>
+              <td>Чистая прибыль</td>
+              <td>Норма сырья</td>
+              <td>Прибыль на 1 хлеб</td>
             </tr>
           </thead>
           {/* <tbody> */}
@@ -69,7 +69,7 @@ export const Foyda = ({className, data, ...props }: FoydaProps) :JSX.Element => 
           {/* </tbody> */}
           <thead className={styles.thead}>
             <tr className={styles.tr}>
-              <td className={styles.section}>Жами</td>
+              <td className={styles.section}>Итого</td>
               <td className={styles.column}>{numberValue(totalByKey('productionCount', datas))}</td>
               <td className={styles.column}>{numberValue(totalByKey('comeProductDocsByProduct', datas))}</td>
               <td className={styles.column}>{numberValue(totalByKey('saleCountWithOutMove', datas))}</td>

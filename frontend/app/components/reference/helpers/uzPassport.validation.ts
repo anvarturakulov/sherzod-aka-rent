@@ -17,32 +17,32 @@ export function validateUzPassportFields(
 
   const series = (refValues.passportSeries ?? "").trim().toUpperCase();
   if (!UZ_PASSPORT_SERIES_RE.test(series)) {
-    return "Паспорт серияси: 2 та лотин ҳарфи (масалан AA)";
+    return "Серия паспорта: 2 латинские буквы (например AA)";
   }
 
   const number = (refValues.passportNumber ?? "").trim();
   if (!UZ_PASSPORT_NUMBER_RE.test(number)) {
-    return "Паспорт рақами: 7 та рақам";
+    return "Номер паспорта: 7 цифр";
   }
 
   const dateStr = (refValues.passportIssueDate ?? "").trim().slice(0, 10);
   if (!dateStr) {
-    return "Паспорт берилган санани киритинг";
+    return "Укажите дату выдачи паспорта";
   }
   const issueDate = new Date(`${dateStr}T00:00:00`);
   if (Number.isNaN(issueDate.getTime())) {
-    return "Паспорт берилган сана нотўғри";
+    return "Некорректная дата выдачи паспорта";
   }
   const minDate = new Date(`${UZ_PASSPORT_ISSUE_MIN_DATE}T00:00:00`);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   if (issueDate < minDate || issueDate > today) {
-    return "Паспорт берилган сана нотўғри";
+    return "Некорректная дата выдачи паспорта";
   }
 
   const issuedBy = (refValues.passportIssuedBy ?? "").trim();
   if (issuedBy.length < 3 || issuedBy.length > 500) {
-    return "«Ким томонидан берилган» майдонини тулдиринг";
+    return "Заполните поле «Кем выдан»";
   }
 
   return null;

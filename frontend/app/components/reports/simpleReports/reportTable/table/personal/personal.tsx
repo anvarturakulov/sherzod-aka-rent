@@ -29,14 +29,14 @@ export const Personal = ({className, ...props }: PersonalProps) :JSX.Element => 
                 <thead>
                     <tr>
                         <td >№</td>
-                        <td className={styles.titleName}>ФИШ</td>
-                        <td className={styles.titleValue}>сана</td>
+                        <td className={styles.titleName}>ФИО</td>
+                        <td className={styles.titleValue}>дата</td>
                         <td className={styles.titleValue}>цех</td>
-                        <td className={styles.titleValue}>изох</td>
-                        <td className={styles.titleValue}>Колдик сумма</td>
-                        <td className={styles.titleValue}>Хисобланди</td>
-                        <td className={styles.titleValue}>Туланди</td>
-                        <td className={styles.titleValue}>Колдик сумма</td>
+                        <td className={styles.titleValue}>комментарий</td>
+                        <td className={styles.titleValue}>Остаток сумма</td>
+                        <td className={styles.titleValue}>Начислено</td>
+                        <td className={styles.titleValue}>Выплачено</td>
+                        <td className={styles.titleValue}>Остаток сумма</td>
                     </tr>
                 </thead>
                 {
@@ -53,7 +53,7 @@ export const Personal = ({className, ...props }: PersonalProps) :JSX.Element => 
                 <thead>
                     <tr>
                         <td ></td>
-                        <td className={styles.titleName}>Жами</td>
+                        <td className={styles.titleName}>Итого</td>
                         <td className={styles.titleValue}></td>
                         <td className={styles.titleValue}></td>
                         <td className={styles.titleValue}></td>

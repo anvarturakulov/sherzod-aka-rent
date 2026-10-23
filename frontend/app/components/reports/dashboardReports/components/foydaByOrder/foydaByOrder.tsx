@@ -27,11 +27,11 @@ const formatPercent = (value: number): string => {
 };
 
 const EXPENSE_TYPE_MAPPING: Record<string, { debet: Schet; kredit: Schet; label: string }> = {
-    cashExpenses: { debet: Schet.S20, kredit: Schet.S50, label: 'Пуллик харажатлар' },
-    materialExpenses: { debet: Schet.S20, kredit: Schet.S10, label: 'Хом ашё' },
-    halfstuffExpenses: { debet: Schet.S20, kredit: Schet.S21, label: 'Ярим тайёр махсулот' },
-    supplierExpenses: { debet: Schet.S20, kredit: Schet.S60, label: 'Таъминотчилар' },
-    salaryExpenses: { debet: Schet.S20, kredit: Schet.S67, label: 'Иш хаки' },
+    cashExpenses: { debet: Schet.S20, kredit: Schet.S50, label: 'Денежные расходы' },
+    materialExpenses: { debet: Schet.S20, kredit: Schet.S10, label: 'Сырьё' },
+    halfstuffExpenses: { debet: Schet.S20, kredit: Schet.S21, label: 'Полуфабрикат' },
+    supplierExpenses: { debet: Schet.S20, kredit: Schet.S60, label: 'Поставщики' },
+    salaryExpenses: { debet: Schet.S20, kredit: Schet.S67, label: 'Зарплата' },
 };
 
 const EXPENSE_COLUMNS = Object.keys(EXPENSE_TYPE_MAPPING);
@@ -60,8 +60,8 @@ export const FoydaByOrder = ({ className, data, ...props }: FoydaByOrderProps): 
             type: 'income',
             orderId: item.isUnallocatedIncome ? null : item.orderId ?? null,
             saleDocId: item.saleDocId ?? null,
-            orderLabel: item.orderLabel || (item.isUnallocatedIncome ? 'Умумий даромад (заказсиз)' : `#${item.orderId}`),
-            columnLabel: 'Тушум',
+            orderLabel: item.orderLabel || (item.isUnallocatedIncome ? 'Общий доход (без заказа)' : `#${item.orderId}`),
+            columnLabel: 'Выручка',
         });
         setModalOpen(true);
     };
@@ -76,7 +76,7 @@ export const FoydaByOrder = ({ className, data, ...props }: FoydaByOrderProps): 
             orderId: item.isOverhead ? null : item.orderId ?? null,
             debet: expenseType.debet,
             kredit: expenseType.kredit,
-            orderLabel: item.orderLabel || (item.isOverhead ? 'Умумий харажатлар' : `#${item.orderId}`),
+            orderLabel: item.orderLabel || (item.isOverhead ? 'Общие расходы' : `#${item.orderId}`),
             columnLabel: expenseType.label,
         });
         setModalOpen(true);
@@ -102,7 +102,7 @@ export const FoydaByOrder = ({ className, data, ...props }: FoydaByOrderProps): 
     return (
         <>
             <div className={styles.title}>
-                ФОЙДА ХИСОБИ (ЗАКАЗЛАР БУЙИЧА)
+                РАСЧЁТ ПРИБЫЛИ (ПО ЗАКАЗАМ)
                 {enterpriseName && <span> - {enterpriseName}</span>}
             </div>
             <div className={styles.tableContainer} data-report-scroll>
@@ -111,16 +111,16 @@ export const FoydaByOrder = ({ className, data, ...props }: FoydaByOrderProps): 
                         <tr>
                             <td>№</td>
                             <td>Заказ</td>
-                            <td>Сотув</td>
-                            <td>Пуллик харажат</td>
-                            <td>Хом ашё</td>
-                            <td>Ярим тайёр махсулот</td>
-                            <td>Таъминотчи</td>
-                            <td>Иш хаки</td>
-                            <td>Умум харажатлар</td>
-                            <td>Жами харажатлар</td>
-                            <td>Фойда</td>
-                            <td>Рентабеллик</td>
+                            <td>Продажа</td>
+                            <td>Денежный расход</td>
+                            <td>Сырьё</td>
+                            <td>Полуфабрикат</td>
+                            <td>Поставщик</td>
+                            <td>Зарплата</td>
+                            <td>Общие расходы</td>
+                            <td>Итого расходов</td>
+                            <td>Прибыль</td>
+                            <td>Рентабельность</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -164,7 +164,7 @@ export const FoydaByOrder = ({ className, data, ...props }: FoydaByOrderProps): 
                         ))}
                         <tr className={styles.totalRow}>
                             <td></td>
-                            <td>ЖАМИ</td>
+                            <td>ИТОГО</td>
                             <td>{numberValue(totalIncome)}</td>
                             <td>{numberValue(totalCashExpenses)}</td>
                             <td>{numberValue(totalMaterialExpenses)}</td>

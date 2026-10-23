@@ -20,6 +20,7 @@ import {
   getLabelForReceiver,
   getTypeReferenceForReceiver,
 } from '../doc.values.functions';
+import { getSettingByKeyFromDB } from '@/app/service/settings/getSettingByKeyFromDB';
 
 interface PartnersSectionProps {
   options: any;
@@ -62,9 +63,13 @@ const PartnersSection = memo<PartnersSectionProps>(({
         : Number(currentValues.senderId) || 0)
     : 0;
 
+  const isRentalContractDoc =
+    contentName === DocumentType.TransferToolsToClient ||
+    contentName === DocumentType.ReceiveToolsFromClient;
+
   const [warningErrors, setWarningErrors] = useState<string[]>([]);
   const [warningPartnerName, setWarningPartnerName] = useState('');
-  const lastCheckedClientIdRef = useRef<number | null>(null);
+  const lastCheckedClientKeyRef = useRef<string | null>(null);
 
   const closeWarning = useCallback(() => {
     setWarningErrors([]);
@@ -172,29 +177,49 @@ const PartnersSection = memo<PartnersSectionProps>(({
 
   useEffect(() => {
     if (!isToolsDoc) {
-      lastCheckedClientIdRef.current = null;
+      lastCheckedClientKeyRef.current = null;
       return;
     }
 
     if (clientId <= 0) {
-      lastCheckedClientIdRef.current = null;
+      lastCheckedClientKeyRef.current = null;
       setWarningErrors([]);
       setWarningPartnerName('');
       return;
     }
 
-    if (lastCheckedClientIdRef.current === clientId) return;
+    const checkKey = `${contentName}:${clientId}`;
+    if (lastCheckedClientKeyRef.current === checkKey) return;
     if (!references?.length) return;
 
     const partner = references.find((item: ReferenceModel) => item.id === clientId);
     if (!partner) return;
 
-    lastCheckedClientIdRef.current = clientId;
+    lastCheckedClientKeyRef.current = checkKey;
     let cancelled = false;
     const asOf = Number(currentDocument?.date) || Date.now();
 
     (async () => {
-      const errors = await validateIndividualClientForTools(partner, token, asOf);
+      let checkContract = false;
+      if (isRentalContractDoc) {
+        if (token) {
+          const settingValue = await getSettingByKeyFromDB('checkRentalContract', token);
+          checkContract = settingValue === true;
+        }
+        if (cancelled) return;
+        if (!checkContract) {
+          setWarningErrors([]);
+          setWarningPartnerName('');
+          return;
+        }
+      }
+      if (cancelled) return;
+      const errors = await validateIndividualClientForTools(
+        partner,
+        token,
+        asOf,
+        checkContract,
+      );
       if (cancelled) return;
       if (errors.length > 0) {
         setWarningPartnerName(partner.name || '');
@@ -210,6 +235,8 @@ const PartnersSection = memo<PartnersSectionProps>(({
     };
   }, [
     isToolsDoc,
+    isRentalContractDoc,
+    contentName,
     clientId,
     references,
     token,

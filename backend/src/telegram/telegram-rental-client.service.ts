@@ -169,7 +169,7 @@ export class TelegramRentalClientService implements OnApplicationBootstrap {
           `• <b>${escapeTelegramHtml(t.toolName)}</b>`,
           `  Миқдор: ${t.openQty} дона`,
           `  Олинган: ${formatDateRu(t.settlementDate)}`,
-          `  Тариф: ${formatMoneyRu(t.hourlyTariff)} so'm/соат`,
+          `  Тариф: ${formatMoneyRu(t.hourlyTariff)} so'm/кун`,
           `  Жорий аренда: ${formatMoneyRu(t.accruedRentLine)} so'm`,
           "",
         );

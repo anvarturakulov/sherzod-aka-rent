@@ -28,7 +28,7 @@ const TransferToolsSaleTable = memo<TransferToolsSaleTableProps>(({
   items,
   warehouseId: warehouseIdProp,
   rowTableType = 'sale',
-  warehouseMissingMessage = 'Аввал жунатувчи складни танланг.',
+  warehouseMissingMessage = 'Сначала выберите склад-отправитель.',
 }) => {
   const { mainData, setMainData } = useAppContext();
   const { currentDocument } = mainData.document;
@@ -71,7 +71,7 @@ const TransferToolsSaleTable = memo<TransferToolsSaleTableProps>(({
 
         const totalQuantity = Number(stockData?.totalQuantity) || 0;
         if (totalQuantity <= 0) {
-          alert(`Складда (S29) товар "${product.name}" қолдиғи йўқ.`);
+          alert(`На складе (S29) нет остатка товара "${product.name}".`);
           return;
         }
 
@@ -93,7 +93,7 @@ const TransferToolsSaleTable = memo<TransferToolsSaleTableProps>(({
         }
 
         if (price <= 0) {
-          alert(`Товар "${product.name}" учун сотиш нархи (firstPrice) топилмади.`);
+          alert(`Для товара "${product.name}" не найдена цена продажи (firstPrice).`);
           return;
         }
 
@@ -175,7 +175,7 @@ const TransferToolsSaleTable = memo<TransferToolsSaleTableProps>(({
       <div className={`${styles.boxHeader} ${styles.titleBox}`}>
         <div className={styles.title}>
           <CartIco className={styles.icoCart} />
-          <div className={styles.titleText}>Мижозга товар сотиш</div>
+          <div className={styles.titleText}>Продажа товара клиенту</div>
         </div>
         {canReplaceInRow && (
           <div className={styles.buttonGroup}>
@@ -184,7 +184,7 @@ const TransferToolsSaleTable = memo<TransferToolsSaleTableProps>(({
               className={styles.addBtn}
               onClick={handleOpenCatalogAdd}
             >
-              + Товар қўшиш
+              + Добавить товар
             </button>
           </div>
         )}
@@ -199,7 +199,7 @@ const TransferToolsSaleTable = memo<TransferToolsSaleTableProps>(({
         />
       ) : (
         <div className={styles.materialsEmpty}>
-          Мижозга сотиладиган товарларни қўшинг.
+          Добавьте товары для продажи клиенту.
         </div>
       )}
       <ProductCatalog

@@ -34,22 +34,22 @@ export const AktSverkaItem = ({className, item, references, ...props }: AktSverk
 
     if (item?.startBalans) {
         if (item?.startBalans > 0) {
-            startSumma = `${numberValue(item?.startBalans)} (Корхонамиз фойдасига)`
+            startSumma = `${numberValue(item?.startBalans)} (в пользу нашего предприятия)`
         } else {
-            startSumma = `${numberValue((-1)*item?.startBalans)} (${item?.section} фойдасига)`
+            startSumma = `${numberValue((-1)*item?.startBalans)} (в пользу ${item?.section})`
         }
     } else {
-        startSumma = 'колдик мавжуд эмас'
+        startSumma = 'остатка нет'
     }
 
     if (item?.endBalans) {
         if (item?.endBalans > 0) {
-            endSumma = `${numberValue(item?.endBalans)} (${enterpriseName || 'Корхонамиз'} фойдасига)`
+            endSumma = `${numberValue(item?.endBalans)} (в пользу ${enterpriseName || 'нашего предприятия'})`
         } else {
-            endSumma = `${numberValue((-1)*item?.endBalans)} (${item?.section} фойдасига)`
+            endSumma = `${numberValue((-1)*item?.endBalans)} (в пользу ${item?.section})`
         }
     } else {
-        endSumma = 'колдик мавжуд эмас'
+        endSumma = 'остатка нет'
     }
 
 
@@ -60,7 +60,7 @@ export const AktSverkaItem = ({className, item, references, ...props }: AktSverk
                         
             <div className={styles.sumBox}>
                 <div className={styles.row}>
-                    <div className={styles.title}>Бошлангич колдик</div>
+                    <div className={styles.title}>Начальный остаток</div>
                     <div className={styles.value}>
                         {startSumma}
                     </div>
@@ -72,12 +72,12 @@ export const AktSverkaItem = ({className, item, references, ...props }: AktSverk
                             <thead>
                                 <tr>
                                     <th className={styles.tableHeader}>№</th>
-                                    <th className={styles.tableHeader}>Сана</th>
-                                    <th className={styles.tableHeader}>Хужжат тури</th>
-                                    <th className={styles.tableHeader}>Манба</th>
-                                    <th className={styles.tableHeader}>Изох</th>
-                                    <th className={styles.tableHeader}>Чиким</th>
-                                    <th className={styles.tableHeader}>Кирим</th>
+                                    <th className={styles.tableHeader}>Дата</th>
+                                    <th className={styles.tableHeader}>Тип документа</th>
+                                    <th className={styles.tableHeader}>Источник</th>
+                                    <th className={styles.tableHeader}>Комментарий</th>
+                                    <th className={styles.tableHeader}>Расход</th>
+                                    <th className={styles.tableHeader}>Приход</th>
 
                                 </tr>
                             </thead>
@@ -143,7 +143,7 @@ export const AktSverkaItem = ({className, item, references, ...props }: AktSverk
                                             ? getNameReference(references, receiverFirstSubcontoId) || ''
                                             : '';
                                         const countInfo = element?.count 
-                                            ? `( сон: ${numberValue(element?.count)} x ${numberValue((debet || kredit) / element?.count)} )` 
+                                            ? `( кол-во: ${numberValue(element?.count)} x ${numberValue((debet || kredit) / element?.count)} )` 
                                             : '';
                                         
                                         // Собираем части изоха
@@ -171,7 +171,7 @@ export const AktSverkaItem = ({className, item, references, ...props }: AktSverk
                                             data-report-doc-anchor={element?.docId || undefined}
                                             className={cn(styles.tableRow, { [styles.clickableRow]: !!element?.docId })}
                                             onDoubleClick={() => openDocument(element?.docId)}
-                                            title={element?.docId ? 'Хужжатни очиш (икки марта босинг)' : undefined}
+                                            title={element?.docId ? 'Открыть документ (двойной клик)' : undefined}
                                         >
                                             <td className={cn(styles.tableCell, styles.number)}>{key+1}</td>
                                             <td className={cn(styles.tableCell, styles.date)}>{secondsToDateString(element?.date) || '-'}</td>
@@ -185,7 +185,7 @@ export const AktSverkaItem = ({className, item, references, ...props }: AktSverk
                             </tbody>
                             <tfoot>
                                 <tr className={cn(styles.tableRow, styles.totalRow)}>
-                                    <td className={cn(styles.tableCell, styles.total)} colSpan={5}>Жами</td>
+                                    <td className={cn(styles.tableCell, styles.total)} colSpan={5}>Итого</td>
                                     <td className={cn(styles.tableCell, styles.total)}>
                                         {numberValue(
                                             item.results
@@ -224,13 +224,13 @@ export const AktSverkaItem = ({className, item, references, ...props }: AktSverk
 
                 {(!item?.results || item?.results.length == 0) && (
                     <div className={styles.resultsTable}>
-                        <div className={styles.empty}>Маълумот мавжуд эмас</div>
+                        <div className={styles.empty}>Нет данных</div>
                     </div>
                 )}
 
                 
                 <div className={styles.row}>
-                    <div className={styles.title}>Охирги колдик</div> 
+                    <div className={styles.title}>Конечный остаток</div> 
                     <div className={styles.value}>{endSumma}</div>
                 </div>  
             </div>

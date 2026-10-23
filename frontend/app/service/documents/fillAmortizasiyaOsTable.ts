@@ -38,10 +38,10 @@ export const fillAmortizasiyaOsTable = async (
       ...currentDocument,
       docTableItems: lines,
     });
-    showMessage(`${lines.length} та қатор тўлдирилди`, 'success', setMainData);
+    showMessage(`Заполнено строк: ${lines.length}`, 'success', setMainData);
   } catch (error: any) {
     showMessage(
-      error?.response?.data?.message || error.message || 'Хатолик',
+      error?.response?.data?.message || error.message || 'Ошибка',
       'error',
       setMainData,
     );

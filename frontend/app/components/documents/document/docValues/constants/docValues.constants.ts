@@ -2,23 +2,23 @@ import { DocumentType } from '@/app/interfaces/document.interface';
 import { UserRoles } from '@/app/interfaces/user.interface';
   
 export const DOC_VALUES_LABELS = {
-  WORKER: 'Ходим',
-  MEDIATOR: 'Воситачи',
+  WORKER: 'Сотрудник',
+  MEDIATOR: 'Посредник',
   DELIVERER: 'Доставщик',
-  PARTNER: 'Таъминотчи',
+  PARTNER: 'Поставщик',
   CLIENT: 'Клиент',
-  FOUNDER: 'Таъсисчи',
-  DEPARTMENT: 'Ички корхона',
-  LOAD_BALANCE: 'Колдик на нархларни юклаш',
-  BALANCE: 'Колдик',
-  COUNT: 'Сон',
-  PRICE: 'Нарх',
+  FOUNDER: 'Учредитель',
+  DEPARTMENT: 'Внутреннее предприятие',
+  LOAD_BALANCE: 'Загрузить остатки и цены',
+  BALANCE: 'Остаток',
+  COUNT: 'Количество',
+  PRICE: 'Цена',
   TOTAL: 'Сумма',
-  PRODUCT_TOTAL: 'Махсулот суммаси',
-  COMMENT: 'Изох',
-  FIN_PERSON: 'Жавобгар шахс',
-  DRIVER: 'Хайдовчи',
-  REMAIN_COUNT: 'Колдик'
+  PRODUCT_TOTAL: 'Сумма продукции',
+  COMMENT: 'Комментарий',
+  FIN_PERSON: 'МОЛ',
+  DRIVER: 'Водитель',
+  REMAIN_COUNT: 'Остаток'
 } as const;
 
 export const DOCUMENT_TYPE_CHECKS = {

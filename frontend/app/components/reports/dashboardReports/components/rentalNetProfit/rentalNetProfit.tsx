@@ -114,9 +114,9 @@ export const RentalNetProfit = ({
       const tmzIds = collectLeafIds(node);
       const columnLabel =
         type === 'income'
-          ? 'Даромад (90)'
+          ? 'Доход (90)'
           : type === 'otherIncome93'
-            ? 'Бошка даромад (93)'
+            ? 'Прочий доход (93)'
             : 'Себестоимость (91)';
       setModalTitle(`${node.name} — ${columnLabel}`);
       setModalOpen(true);
@@ -278,14 +278,14 @@ export const RentalNetProfit = ({
 
   return (
     <div className={styles.container} {...props}>
-      <div className={styles.title}>Ижара соф фойдаси — {enterpriseName}</div>
+      <div className={styles.title}>Чистая прибыль аренды — {enterpriseName}</div>
       <div className={styles.subtitle}>
-        Даромад (90) + Бошка даромад (93) − Себестоимость (91) − Харажатлар (20
-        фақат 91 сиз даромадларга)
+        Доход (90) + Прочий доход (93) − Себестоимость (91) − Расходы (20
+        только доходы без 91)
       </div>
 
       {values.length === 0 && (
-        <div className={styles.emptyMessage}>Маълумот йўқ</div>
+        <div className={styles.emptyMessage}>Нет данных</div>
       )}
 
       {values.length > 0 && (
@@ -293,11 +293,11 @@ export const RentalNetProfit = ({
           <thead>
             <tr>
               <th>ТМЗ / папка</th>
-              <th>Даромад (90)</th>
-              <th>Бошка даромад (93)</th>
+              <th>Доход (90)</th>
+              <th>Прочий доход (93)</th>
               <th>Себестоимость (91)</th>
-              <th>Харажатлар (20)</th>
-              <th>Соф фойда</th>
+              <th>Расходы (20)</th>
+              <th>Чистая прибыль</th>
               <th>%</th>
             </tr>
           </thead>
@@ -305,7 +305,7 @@ export const RentalNetProfit = ({
             {renderRows(values, 0)}
             {totals && (
               <tr className={styles.totalsRow}>
-                <td className={styles.nameCell}>Жами</td>
+                <td className={styles.nameCell}>Итого</td>
                 <td className={styles.numeric}>{numberValue(totals.income)}</td>
                 <td className={styles.numeric}>
                   {numberValue(totals.otherIncome93 ?? 0)}

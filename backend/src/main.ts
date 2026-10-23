@@ -9,13 +9,19 @@ import { ConfigService } from "@nestjs/config";
 import * as bodyParser from "body-parser";
 import { AllExceptionsFilter } from "./common/filters/http-exception.filter";
 import helmet from "helmet";
+import * as dotenv from "dotenv";
+import { assertMachineLicense } from "./license/machine-license";
 
 async function start() {
+  const nodeEnv = process.env.NODE_ENV || "development";
+  dotenv.config({ path: `.${nodeEnv}.env` });
+  assertMachineLicense();
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.set("trust proxy", 1);
 
   const configService = app.get(ConfigService);
-  const PORT = configService.get("PORT") || 7006;
+  const PORT = configService.get("PORT") || 7008;
   // Bind host (set HOST=127.0.0.1 in production to avoid exposing port publicly)
   const HOST = configService.get("HOST") || process.env.HOST || "0.0.0.0";
   const NODE_ENV = process.env.NODE_ENV || "development";
@@ -43,12 +49,7 @@ async function start() {
   const corsFromEnv =
     process.env.CORS_ORIGINS || configService.get<string>("CORS_ORIGINS") || "";
   const defaultCorsOrigins = [
-    "http://localhost:3007",
-    "https://mebers.kord.uz",
-    "http://mebers.kord.uz",
-    "https://www.mebers.kord.uz",
-    "http://www.mebers.kord.uz",
-    "https://8dd2-95-214-210-218.ngrok-free.app",
+    "http://localhost:3008",
   ];
   const corsOrigins = corsFromEnv
     ? corsFromEnv

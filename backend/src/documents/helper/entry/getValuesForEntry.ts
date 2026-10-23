@@ -353,6 +353,7 @@ export const getValuesForEntry = async (
 
     switch (documentType) {
       case DocumentType.OrderToolsToClient:
+      case DocumentType.SaleEquipment:
         return null;
 
       case DocumentType.ComeCashFromClients:
@@ -1737,6 +1738,9 @@ export const getValuesForEntry = async (
         return null;
 
       case DocumentType.TransferToolsToClient:
+        if (tableItem?.billingRole === "COLUMN" && entryType === "primaryEntry") {
+          return null;
+        }
         if (entryType === "primaryEntry" && tableItem) {
           const analiticIdFromTable = getTableItemValue<number | null>(
             tableItem,
@@ -1827,6 +1831,9 @@ export const getValuesForEntry = async (
         return null;
 
       case DocumentType.ReceiveToolsFromClient: {
+        if (tableItem?.billingRole === "COLUMN" && entryType === "primaryEntry") {
+          return null;
+        }
         if (entryType === "primaryEntry" && tableItem) {
           const tableType = tableItem.tableType || "return";
           const toolId = getTableItemValue<number | null>(

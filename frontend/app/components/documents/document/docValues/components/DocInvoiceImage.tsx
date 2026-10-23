@@ -111,7 +111,7 @@ export const DocInvoiceImage = memo(() => {
         });
 
         if (!response.ok) {
-          throw new Error('Накладной расмини йуклашда хатолик юз берди');
+          throw new Error('Ошибка при загрузке изображения накладной');
         }
 
         const result = await response.json();
@@ -120,7 +120,7 @@ export const DocInvoiceImage = memo(() => {
           saveImages([...images, newPath].slice(0, MAX_IMAGES));
         }
       } catch {
-        alert('Накладной расмини йуклашда хатолик юз берди');
+        alert('Ошибка при загрузке изображения накладной');
       } finally {
         setIsUploading(false);
         if (fileInputRef.current) {
@@ -152,10 +152,10 @@ export const DocInvoiceImage = memo(() => {
           }
         }
       }
-      alert('Буферда расм топилмади. Аввал расмни нусхаланг (PrtSc ёки «Расмни нусхалаш»).');
+      alert('В буфере нет изображения. Сначала скопируйте изображение (PrtSc или «Копировать изображение»).');
     } catch {
       addCardRef.current?.focus();
-      alert('Буферга кириш рухсат берилмади. Буфердан Ctrl+V ишлатинг ёки браузер рухсатини йўқинг.');
+      alert('Нет доступа к буферу. Вставьте через Ctrl+V или разрешите доступ в браузере.');
     }
   };
 
@@ -182,7 +182,7 @@ export const DocInvoiceImage = memo(() => {
           <div key={`${path}-${index}`} className={styles.invoiceThumbCard}>
             <img
               src={url}
-              alt="Накладной расми"
+              alt="Изображение накладной"
               className={styles.invoiceThumbImg}
               onClick={() => setModalUrl(url)}
             />
@@ -190,8 +190,8 @@ export const DocInvoiceImage = memo(() => {
               <button
                 type="button"
                 className={styles.invoiceThumbRemove}
-                title="Учириш"
-                aria-label="Учириш"
+                title="Удалить"
+                aria-label="Удалить"
                 onClick={() => handleRemove(index)}
                 disabled={isUploading}
               >
@@ -209,8 +209,8 @@ export const DocInvoiceImage = memo(() => {
             [styles.invoiceAddCardDisabled]: !canAddMore || isUploading,
           })}
           tabIndex={canAddMore ? 0 : -1}
-          title="Файл танлаш (ёки буфердан Ctrl+V)"
-          aria-label="Расм қўшиш"
+          title="Выбрать файл (или из буфера Ctrl+V)"
+          aria-label="Добавить изображение"
           onPaste={handlePaste}
           onClick={() => canAddMore && !isUploading && fileInputRef.current?.click()}
         >
@@ -224,8 +224,8 @@ export const DocInvoiceImage = memo(() => {
               type="button"
               tabIndex={-1}
               className={styles.invoicePasteBtn}
-              title="Буфердан қўйиш"
-              aria-label="Буфердан қўйиш"
+              title="Вставить из буфера"
+              aria-label="Вставить из буфера"
               onClick={(e) => {
                 e.stopPropagation();
                 void handlePasteFromClipboard();
@@ -248,7 +248,7 @@ export const DocInvoiceImage = memo(() => {
       {modalUrl && (
         <div className={styles.invoiceModalOverlay} onClick={() => setModalUrl(null)}>
           <div className={styles.invoiceModalContent} onClick={(e) => e.stopPropagation()}>
-            <img src={modalUrl} alt="Накладной расми" className={styles.invoiceModalImage} />
+            <img src={modalUrl} alt="Изображение накладной" className={styles.invoiceModalImage} />
             <button
               type="button"
               className={styles.invoiceModalClose}

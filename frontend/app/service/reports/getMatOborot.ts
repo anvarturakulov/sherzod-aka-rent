@@ -15,7 +15,7 @@ export const getMatOborot = (
 
   if (!isMatOborotSchet(schet)) {
     if (setMainData) {
-      showMessage('ТМБ турини танланг', 'error', setMainData);
+      showMessage('Выберите тип ТМЦ', 'error', setMainData);
       setMainData('uploadingDashboard', false);
     }
     return;
@@ -60,7 +60,7 @@ export const getMatOborot = (
         const msg =
           error.response?.data?.message ||
           error.message ||
-          'Хисоботни шакллантириб бўлмади';
+          'Не удалось сформировать отчёт';
         showMessage(msg, 'error', setMainData);
         setMainData('uploadingDashboard', false);
       }

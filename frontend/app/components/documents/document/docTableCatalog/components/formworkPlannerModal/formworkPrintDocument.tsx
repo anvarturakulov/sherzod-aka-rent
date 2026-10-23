@@ -34,23 +34,23 @@ const FormworkPrintDocument = forwardRef<HTMLDivElement, FormworkPrintDocumentPr
     return (
       <div ref={ref} style={{ padding: 20, fontFamily: 'Arial, sans-serif', fontSize: 12, color: '#000' }}>
         <h2 style={{ textAlign: 'center', margin: '0 0 6px', fontSize: 16 }}>
-          Опалубка жойлашуви схемаси
+          Схема размещения опалубки
         </h2>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
           <div>
             {clientName ? (
               <div>
-                Буюртмачи: <b>{clientName}</b>
+                Заказчик: <b>{clientName}</b>
               </div>
             ) : null}
-            {documentId ? <div>Ҳужжат № {documentId}</div> : null}
+            {documentId ? <div>Документ № {documentId}</div> : null}
           </div>
           <div style={{ textAlign: 'right' }}>
             {documentDate ? <div>{formatDisplayDateTime(documentDate)}</div> : null}
             <div>
-              Лента: {layout.stripWidth} мм · Баландлик: {layout.foundationHeight} мм
+              Лента: {layout.stripWidth} мм · Высота: {layout.foundationHeight} мм
             </div>
-            <div>Яруслар: {result.tiers.join(' + ')} мм</div>
+            <div>Ярусы: {result.tiers.join(' + ')} мм</div>
           </div>
         </div>
 
@@ -78,12 +78,12 @@ const FormworkPrintDocument = forwardRef<HTMLDivElement, FormworkPrintDocumentPr
           <thead>
             <tr>
               <th style={cell}>№</th>
-              <th style={cell}>Тури</th>
-              <th style={cell}>Номи</th>
-              <th style={cell}>Ўлчам</th>
-              <th style={cellRight}>Керак</th>
-              {result.stockKnown && <th style={cellRight}>Берилади</th>}
-              {result.stockKnown && <th style={cellRight}>Етишмайди</th>}
+              <th style={cell}>Тип</th>
+              <th style={cell}>Наименование</th>
+              <th style={cell}>Размер</th>
+              <th style={cellRight}>Нужно</th>
+              {result.stockKnown && <th style={cellRight}>Выдать</th>}
+              {result.stockKnown && <th style={cellRight}>Не хватает</th>}
             </tr>
           </thead>
           <tbody>
@@ -107,8 +107,8 @@ const FormworkPrintDocument = forwardRef<HTMLDivElement, FormworkPrintDocumentPr
 
         {shortage.length > 0 && (
           <div style={{ marginTop: 10, border: '1px solid #b91c1c', padding: 8 }}>
-            <b style={{ color: '#b91c1c' }}>Складда етишмайди:</b>{' '}
-            {shortage.map((r) => `${r.name}${r.size ? ` (${r.size})` : ''} — ${fmt(r.shortage)} дона`).join('; ')}
+            <b style={{ color: '#b91c1c' }}>Не хватает на складе:</b>{' '}
+            {shortage.map((r) => `${r.name}${r.size ? ` (${r.size})` : ''} — ${fmt(r.shortage)} шт.`).join('; ')}
           </div>
         )}
 
@@ -121,11 +121,11 @@ const FormworkPrintDocument = forwardRef<HTMLDivElement, FormworkPrintDocumentPr
         )}
 
         <div style={{ display: 'flex', gap: 24, marginTop: 8, fontSize: 11 }}>
-          <span>Ташқи контур: {(result.totals.outerLength / 1000).toFixed(2)} м</span>
-          <span>Ички контур: {(result.totals.holeLength / 1000).toFixed(2)} м</span>
-          <span>Щитлар: {result.totals.panels}</span>
+          <span>Внешний контур: {(result.totals.outerLength / 1000).toFixed(2)} м</span>
+          <span>Внутренний контур: {(result.totals.holeLength / 1000).toFixed(2)} м</span>
+          <span>Щиты: {result.totals.panels}</span>
           <span>
-            Бурчаклар: {result.totals.cornersOuter} ташқи / {result.totals.cornersInner} ички
+            Углы: {result.totals.cornersOuter} внешних / {result.totals.cornersInner} внутренних
           </span>
         </div>
       </div>

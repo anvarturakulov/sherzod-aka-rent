@@ -31,6 +31,7 @@ import {
     exportBasisAllMaterialsXml,
     exportBasisTestMaterialsXml,
 } from '@/app/service/references/exportMaterialsToBasisXml';
+import { compareTmzByArticleNumber } from './helpers/compareTmzByArticle';
 import { compareTmzByImageAndType } from './helpers/compareTmzImageSort';
 
 export type TmzImageSortMode = 'none' | 'noImageFirst' | 'hasImageFirst';
@@ -151,8 +152,10 @@ const ReferencesList = memo<ReferencesListProps>(({className, ...props}): JSX.El
             roots.push(rootNode);
         });
 
+        const sortByArticle = referenceType === TypeReference.TMZ;
         const sortTree = (nodes: TreeNode[]): TreeNode[] => {
             return nodes.sort((a, b) => {
+                if (sortByArticle) return compareTmzByArticleNumber(a.item, b.item);
                 if (a.item.isFolder && !b.item.isFolder) return -1;
                 if (!a.item.isFolder && b.item.isFolder) return 1;
                 return a.item.name.localeCompare(b.item.name);
@@ -234,7 +237,7 @@ const ReferencesList = memo<ReferencesListProps>(({className, ...props}): JSX.El
                 }
                 return true;
             })
-            .sort(sortByNameWithDeleted);
+            .sort(isTMZList ? compareTmzByArticleNumber : sortByNameWithDeleted);
     }, [
         isFilterActive,
         isNameSearchActive,
@@ -359,35 +362,35 @@ const ReferencesList = memo<ReferencesListProps>(({className, ...props}): JSX.El
         try {
             const usage = await ReferencesService.getReferenceUsage(item.id, token);
             if (usage.counts.total === 0) {
-                showMessage(`"${item.name}" учун боғланишлар топилмади`, 'success', setMainData);
+                showMessage(`"${item.name}" связи не найдены`, 'success', setMainData);
                 return;
             }
             setUsageModal({ itemName: item.name, usage });
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Боғланишларни қидиришда хатолик';
+            const message = error instanceof Error ? error.message : 'Ошибка поиска связей';
             showMessage(message, 'error', setMainData);
         }
     }, [token, setMainData]);
 
     const handleDeletePermanent = useCallback(async (item: ReferenceModel) => {
         if (!token || !item.id) return;
-        const confirmed = window.confirm(`"${item.name}" ни базадан тўлиқ ўчиришни тасдиқлайсизми?\nТўлиқ ўчириш фақат боғланишлар бўлмаганда амалга оширилади.`);
+        const confirmed = window.confirm(`"${item.name}" — полностью удалить из базы?\nПолное удаление возможно только при отсутствии связей.`);
         if (!confirmed) return;
         try {
             const usage = await ReferencesService.getReferenceUsage(item.id, token);
             if (!usage.canDelete) {
                 showMessage(
-                    `"${item.name}" ни ўчириб бўлмайди: боғланишлар мавжуд (${usage.counts.total})`,
+                    `"${item.name}" нельзя удалить: есть связи (${usage.counts.total})`,
                     'error',
                     setMainData,
                 );
                 return;
             }
             await ReferencesService.deleteReferencePermanent(item.id, token);
-            showMessage(`"${item.name}" базадан тўлиқ ўчирилди`, 'success', setMainData);
+            showMessage(`"${item.name}" полностью удалён из базы`, 'success', setMainData);
             await mutate();
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Справочникни ўчиришда хатолик';
+            const message = error instanceof Error ? error.message : 'Ошибка удаления справочника';
             showMessage(message, 'error', setMainData);
         }
     }, [token, mutate, setMainData]);
@@ -396,10 +399,10 @@ const ReferencesList = memo<ReferencesListProps>(({className, ...props}): JSX.El
         if (!token || !item.id) return;
         try {
             await ReferencesService.markToDelete(item.id, token);
-            showMessage(`"${item.name}" ўчиришга белгиланди`, 'success', setMainData);
+            showMessage(`"${item.name}" помечен на удаление`, 'success', setMainData);
             await mutate();
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Справочникни ўчиришга белгилашда хатолик';
+            const message = error instanceof Error ? error.message : 'Ошибка пометки справочника на удаление';
             showMessage(message, 'error', setMainData);
         }
     }, [token, mutate, setMainData]);
@@ -408,10 +411,10 @@ const ReferencesList = memo<ReferencesListProps>(({className, ...props}): JSX.El
         if (!token || !item.id) return;
         try {
             await ReferencesService.duplicateReference(item.id, token);
-            showMessage(`"${item.name}" нусхаси яратилди`, 'success', setMainData);
+            showMessage(`"${item.name}" — копия создана`, 'success', setMainData);
             await mutate();
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Справочникни нусхалашда хатолик';
+            const message = error instanceof Error ? error.message : 'Ошибка копирования справочника';
             showMessage(message, 'error', setMainData);
         }
     }, [token, mutate, setMainData]);
@@ -446,7 +449,7 @@ const ReferencesList = memo<ReferencesListProps>(({className, ...props}): JSX.El
             >
                 {!canViewList ? (
                     <p style={{ padding: '24px', color: '#b91c1c' }}>
-                        Ушбу справочникни кўриш учун рухсатингиз йўқ.
+                        У вас нет доступа к просмотру этого справочника.
                     </p>
                 ) : (!isValidReferenceType || isLoadingData || isLoadingReferences) ? (
                     <LoadingIco className={loadingStyles.loadingIco} />
@@ -502,7 +505,7 @@ const ReferencesList = memo<ReferencesListProps>(({className, ...props}): JSX.El
                                         colSpan={20}
                                         className={styles.searchEmpty}
                                     >
-                                        {isTMZList ? 'Товарлар топилмади' : 'Маълумот топилмади'}
+                                        {isTMZList ? 'Товары не найдены' : 'Данные не найдены'}
                                     </td>
                                 </tr>
                             ) : (

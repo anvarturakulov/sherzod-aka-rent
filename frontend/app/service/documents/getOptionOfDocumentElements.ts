@@ -34,7 +34,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
     let isDepartmentIsVisible = false;
 
     let carType = TypeReference.CARS, carLabel = 'Автомашина', carIsVisible = false;
-    let senderPersonType = TypeReference.WORKERS, senderPersonLabel = 'Жунатувчи ходим', senderPersonIsVisible = false;
+    let senderPersonType = TypeReference.WORKERS, senderPersonLabel = 'Сотрудник-отправитель', senderPersonIsVisible = false;
     let materialResponsiblePersonType = TypeReference.WORKERS,
         materialResponsiblePersonLabel = 'Мат. жавобгар шахс',
         materialResponsiblePersonIsVisible = false;
@@ -102,6 +102,10 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
     const documentsTransferToolsToClient = [
         `${DocumentType.TransferToolsToClient}`,
         `${DocumentType.OrderToolsToClient}`,
+    ]
+
+    const documentsSaleEquipment = [
+        `${DocumentType.SaleEquipment}`,
     ]
 
     const documentsTransferSubleaseToolsToClient = [
@@ -217,7 +221,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
     
     if (documentsComeMaterial.includes(documentType)) {
         senderType = TypeReference.PARTNERS
-        senderLabel = 'Таъминотчи'
+        senderLabel = 'Поставщик'
         senderIsVisible = true
         
         receiverType = TypeReference.STORAGES
@@ -242,7 +246,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsComeTools.includes(documentType)) {
         senderType = TypeReference.PARTNERS
-        senderLabel = 'Таъминотчи'
+        senderLabel = 'Поставщик'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
@@ -250,7 +254,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
-        analiticLabel = 'Ускуна'
+        analiticLabel = 'Инструмент'
         analiticIsVisible = true
 
         balansIsVisible = false;
@@ -264,11 +268,11 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsComeTovar.includes(documentType)) {
         senderType = TypeReference.PARTNERS
-        senderLabel = 'Таъминотчи'
+        senderLabel = 'Поставщик'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Қабул қилувчи склад'
+        receiverLabel = 'Принимающий склад'
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
@@ -286,7 +290,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsComeOS.includes(documentType)) {
         senderType = TypeReference.PARTNERS
-        senderLabel = 'Таъминотчи'
+        senderLabel = 'Поставщик'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
@@ -294,7 +298,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
-        analiticLabel = 'Асосий восита'
+        analiticLabel = 'Основное средство'
         analiticIsVisible = true
 
         balansIsVisible = false;
@@ -310,7 +314,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsComeProduct.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
@@ -318,7 +322,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
-        analiticLabel = 'Тайёр махсулот'
+        analiticLabel = 'Готовая продукция'
         analiticIsVisible = true
 
         balansIsVisible = false;
@@ -348,15 +352,15 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsSaleProd.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.PARTNERS
-        receiverLabel = 'Мижоз'
+        receiverLabel = 'Клиент'
         recieverIsVisible = true
 
         analiticType = TypeReference.STORAGES
-        analiticLabel = 'Пулни олувчи булим'
+        analiticLabel = 'Отдел-получатель денег'
         analiticIsVisible = false
 
         balansIsVisible = false;
@@ -370,15 +374,15 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsSaleMaterial.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи'
+        senderLabel = 'Отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.PARTNERS
-        receiverLabel = 'Мижоз'
+        receiverLabel = 'Клиент'
         recieverIsVisible = true
 
         analiticType = TypeReference.STORAGES
-        analiticLabel = 'Пулни олувчи булим'
+        analiticLabel = 'Отдел-получатель денег'
         analiticIsVisible = false
 
         balansIsVisible = false;
@@ -395,15 +399,15 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsSaleTovar.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи склад'
+        senderLabel = 'Склад-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.PARTNERS
-        receiverLabel = 'Мижоз'
+        receiverLabel = 'Клиент'
         recieverIsVisible = true
 
         analiticType = TypeReference.STORAGES
-        analiticLabel = 'Пулни олувчи булим'
+        analiticLabel = 'Отдел-получатель денег'
         analiticIsVisible = false
 
         balansIsVisible = false;
@@ -420,15 +424,15 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsSaleOS.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи'
+        senderLabel = 'Отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.PARTNERS
-        receiverLabel = 'Мижоз'
+        receiverLabel = 'Клиент'
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
-        analiticLabel = 'Асосий восита'
+        analiticLabel = 'Основное средство'
         analiticIsVisible = true
 
         totalIsDisabled = true;
@@ -442,11 +446,11 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsSaleHalfStuff.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи'
+        senderLabel = 'Отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.PARTNERS
-        receiverLabel = 'Мижоз'
+        receiverLabel = 'Клиент'
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
@@ -459,19 +463,19 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsLeaveProd.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.CHARGES
-        receiverLabel = 'Харажат тури'
+        receiverLabel = 'Вид расхода'
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
-        analiticLabel = 'Тайёр махсулот'
+        analiticLabel = 'Готовая продукция'
         analiticIsVisible = false
 
         productForChargeType = TypeReference.TMZ
-        productForChargeLabel = 'Харажат кайси махсулот учун'
+        productForChargeLabel = 'Расход на какую продукцию'
         productForChargeIsVisible = false
 
         balansIsVisible = false;
@@ -485,19 +489,19 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsLeaveMaterial.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Харажатни олувчи булим'
+        receiverLabel = 'Отдел-получатель расхода'
         recieverIsVisible = true
 
         analiticType = TypeReference.CHARGES
-        analiticLabel = 'Харажат тури'
+        analiticLabel = 'Вид расхода'
         analiticIsVisible = true
 
         productForChargeType = TypeReference.TMZ
-        productForChargeLabel = 'Харажат кайси махсулот учун'
+        productForChargeLabel = 'Расход на какую продукцию'
         productForChargeIsVisible = false
 
         tableIsVisible = true
@@ -511,19 +515,19 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsLeaveTools.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Харажатни олувчи булим'
+        receiverLabel = 'Отдел-получатель расхода'
         recieverIsVisible = true
 
         analiticType = TypeReference.CHARGES
-        analiticLabel = 'Харажат тури'
+        analiticLabel = 'Вид расхода'
         analiticIsVisible = true
 
         productForChargeType = TypeReference.TMZ
-        productForChargeLabel = 'Харажат кайси махсулот учун'
+        productForChargeLabel = 'Расход на какую продукцию'
         productForChargeIsVisible = false
 
         tableIsVisible = true
@@ -536,19 +540,19 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsLeaveTovar.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи склад'
+        senderLabel = 'Склад-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Харажатни олувчи булим'
+        receiverLabel = 'Отдел-получатель расхода'
         recieverIsVisible = true
 
         analiticType = TypeReference.CHARGES
-        analiticLabel = 'Харажат тури'
+        analiticLabel = 'Вид расхода'
         analiticIsVisible = true
 
         productForChargeType = TypeReference.TMZ
-        productForChargeLabel = 'Харажат кайси махсулот учун'
+        productForChargeLabel = 'Расход на какую продукцию'
         productForChargeIsVisible = false
 
         tableIsVisible = true
@@ -561,19 +565,19 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsLeaveOS.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Харажатни олувчи булим'
+        receiverLabel = 'Отдел-получатель расхода'
         recieverIsVisible = true
 
         analiticType = TypeReference.CHARGES
-        analiticLabel = 'Харажат тури'
+        analiticLabel = 'Вид расхода'
         analiticIsVisible = true
 
         productForChargeType = TypeReference.TMZ
-        productForChargeLabel = 'Харажат кайси махсулот учун'
+        productForChargeLabel = 'Расход на какую продукцию'
         productForChargeIsVisible = false
 
         tableIsVisible = true
@@ -585,7 +589,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsAmortizasiyaOS.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Омбор (ОС)'
+        senderLabel = 'Склад (ОС)'
         senderIsVisible = true
         recieverIsVisible = false
         analiticIsVisible = false
@@ -600,15 +604,15 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
     
     if (documentsLeaveOnlyOneMaterial.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Харажатни олувчи булим'
+        receiverLabel = 'Отдел-получатель расхода'
         recieverIsVisible = true
 
         analiticType = TypeReference.CHARGES
-        analiticLabel = 'Харажат тури'
+        analiticLabel = 'Вид расхода'
         analiticIsVisible = true
 
         productForChargeType = TypeReference.TMZ
@@ -627,11 +631,11 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsLeaveHalfstuff.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.CHARGES
-        receiverLabel = 'Харажат тури'
+        receiverLabel = 'Вид расхода'
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
@@ -639,7 +643,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
         analiticIsVisible = false
 
         productForChargeType = TypeReference.TMZ
-        productForChargeLabel = 'Харажат кайси махсулот учун'
+        productForChargeLabel = 'Расход на какую продукцию'
         productForChargeIsVisible = true
 
         totalIsDisabled = true;
@@ -656,7 +660,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsMoveProd.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
@@ -664,7 +668,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
-        analiticLabel = 'Тайёр махсулот'
+        analiticLabel = 'Готовая продукция'
         analiticIsVisible = true
 
         priceIsVisible = false;
@@ -673,7 +677,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsMoveMaterial.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи килувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
@@ -697,7 +701,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsMoveTools.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи килувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
@@ -705,7 +709,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
-        analiticLabel = 'Ускуна'
+        analiticLabel = 'Инструмент'
         analiticIsVisible = true
 
         totalIsDisabled = true;
@@ -721,18 +725,19 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsTransferToolsToClient.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи склад'
+        senderLabel = 'Склад-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.PARTNERS
-        receiverLabel = 'Мижоз'
+        receiverLabel = 'Клиент'
         recieverIsVisible = true
 
         analiticType = TypeReference.STORAGES
         analiticLabel = 'Касса (аванс)'
         analiticIsVisible = false
 
-        materialResponsiblePersonIsVisible = true;
+        materialResponsiblePersonIsVisible =
+            documentType === `${DocumentType.OrderToolsToClient}`;
         materialResponsiblePersonLabel = 'Мат. жавобгар шахс';
         materialResponsiblePersonType = TypeReference.WORKERS;
 
@@ -746,13 +751,33 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
         tableIsVisible = true;
     }
 
-    if (documentsTransferSubleaseToolsToClient.includes(documentType)) {
+    if (documentsSaleEquipment.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Ҳамкор омбори'
+        senderLabel = 'Склад-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.PARTNERS
-        receiverLabel = 'Мижоз'
+        receiverLabel = 'Клиент'
+        recieverIsVisible = true
+
+        analiticIsVisible = false
+        totalIsDisabled = true;
+        priceIsDisabled = true;
+        balansIsVisible = false;
+        commentIsVisible = true;
+        countIsVisible = false;
+        priceIsVisible = false;
+        totalIsVisible = false;
+        tableIsVisible = true;
+    }
+
+    if (documentsTransferSubleaseToolsToClient.includes(documentType)) {
+        senderType = TypeReference.STORAGES
+        senderLabel = 'Склад партнёра'
+        senderIsVisible = true
+
+        receiverType = TypeReference.PARTNERS
+        receiverLabel = 'Клиент'
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
@@ -771,11 +796,11 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsReceiveToolsFromClient.includes(documentType)) {
         senderType = TypeReference.PARTNERS
-        senderLabel = 'Мижоз'
+        senderLabel = 'Клиент'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Қабул қилувчи склад'
+        receiverLabel = 'Принимающий склад'
         recieverIsVisible = true
 
         analiticType = TypeReference.STORAGES
@@ -783,7 +808,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
         analiticIsVisible = false
 
         productForChargeType = TypeReference.STORAGES
-        productForChargeLabel = 'Пластик (банк)'
+        productForChargeLabel = 'Карта (банк)'
         productForChargeIsVisible = false
 
         totalIsDisabled = true;
@@ -798,11 +823,11 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsReceiveSubleaseToolsFromClient.includes(documentType)) {
         senderType = TypeReference.PARTNERS
-        senderLabel = 'Мижоз'
+        senderLabel = 'Клиент'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Ҳамкор омбори'
+        receiverLabel = 'Склад партнёра'
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
@@ -821,7 +846,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsMoveOS.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи килувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
@@ -829,7 +854,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
         recieverIsVisible = true
 
         analiticType = TypeReference.TMZ
-        analiticLabel = 'Асосий восита'
+        analiticLabel = 'Основное средство'
         analiticIsVisible = true
 
         totalIsDisabled = true;
@@ -844,7 +869,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsMoveHalfstuff.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
@@ -886,7 +911,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsMoveCash.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
@@ -911,15 +936,15 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (documentsLeaveCash.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жунатувчи булим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Харажатни олувчи булим'
+        receiverLabel = 'Отдел-получатель расхода'
         recieverIsVisible = true
 
         analiticType = TypeReference.CHARGES
-        analiticLabel = 'Харажат тури'
+        analiticLabel = 'Вид расхода'
         analiticIsVisible = true
 
         productForChargeType = TypeReference.WORKERS
@@ -943,15 +968,15 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
         senderIsVisible = false
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Харажатни олувчи булим'
+        receiverLabel = 'Отдел-получатель расхода'
         recieverIsVisible = true
 
         analiticType = TypeReference.WORKERS
-        analiticLabel = 'Ходим'
+        analiticLabel = 'Сотрудник'
         analiticIsVisible = true;
 
         productForChargeType = TypeReference.TMZ
-        productForChargeLabel = 'Харажат кайси махсулот учун'
+        productForChargeLabel = 'Расход на какую продукцию'
         productForChargeIsVisible = false
 
         priceIsVisible = false;
@@ -966,7 +991,7 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
         senderIsVisible = false
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Фойдани олувчи таъсисчи'
+        receiverLabel = 'Учредитель-получатель прибыли'
         recieverIsVisible = true
 
         analiticType = TypeReference.WORKERS
@@ -980,19 +1005,19 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (ServicesFromPartners.includes(documentType)) {
         senderType = TypeReference.PARTNERS
-        senderLabel = 'Корхона'
+        senderLabel = 'Предприятие'
         senderIsVisible = true
 
         receiverType = TypeReference.STORAGES
-        receiverLabel = 'Харажатни олувчи булим'
+        receiverLabel = 'Отдел-получатель расхода'
         recieverIsVisible = true
 
         analiticType = TypeReference.CHARGES
-        analiticLabel = 'Харажат тури'
+        analiticLabel = 'Вид расхода'
         analiticIsVisible = true;
 
         productForChargeType = TypeReference.TMZ
-        productForChargeLabel = 'Харажат кайси махсулот учун'
+        productForChargeLabel = 'Расход на какую продукцию'
         productForChargeIsVisible = false
 
         priceIsVisible = false;
@@ -1002,11 +1027,11 @@ export const getOptionOfDocumentElements = (documentType: string, documentDate?:
 
     if (ServicesToClients.includes(documentType)) {
         senderType = TypeReference.STORAGES
-        senderLabel = 'Жўнатувчи бўлим'
+        senderLabel = 'Отдел-отправитель'
         senderIsVisible = true
 
         receiverType = TypeReference.PARTNERS
-        receiverLabel = 'Мижоз'
+        receiverLabel = 'Клиент'
         recieverIsVisible = true
 
         analiticType = TypeReference.SERVICES

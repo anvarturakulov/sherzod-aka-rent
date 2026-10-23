@@ -9,6 +9,7 @@ export type RentalExpectedIncomeToolRow = {
   rentHours: number;
   rentSum: number;
   transferDocId: number;
+  comment: string;
 };
 
 export type RentalExpectedIncomeClientRow = {

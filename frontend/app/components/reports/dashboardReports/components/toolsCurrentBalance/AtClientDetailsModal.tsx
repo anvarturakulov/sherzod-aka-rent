@@ -64,7 +64,7 @@ export function AtClientDetailsModal({
       setData(result);
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : 'Маълумотларни юклашда хато';
+        err instanceof Error ? err.message : 'Ошибка при загрузке данных';
       setError(message);
       setData(null);
     } finally {
@@ -102,12 +102,12 @@ export function AtClientDetailsModal({
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2>Мижозда қолдиқ: {titleParts.join(' ')}</h2>
+          <h2>Остаток у клиента: {titleParts.join(' ')}</h2>
           <button
             type="button"
             className={styles.closeButton}
             onClick={onClose}
-            aria-label="Ёпиш"
+            aria-label="Закрыть"
           >
             ×
           </button>
@@ -116,30 +116,30 @@ export function AtClientDetailsModal({
         <div className={styles.content}>
           <div className={styles.summary}>
             <span>
-              Қолдиқ вақти:{' '}
+              Время остатка:{' '}
               <strong>{formatDisplayDateTime(asOf) || '—'}</strong>
             </span>
             <span>
-              Омборда: <strong>{numberValue(warehouseQty)}</strong>
+              На складе: <strong>{numberValue(warehouseQty)}</strong>
             </span>
             <span>
-              Мижозда: <strong>{numberValue(atClientQty)}</strong>
+              У клиента: <strong>{numberValue(atClientQty)}</strong>
             </span>
           </div>
 
-          {loading && <div className={styles.loading}>Юкланмоқда...</div>}
+          {loading && <div className={styles.loading}>Загрузка...</div>}
 
           {error && (
             <div className={styles.error}>
               <p>{error}</p>
               <button type="button" onClick={loadDetails}>
-                Қайтиб уриниш
+                Повторить
               </button>
             </div>
           )}
 
           {!loading && !error && data && data.clients.length === 0 && (
-            <div className={styles.empty}>Мижозда қолдиқ топилмади</div>
+            <div className={styles.empty}>Остаток у клиента не найден</div>
           )}
 
           {!loading && !error && data && data.clients.length > 0 && (
@@ -147,10 +147,10 @@ export function AtClientDetailsModal({
               <thead>
                 <tr>
                   <th className={styles.center}>№</th>
-                  <th>Мижоз</th>
-                  <th className={styles.numeric}>Сони</th>
-                  <th className={styles.center}>Узатиш санаси</th>
-                  <th className={styles.center}>Хужжат</th>
+                  <th>Клиент</th>
+                  <th className={styles.numeric}>Кол-во</th>
+                  <th className={styles.center}>Дата передачи</th>
+                  <th className={styles.center}>Документ</th>
                 </tr>
               </thead>
               <tbody>
@@ -182,7 +182,7 @@ export function AtClientDetailsModal({
                         <td className={styles.center}>
                           {batch.settlementDate != null
                             ? formatDisplayDateOrDash(batch.settlementDate)
-                            : 'номаълум'}
+                            : 'неизвестно'}
                         </td>
                         <td className={styles.center}>
                           {batch.transferDocId ? (
@@ -194,7 +194,7 @@ export function AtClientDetailsModal({
                                 e.stopPropagation();
                                 openTransferDocument(batch.transferDocId);
                               }}
-                              title="Узатиш хужжатини очиш"
+                              title="Открыть документ передачи"
                             >
                               №{batch.transferDocId}
                             </button>
@@ -208,7 +208,7 @@ export function AtClientDetailsModal({
                 })}
                 <tr>
                   <td colSpan={2} className={styles.center}>
-                    <strong>Жами</strong>
+                    <strong>Итого</strong>
                   </td>
                   <td className={styles.numeric}>
                     <strong>

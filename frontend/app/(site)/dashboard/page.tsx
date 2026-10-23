@@ -35,7 +35,7 @@ export default function Dashboard() {
   const router = useRouter();
   const {mainData, setMainData} = useAppContext()
   const { mainPage } = mainData.window
-  const { contentType, contentTitle, contentName } = mainData.document
+  const { contentType, contentName } = mainData.document
   const { user } = mainData.users
 
   const token = user?.token;
@@ -82,10 +82,10 @@ export default function Dashboard() {
           </div>
 
           <div className={styles.journalBox}>
-            { !mainPage && contentType=='servis' && contentTitle == ServiceType.Users && <UsersList/> }
-            { !mainPage && contentType=='servis' && contentTitle == ServiceType.Enterprises && <EnterprisesList/> }
-            { !mainPage && contentType=='servis' && contentTitle == ServiceType.Options && <SettingsJournal/> }
-            { !mainPage && contentType=='servis' && contentTitle == ServiceType.PricingPolicy && <PricingPolicyPage/> }
+            { !mainPage && contentType=='servis' && contentName == ServiceType.Users && <UsersList/> }
+            { !mainPage && contentType=='servis' && contentName == ServiceType.Enterprises && <EnterprisesList/> }
+            { !mainPage && contentType=='servis' && contentName == ServiceType.Options && <SettingsJournal/> }
+            { !mainPage && contentType=='servis' && contentName == ServiceType.PricingPolicy && <PricingPolicyPage/> }
           </div>
 
           <div className={styles.journalBox}>

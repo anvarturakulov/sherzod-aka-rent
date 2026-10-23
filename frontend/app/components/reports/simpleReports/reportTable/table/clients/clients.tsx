@@ -91,7 +91,7 @@ export const Clients = ({ className, ...props }: ClientProps): JSX.Element => {
   return (
     <div className={className}>
       {clientData.length === 0 ? (
-        <div className={styles.noData}>Бу цех буйича малумотлар йук</div>
+        <div className={styles.noData}>Нет данных по этому цеху</div>
       ) : (
         <div className={styles.sectionContainer}>
           <div className={styles.tableWrap}>
@@ -99,11 +99,11 @@ export const Clients = ({ className, ...props }: ClientProps): JSX.Element => {
             <thead>
               <tr>
                 <th>№</th>
-                <th>Мижоз</th>
+                <th>Клиент</th>
                 {days.map((day, index) =>
                   index === days.length - 1 ? (
                     <th key={index} className={styles.totalTh}>
-                      Жами
+                      Итого
                     </th>
                   ) : (
                     <th key={index} className={styles.th}>
@@ -152,7 +152,7 @@ export const Clients = ({ className, ...props }: ClientProps): JSX.Element => {
               {/* Строка с итогами по дням */}
               <tr className={styles.totalRow}>
                 <td></td>
-                <td>Жами</td>
+                <td>Итого</td>
                 {dayTotals.map((total, dayIndex) => {
                   if (dayIndex !== days.length - 1) {
                     return (
@@ -192,7 +192,7 @@ export const Clients = ({ className, ...props }: ClientProps): JSX.Element => {
           </table>
 
           <div className={styles.dimensions}>
-            Жадвал: {clientData.length} мижозлар сони × {days.length - 1} кунга
+            Таблица: {clientData.length} клиентов × {days.length - 1} дней
           </div>
           </div>
         </div>

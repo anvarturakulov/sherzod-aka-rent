@@ -70,11 +70,12 @@ export class RentalClientSummaryService {
   ): Promise<RentalActiveToolRow[]> {
     const enterpriseId = getTelegramEnterpriseRental();
 
-    const batches =
+    const batches = (
       await this.clientToolBatchesService.findOpenBatchesForClient(
         clientId,
         enterpriseId,
-      );
+      )
+    ).filter((batch) => batch.billingRole !== "COLUMN_COMPONENT");
     if (!batches.length) return [];
 
     const previewRows = await this.clientToolBatchesService.buildPreviewRows(

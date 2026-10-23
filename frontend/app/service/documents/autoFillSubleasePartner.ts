@@ -12,7 +12,7 @@ export type SubleasePartnerStorage = {
 };
 
 export const SUBLEASE_STORAGE_MISSING_MSG =
-  'Субаренда омбори топилмади. Цех/омборда тип «Субаренда (ҳамкор омбори)» яратинг ва ҳамкорни белгиланг.';
+  'Склад субаренды не найден. В цехе или складе создайте тип «Субаренда (склад партнёра)» и укажите партнёра.';
 
 /** Первый склад PARTNER_TOOLS с partnerId из уже загруженного списка. */
 export const pickDefaultSubleasePartnerStorage = (

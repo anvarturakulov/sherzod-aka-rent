@@ -112,14 +112,14 @@ export const TableRow = memo<TableRowProps>(({
         // Ctrl+клик: полное удаление только для внутренних DELETED
         if (e.ctrlKey) {
             if (item.isInterEnterprise) {
-                alert('Фақат ички ҳужжатни тўлиқ ўчириш мумкин');
+                alert('Полностью удалить можно только внутренний документ');
                 return;
             }
             if (item.docStatus !== DocSTATUS.DELETED) {
-                alert('Тўлиқ ўчиришдан олдин ҳужжатни ўчиришга белгиланг');
+                alert('Перед полным удалением пометьте документ на удаление');
                 return;
             }
-            if (confirm('Ҳужжатни базадан тўлиқ ўчиришни хохлайсизми?')) {
+            if (confirm('Полностью удалить документ из базы?')) {
                 void deleteDocumentPermanent(item.id, token, setMainData);
             }
             return;
@@ -136,13 +136,13 @@ export const TableRow = memo<TableRowProps>(({
                 
                 // Если PENDING и это отправитель или HEADGLOBAL - отменить отправку
                 if (isSender || isHeadGlobal) {
-                    if (confirm('Жўнатишни бекор килишни хохлайсизми?')) {
+                    if (confirm('Отменить отправку?')) {
                         cancelSendingInterEnterpriseDocument(item.id, setMainData, mainData);
                     }
                 } 
                 // Если PENDING и это получатель (но не HEADGLOBAL) - отклонить
                 else if (isReceiver) {
-                    const reason = prompt('Рад этиш сабабини киритинг:');
+                    const reason = prompt('Укажите причину отклонения:');
                     if (reason) {
                         rejectInterEnterpriseDocument(item.id, reason, setMainData, mainData);
                     }
@@ -150,13 +150,13 @@ export const TableRow = memo<TableRowProps>(({
             } else if (item.docStatus === DocSTATUS.REJECTED) {
                 // Если REJECTED и это отправитель - вернуть в работу
                 if (item.sourceEnterpriseId === userEnterpriseId) {
-                    if (confirm('Хужжатни ишга кайтаришни хохлайсизми?')) {
+                    if (confirm('Вернуть документ в работу?')) {
                         returnInterEnterpriseDocumentToWork(item.id, setMainData, mainData);
                     }
                 }
             } else if (item.docStatus === DocSTATUS.PROVEDEN) {
                 if (user?.role === UserRoles.ADMINGLOBAL) {
-                    if (confirm('Проводкани бекор килишни хохлайсизми? Барча проводкалар, stocks ва oborots бекор килинади.')) {
+                    if (confirm('Отменить проводку? Все проводки, stocks и oborots будут отменены.')) {
                         cancelInterEnterpriseProvodka(item.id, setMainData, mainData);
                     }
                 } else {
@@ -181,28 +181,28 @@ export const TableRow = memo<TableRowProps>(({
             if (item.docStatus === DocSTATUS.PENDING) {
                 // Если PENDING и это получатель - принять документ
                 if (item.targetEnterpriseId === userEnterpriseId) {
-                    if (confirm('Хужжатни кабул килишни хохлайсизми? Проводка автомат равишда берилади.')) {
+                    if (confirm('Принять документ? Проводка будет проведена автоматически.')) {
                         acceptInterEnterpriseDocument(item.id, setMainData, mainData);
                     }
                 } else if (user?.role === UserRoles.HEADGLOBAL) {
                     // HEADGLOBAL может принимать документы от имени других организаций
-                    if (confirm('Хужжатни кабул килишни хохлайсизми? Проводка автомат равишда берилади.')) {
+                    if (confirm('Принять документ? Проводка будет проведена автоматически.')) {
                         acceptInterEnterpriseDocument(item.id, setMainData, mainData, item.targetEnterpriseId);
                     }
                 } else {
-                    alert('Сиз бу хужжатни кабул кила олмайсиз');
+                    alert('Вы не можете принять этот документ');
                 }
             } else if (item.docStatus === DocSTATUS.OPEN) {
                 // Если OPEN и это отправитель - отправить документ
                 if (item.sourceEnterpriseId === userEnterpriseId) {
-                    if (confirm('Хужжатни жўнатишни хохлайсизми?')) {
+                    if (confirm('Отправить документ?')) {
                         sendInterEnterpriseDocument(item.id, setMainData, mainData);
                     }
                 } else {
-                    alert('Сиз бу хужжатни жўната олмайсиз');
+                    alert('Вы не можете отправить этот документ');
                 }
             } else {
-                alert('Хужжат холати макул эмас');
+                alert('Статус документа недопустим');
             }
         } else {
             // Для обычных (внутренних) документов:
@@ -250,7 +250,7 @@ export const TableRow = memo<TableRowProps>(({
                       setIsDisabled
                     );
                 } else {
-                    if (confirm('Хужжатни тасдиқлаш учун жўнатишни хохлайсизми?')) {
+                    if (confirm('Отправить документ на утверждение?')) {
                         sendInternalDocumentToPending(item.id, setMainData, mainData);
                     }
                 }
@@ -289,11 +289,11 @@ export const TableRow = memo<TableRowProps>(({
               !(isMoveCash && receiverHasBuxgalter)
             ) {
               // HEADGLOBAL может утверждать только если это не MoveCash с hasBuxgalter === true
-              if (confirm('Хужжатни тасдиклаб проводка беришни хохлайсизми?')) {
+              if (confirm('Утвердить документ и провести проводку?')) {
                 approveInternalDocument(item.id, setMainData, mainData);
               }
             } else {
-                alert('Хужжат холати макул эмас');
+                alert('Статус документа недопустим');
             }
         }
     };
@@ -480,7 +480,7 @@ export const TableRow = memo<TableRowProps>(({
                 <td>{
                     item.documentType === DocumentType.OrderToolsToClient &&
                     Number(item.docValues?.fulfilledByTransferDocId) > 0
-                        ? `ёпилган (Топшириш №${item.docValues?.fulfilledByTransferDocId})`
+                        ? `закрыт (Передача №${item.docValues?.fulfilledByTransferDocId})`
                         : `${item.docValues?.comment ? `${item.docValues?.comment} - `: ''} ${item.docValues?.count ? `${item.docValues?.count}`: ''} ${item.docValues?.finPerson ? `${item.docValues?.finPerson} `: ''}`
                 }</td>
                 <td>{getUserName(item.userId, mainData)}</td>
@@ -522,7 +522,7 @@ export const TableRow = memo<TableRowProps>(({
                                 [styles.disabled]: isDisabled
                             })}
                             onClick={handleDuplicateClick}
-                            title="Дубликат (янги хужжат)"
+                            title="Дубликат (новый документ)"
                         />
                     )}
                 </td>

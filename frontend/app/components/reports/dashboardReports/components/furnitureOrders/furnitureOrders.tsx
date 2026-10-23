@@ -39,7 +39,7 @@ function ProductThumb({
         type="button"
         className={styles.thumbBtn}
         onClick={() => setModalOpen(true)}
-        title="Расмни катталаштириш"
+        title="Увеличить изображение"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -179,7 +179,7 @@ export const FurnitureOrders = ({
               data-report-doc-anchor={doc.documentId}
               className={styles.docLink}
               onClick={() => openDocument(doc.documentId)}
-              title="Хужжатни очиш"
+              title="Открыть документ"
             >
               {lines.join('\n')}
             </button>
@@ -214,7 +214,7 @@ export const FurnitureOrders = ({
   return (
     <div className={className} {...props}>
       <div className={styles.title}>
-        Заявкалар (хужжатлар)
+        Заявки (документы)
         {enterpriseName ? ` — ${enterpriseName}` : ''}
       </div>
 
@@ -224,7 +224,7 @@ export const FurnitureOrders = ({
           className={`${styles.filterBtn} ${allSelected ? styles.filterBtnActive : ''}`}
           onClick={() => setSelectedStages([])}
         >
-          Барчаси
+          Все
         </button>
         {STAGE_OPTIONS.map((stage) => (
           <button
@@ -241,25 +241,25 @@ export const FurnitureOrders = ({
       </div>
 
       {filteredRows.length === 0 ? (
-        <div className={styles.empty}>Танланган статус буйича заказлар йўқ</div>
+        <div className={styles.empty}>По выбранному статусу заказов нет</div>
       ) : (
         <div className={styles.tableContainer} data-report-scroll>
           <table className={styles.table}>
             <thead>
               <tr>
                 <td>Номер</td>
-                <td>Сана</td>
-                <td>Мижоз</td>
-                <td>Расм</td>
-                <td>Тайёр махсулот</td>
-                <td>Сон</td>
-                <td>Хом ашё чикими</td>
-                <td>ЯТМ чикими</td>
-                <td>Тайёр мах. кирими</td>
+                <td>Дата</td>
+                <td>Клиент</td>
+                <td>Фото</td>
+                <td>Готовая продукция</td>
+                <td>Кол-во</td>
+                <td>Списание сырья</td>
+                <td>Расход ПФ</td>
+                <td>Приход гот. прод.</td>
                 <td>Фактура</td>
-                <td>Файллар</td>
-                <td>Топшириш санаси</td>
-                <td>Холати</td>
+                <td>Файлы</td>
+                <td>Дата передачи</td>
+                <td>Статус</td>
               </tr>
             </thead>
             <tbody>
@@ -283,7 +283,7 @@ export const FurnitureOrders = ({
                       type="button"
                       className={styles.productLink}
                       onClick={() => openMaterialsModal(row)}
-                      title="Хом ашё чикими — режа / факт"
+                      title="Списание сырья — план / факт"
                     >
                       {row.productName || '—'}
                     </button>

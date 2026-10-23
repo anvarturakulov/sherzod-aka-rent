@@ -174,9 +174,9 @@ export const Sidebar = ({
                     </div>
                     {!isCollapsed && (
                         <div className={styles.titleBox}>
-                            Чикиш
+                            Выход
                             <div className={styles.titleText}>
-                                Дастурда ишни якунлаш
+                                Завершить работу в программе
                             </div>
                         </div>
                     )}

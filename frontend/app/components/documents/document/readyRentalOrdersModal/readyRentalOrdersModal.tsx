@@ -55,14 +55,14 @@ export default function ReadyRentalOrdersModal({
         aria-labelledby="ready-rental-orders-title"
       >
         <div className={styles.header}>
-          <div className={styles.badge}>Буюртма</div>
+          <div className={styles.badge}>Заказ</div>
           <h3 id="ready-rental-orders-title" className={styles.title}>
             {summary.title}
           </h3>
           <p className={styles.note}>{summary.note}</p>
           {!payload?.enoughForAll && orders.length > 1 && (
             <div className={styles.warn}>
-              Қолдиқ ҳаммасига етмайди — битта буюртмани танлаб ёпинг.
+              Остатка не хватает на все — выберите один заказ и закройте.
             </div>
           )}
         </div>
@@ -72,9 +72,9 @@ export default function ReadyRentalOrdersModal({
               <thead>
                 <tr>
                   <th>№</th>
-                  <th>Мижоз</th>
-                  <th>Ускуна</th>
-                  <th className={styles.qtyCol}>Миқдор</th>
+                  <th>Клиент</th>
+                  <th>Инструмент</th>
+                  <th className={styles.qtyCol}>Количество</th>
                 </tr>
               </thead>
               <tbody>

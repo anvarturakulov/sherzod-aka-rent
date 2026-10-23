@@ -25,8 +25,8 @@ export const ComeMaterialTmzByArticle = ({
   if (!values) {
     return (
       <div className={styles.container} {...props}>
-        <div className={styles.title}>Материал приходи (артикул)</div>
-        <div className={styles.emptyMessage}>Маълумотлар юкланмоқда</div>
+        <div className={styles.title}>Приход материалов (артикул)</div>
+        <div className={styles.emptyMessage}>Загрузка данных</div>
       </div>
     );
   }
@@ -36,10 +36,10 @@ export const ComeMaterialTmzByArticle = ({
   if (!materials.length) {
     return (
       <div className={styles.container} {...props}>
-        <div className={styles.title}>Материал приходи (артикул)</div>
-        <div className={styles.subtitle}>Давр: {periodLabel}</div>
+        <div className={styles.title}>Приход материалов (артикул)</div>
+        <div className={styles.subtitle}>Период: {periodLabel}</div>
         <div className={styles.emptyMessage}>
-          ComeMaterial ҳужжатлари бўйича материал топилмади
+          По документам ComeMaterial материал не найден
         </div>
       </div>
     );
@@ -47,10 +47,10 @@ export const ComeMaterialTmzByArticle = ({
 
   return (
     <div className={styles.container} {...props}>
-      <div className={styles.title}>Материал приходи (артикул)</div>
+      <div className={styles.title}>Приход материалов (артикул)</div>
       <div className={styles.subtitle}>
-        Давр: {periodLabel} · Ҳужжатлар: {totals?.documentsCount ?? 0} ·
-        Материаллар: {totals?.uniqueMaterials ?? 0} · Артикуллар:{' '}
+        Период: {periodLabel} · Документы: {totals?.documentsCount ?? 0} ·
+        Материалы: {totals?.uniqueMaterials ?? 0} · Артикулы:{' '}
         {totals?.uniqueArticles ?? 0}
       </div>
 
@@ -60,11 +60,11 @@ export const ComeMaterialTmzByArticle = ({
             <th className={`${styles.center} ${styles.indexCol}`}>№</th>
             <th className={styles.articleCol}>Артикул</th>
             <th>Материал</th>
-            <th className={styles.unitCol}>Улч. бир.</th>
-            <th className={styles.numeric}>Сони</th>
+            <th className={styles.unitCol}>Ед. изм.</th>
+            <th className={styles.numeric}>Кол-во</th>
             <th className={styles.numeric}>Сумма</th>
-            <th className={styles.numeric}>Қаторлар</th>
-            <th className={styles.numeric}>Ҳужжатлар</th>
+            <th className={styles.numeric}>Строки</th>
+            <th className={styles.numeric}>Документы</th>
           </tr>
         </thead>
         <tbody>
@@ -88,7 +88,7 @@ export const ComeMaterialTmzByArticle = ({
           ))}
           <tr className={styles.summaryRow}>
             <td colSpan={4} className={styles.center}>
-              Жами
+              Итого
             </td>
             <td className={styles.numeric}>
               {numberValue(Number(totals?.totalCount) || 0)}

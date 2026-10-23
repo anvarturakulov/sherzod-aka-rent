@@ -32,7 +32,10 @@ export const prepareEntrysList = async (
 ): Promise<Array<EntryCreationAttrs>> => {
   const results: Array<EntryCreationAttrs> = [];
 
-  if (document.documentType === DocumentType.OrderToolsToClient) {
+  if (
+    document.documentType === DocumentType.OrderToolsToClient ||
+    document.documentType === DocumentType.SaleEquipment
+  ) {
     return results;
   }
 

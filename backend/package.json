@@ -26,6 +26,8 @@
     "db:fix": "node fix-database-structure.js",
     "migration:run": "node other-files/scripts/run-migrations.js",
     "migration:run:prod": "cross-env NODE_ENV=production node other-files/scripts/run-migrations.js",
+    "license:guid": "node scripts/issue-license.js --show-guid",
+    "license:issue": "node scripts/issue-license.js",
     "migration:revert": "node other-files/scripts/revert-migrations.js"
   },
   "dependencies": {
@@ -61,6 +63,7 @@
     "pg": "^8.14.1",
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",
+    "tsconfig-paths": "^4.2.0",
     "rxjs": "^7.8.1",
     "sequelize": "^6.37.5",
     "sequelize-typescript": "^2.1.6",
@@ -98,7 +101,6 @@
     "ts-jest": "^29.2.5",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },

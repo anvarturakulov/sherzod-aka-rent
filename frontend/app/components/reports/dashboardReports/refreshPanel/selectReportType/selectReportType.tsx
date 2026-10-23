@@ -122,7 +122,7 @@ export const SelectReportType: FC<SelectReportTypeProps> = ({ className, ...prop
                     className={cn(styles.option, styles.chooseMe)}
                     data-type='' 
                     key={'Танланмаган'}>
-                        {'Жамланма-хисобот турини танланг'}
+                        {'Выберите вид сводного отчёта'}
                 </option>
                 {visibleReports && visibleReports.length>0  &&
                 visibleReports.map(( item:DashboardReportItem ) => (

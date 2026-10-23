@@ -3,38 +3,38 @@ import { formatDisplayDate, formatDisplayDateTime } from '@/app/utils/formatDisp
 
 export const getTitleText = (contentType: string | undefined): string => {
     switch(contentType) {
-        case 'document': return 'Хужжатлар'
-        case 'reference': return 'Номлар'
-        case 'servis': return 'Дастур'
-        default: return 'Хисоботлар'
+        case 'document': return 'Документы'
+        case 'reference': return 'Справочники'
+        case 'servis': return 'Программа'
+        default: return 'Отчёты'
     }
 }
 
 export const getButtonText = (contentType: string | undefined): string => {
     switch(contentType) {
-        case 'document': return 'Янги хужжат'
-        case 'reference': return 'Янги ном'
-        case 'servis': return 'Янги хусусият'
-        default: return 'Янги элемент'
+        case 'document': return 'Новый документ'
+        case 'reference': return 'Новое наименование'
+        case 'servis': return 'Новая настройка'
+        default: return 'Новый элемент'
     }
 }
 
 export const getFirstText = (contentType: string | undefined, isNewDocument: boolean, isNewReference: boolean, isNewSetting?: boolean): string => {
     if (contentType === 'document') {
-        return isNewDocument ? 'буйича янги хужжат тузиш' : 'буйича хужжатни куриш'
+        return isNewDocument ? 'создать новый документ' : 'просмотр документа'
     } else if (contentType === 'servis') {
-        return isNewSetting ? 'буйича янги хусусият тузиш' : 'буйича хусусиятни куриш'
+        return isNewSetting ? 'создать новую настройку' : 'просмотр настройки'
     } else {
-        return isNewReference ? 'буйича янги ном очиш' : 'буйича номни куриш'
+        return isNewReference ? 'создать новое наименование' : 'просмотр наименования'
     }
 }
 
 export const getSecondText = (contentType: string | undefined): string => {
     switch(contentType) {
-        case 'document': return 'буйича хужжатлар руйхати'
-        case 'reference': return 'буйича номлар руйхати'
-        case 'servis': return 'буйича хусусиятлар руйхати'
-        default: return 'буйича хисобот'
+        case 'document': return 'список документов'
+        case 'reference': return 'список наименований'
+        case 'servis': return 'список настроек'
+        default: return 'отчёт'
     }
 }
 
@@ -50,16 +50,16 @@ const formatJournalDateTime = (value: number | string | null | undefined): strin
     return formatDisplayDateTime(num) || '—';
 };
 
-export const JOURNAL_META_PLACEHOLDER = 'Охирги хужжат санаси';
+export const JOURNAL_META_PLACEHOLDER = 'Дата последнего документа';
 
 export const getJournalMetaText = (journalMeta?: JournalMeta | null): string => {
     if (!journalMeta) return '';
     if (journalMeta.lastDocumentDate == null && journalMeta.lastModifiedAt == null) {
-        return 'Хужжатлар йўқ';
+        return 'Документов нет';
     }
     return [
-        `Охирги хужжат санаси: ${formatJournalDate(journalMeta.lastDocumentDate)}`,
-        `Охирги ўзгариш: ${formatJournalDateTime(journalMeta.lastModifiedAt)}`,
+        `Дата последнего документа: ${formatJournalDate(journalMeta.lastDocumentDate)}`,
+        `Последнее изменение: ${formatJournalDateTime(journalMeta.lastModifiedAt)}`,
     ].join(' · ');
 };
 
@@ -70,5 +70,5 @@ export const getDateRangeText = (dateStart: number | undefined, dateEnd: number 
     
     const dateStartInStr = formatDate(dateStart)
     const dateEndInStr = formatDate(dateEnd)
-    return `оралик сана: ${dateStartInStr} дан ${dateEndInStr} гача`
+    return `период: с ${dateStartInStr} по ${dateEndInStr}`
 } 

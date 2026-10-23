@@ -50,7 +50,7 @@ export const ReferenceUsageModal = ({
                 <div className={styles.header}>
                     <div>
                         <h2 id="reference-usage-modal-title" className={styles.title}>
-                            Боғланишлар
+                            Связи
                         </h2>
                         <p className={styles.subtitle}>Справочник: {itemName}</p>
                     </div>
@@ -58,7 +58,7 @@ export const ReferenceUsageModal = ({
                         type="button"
                         className={styles.closeButton}
                         onClick={onClose}
-                        aria-label="Ёпиш"
+                        aria-label="Закрыть"
                     >
                         ✕
                     </button>
@@ -67,29 +67,29 @@ export const ReferenceUsageModal = ({
                 <div className={styles.body}>
                     <div className={styles.summary}>
                         <span>
-                            Жами: <strong>{usage.counts.total}</strong>
+                            Всего: <strong>{usage.counts.total}</strong>
                         </span>
                         <span>
-                            Бошқа справочникларда: <strong>{usage.counts.inReferences}</strong>
+                            В других справочниках: <strong>{usage.counts.inReferences}</strong>
                         </span>
                         <span>
-                            Ҳужжатларда: <strong>{usage.counts.inDocuments}</strong>
+                            В документах: <strong>{usage.counts.inDocuments}</strong>
                         </span>
                         <span>
-                            Шартномалар ва бошқа жадвалларда: <strong>{usage.counts.inRelated ?? related.length}</strong>
+                            В договорах и других таблицах: <strong>{usage.counts.inRelated ?? related.length}</strong>
                         </span>
                     </div>
 
                     {usage.inReferences.length > 0 && (
                         <section className={styles.section}>
-                            <h3 className={styles.sectionTitle}>Бошқа справочниклар</h3>
+                            <h3 className={styles.sectionTitle}>Другие справочники</h3>
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
-                                        <th>Номи</th>
+                                        <th>Наименование</th>
                                         <th>Артикул</th>
-                                        <th>Тури</th>
-                                        <th>Майдон</th>
+                                        <th>Тип</th>
+                                        <th>Поле</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -113,13 +113,13 @@ export const ReferenceUsageModal = ({
 
                     {usage.inDocuments.length > 0 && (
                         <section className={styles.section}>
-                            <h3 className={styles.sectionTitle}>Ҳужжатлар</h3>
+                            <h3 className={styles.sectionTitle}>Документы</h3>
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
-                                        <th>Ҳужжат ID</th>
-                                        <th>Тури</th>
-                                        <th>Майдон</th>
+                                        <th>ID документа</th>
+                                        <th>Тип</th>
+                                        <th>Поле</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -142,14 +142,14 @@ export const ReferenceUsageModal = ({
 
                     {related.length > 0 && (
                         <section className={styles.section}>
-                            <h3 className={styles.sectionTitle}>Шартномалар ва бошқа жадваллар</h3>
+                            <h3 className={styles.sectionTitle}>Договоры и другие таблицы</h3>
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
-                                        <th>Манба</th>
+                                        <th>Источник</th>
                                         <th>ID</th>
-                                        <th>Номи</th>
-                                        <th>Майдон</th>
+                                        <th>Наименование</th>
+                                        <th>Поле</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -174,7 +174,7 @@ export const ReferenceUsageModal = ({
 
                 <div className={styles.footer}>
                     <button type="button" className={styles.okButton} onClick={onClose}>
-                        Ёпиш
+                        Закрыть
                     </button>
                 </div>
             </div>

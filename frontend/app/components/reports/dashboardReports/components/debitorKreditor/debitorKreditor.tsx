@@ -133,20 +133,20 @@ const AKT_SVERKA_PARTNER_BY_REPORT: Record<
 };
 
 const INDICATOR_DEFS: Pick<IndicatorRow, 'title' | 'reportID'>[] = [
-    { title: 'Асосий воситалар', reportID: 'OS' },
-    { title: 'Хом ашё', reportID: 'MATERIAL' },
-    { title: 'Товарлар', reportID: 'TOVAR' },
-    { title: 'Тайёр махсулот таннархи ', reportID: 'PRODUCTIONS' },
-    { title: 'Ускуналар (омбор)', reportID: 'TOOLS_WAREHOUSE' },
-    { title: 'Ускуналар (мижозда)', reportID: 'TOOLS_AT_CLIENT' },
-    { title: 'Мижозларнинг биздан карзи', reportID: 'CLIENTS' },
-    { title: 'Ички корхоналарнинг биздан карзи', reportID: 'DEPARTMENTS' },
-    { title: 'Пул маблаглари', reportID: 'BUXGALTER' },
-    { title: 'Таъминотчиларнинг биздан карзи', reportID: 'SUPPLIERS' },
-    { title: 'Ходимлардаги аванслар', reportID: 'WORKERS' },
-    { title: 'Воситачидаги бонус қарзи', reportID: 'MEDIATORS' },
-    { title: 'Доставщиклардаги қарз', reportID: 'DELIVERERS' },
-    { title: 'Таъсисчиларнинг карзи', reportID: 'FOUNDERS' },
+    { title: 'Основные средства', reportID: 'OS' },
+    { title: 'Сырьё', reportID: 'MATERIAL' },
+    { title: 'Товары', reportID: 'TOVAR' },
+    { title: 'Себестоимость готовой продукции ', reportID: 'PRODUCTIONS' },
+    { title: 'Инструменты (склад)', reportID: 'TOOLS_WAREHOUSE' },
+    { title: 'Инструменты (у клиента)', reportID: 'TOOLS_AT_CLIENT' },
+    { title: 'Долг клиентов перед нами', reportID: 'CLIENTS' },
+    { title: 'Долг внутренних предприятий перед нами', reportID: 'DEPARTMENTS' },
+    { title: 'Денежные средства', reportID: 'BUXGALTER' },
+    { title: 'Долг поставщиков перед нами', reportID: 'SUPPLIERS' },
+    { title: 'Авансы у сотрудников', reportID: 'WORKERS' },
+    { title: 'Долг бонуса у посредника', reportID: 'MEDIATORS' },
+    { title: 'Долг у доставщиков', reportID: 'DELIVERERS' },
+    { title: 'Долг учредителей', reportID: 'FOUNDERS' },
 ];
 
 const InnerPanel = ({
@@ -168,7 +168,7 @@ const InnerPanel = ({
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <td className={styles.innerName}>Номи</td>
+                        <td className={styles.innerName}>Наименование</td>
                         <td className={styles.innerValue}>Сумма</td>
                     </tr>
                     {datas &&
@@ -290,7 +290,7 @@ export const DebitorKreditor = ({ className, data, ...props }: DebitorKreditorPr
             setOborotVisible(true);
         } catch (error: unknown) {
             const message =
-                error instanceof Error ? error.message : 'Хатолик юз берди';
+                error instanceof Error ? error.message : 'Произошла ошибка';
             showMessage(message, 'error', setMainData);
         } finally {
             setOborotLoading(false);
@@ -357,37 +357,37 @@ export const DebitorKreditor = ({ className, data, ...props }: DebitorKreditorPr
     );
 
     const oborotTitles: Record<string, string> = {
-        OS: 'Асосий воситалар',
-        MATERIAL: 'Хом ашё',
-        TOVAR: 'Товарлар',
-        PRODUCTIONS: 'Тайёр махсулотлар',
-        TOOLS_WAREHOUSE: 'Ускуналар (омбор)',
-        TOOLS_AT_CLIENT: 'Ускуналар (мижозда)',
-        CLIENTS: 'Мижозлар',
-        DEPARTMENTS: 'Ички корхоналар',
-        BUXGALTER: 'Пул маблаглари',
-        SUPPLIERS: 'Таъминотчилар',
-        WORKERS: 'Ходимлар',
-        MEDIATORS: 'Воситачилар',
-        DELIVERERS: 'Доставщиклар',
-        FOUNDERS: 'Таъсисчилар',
+        OS: 'Основные средства',
+        MATERIAL: 'Сырьё',
+        TOVAR: 'Товары',
+        PRODUCTIONS: 'Готовая продукция',
+        TOOLS_WAREHOUSE: 'Инструменты (склад)',
+        TOOLS_AT_CLIENT: 'Инструменты (у клиента)',
+        CLIENTS: 'Клиенты',
+        DEPARTMENTS: 'Внутренние предприятия',
+        BUXGALTER: 'Денежные средства',
+        SUPPLIERS: 'Поставщики',
+        WORKERS: 'Сотрудники',
+        MEDIATORS: 'Посредники',
+        DELIVERERS: 'Доставщики',
+        FOUNDERS: 'Учредители',
     };
 
     const passiveTitles: Record<string, string> = {
-        OS: 'Асосий воситалар',
-        MATERIAL: 'Хом ашё (минус)',
-        TOVAR: 'Товарлар (минус)',
-        PRODUCTIONS: 'Тайёр махсулот (минус)',
-        TOOLS_WAREHOUSE: 'Ускуналар (омбор, минус)',
-        TOOLS_AT_CLIENT: 'Ускуналар (мижозда, минус)',
-        DEPARTMENTS: 'Ички корхоналардан карзимиз',
-        CLIENTS: 'Мижозлардан карзимиз',
-        BUXGALTER: 'Пул маблаглари (минус)',
-        SUPPLIERS: 'Таъминотчилардан карзимиз',
-        WORKERS: 'Ходимлардан карзимиз',
-        MEDIATORS: 'Воситачилardan bizga qarz',
-        DELIVERERS: 'Доставщиклардан бизга қарз',
-        FOUNDERS: 'Таъсисчилардан карзимиз',
+        OS: 'Основные средства',
+        MATERIAL: 'Сырьё (минус)',
+        TOVAR: 'Товары (минус)',
+        PRODUCTIONS: 'Готовая продукция (минус)',
+        TOOLS_WAREHOUSE: 'Инструменты (склад, минус)',
+        TOOLS_AT_CLIENT: 'Инструменты (у клиента, минус)',
+        DEPARTMENTS: 'Наш долг внутренним предприятиям',
+        CLIENTS: 'Наш долг клиентам',
+        BUXGALTER: 'Денежные средства (минус)',
+        SUPPLIERS: 'Наш долг поставщикам',
+        WORKERS: 'Наш долг сотрудникам',
+        MEDIATORS: 'Долг посредников нам',
+        DELIVERERS: 'Долг доставщиков нам',
+        FOUNDERS: 'Наш долг учредителям',
     };
 
     const allDebitStart = indicators.reduce((acc, r) => acc + r.debitStart, 0);
@@ -412,11 +412,11 @@ export const DebitorKreditor = ({ className, data, ...props }: DebitorKreditorPr
                         <thead>
                             <tr>
                                 <td></td>
-                                <td className={styles.totalTd}>Давр бошига колдик</td>
-                                <td className={styles.totalTd}>Давр охирига колдик</td>
+                                <td className={styles.totalTd}>Остаток на начало периода</td>
+                                <td className={styles.totalTd}>Остаток на конец периода</td>
                             </tr>
                             <tr>
-                                <td>АКТИВ (бизда бор)</td>
+                                <td>АКТИВ (у нас)</td>
                                 <td className={styles.totalTd} colSpan={2}></td>
                             </tr>
                             {indicators.map((row) => (
@@ -433,14 +433,14 @@ export const DebitorKreditor = ({ className, data, ...props }: DebitorKreditorPr
                                 </Fragment>
                             ))}
                             <tr>
-                                <td>Жами</td>
+                                <td>Итого</td>
                                 <td className={styles.totalTd}>{numberValue(allDebitStart)}</td>
                                 <td className={styles.totalTd}>{numberValue(allDebitEnd)}</td>
                             </tr>
                         </thead>
                         <thead>
                             <tr>
-                                <td>ПАССИВ (Карзимиз)</td>
+                                <td>ПАССИВ (наш долг)</td>
                                 <td className={styles.totalTd} colSpan={2}></td>
                             </tr>
                             {indicators.map((row) => (
@@ -457,7 +457,7 @@ export const DebitorKreditor = ({ className, data, ...props }: DebitorKreditorPr
                                 </Fragment>
                             ))}
                             <tr>
-                                <td>Жами</td>
+                                <td>Итого</td>
                                 <td className={styles.totalTd}>{numberValue(allKreditStart)}</td>
                                 <td className={styles.totalTd}>{numberValue(allKreditEnd)}</td>
                             </tr>
@@ -491,14 +491,14 @@ export const DebitorKreditor = ({ className, data, ...props }: DebitorKreditorPr
                         disabled={oborotLoading}
                     >
                         {oborotLoading
-                            ? 'Маълумот юкланмокда...'
+                            ? 'Загрузка данных...'
                             : oborotVisible
                               ? 'Обновить оборот'
                               : 'Показать оборот'}
                     </button>
                 </div>
                 {oborotLoading && !oborotVisible ? (
-                    <p className={styles.oborotLoading}>Маълумот юкланмокда...</p>
+                    <p className={styles.oborotLoading}>Загрузка данных...</p>
                 ) : null}
                 {oborotVisible ? (
                     <div className={styles.box}>
@@ -526,7 +526,7 @@ export const DebitorKreditor = ({ className, data, ...props }: DebitorKreditorPr
                                         </Fragment>
                                     ))}
                                     <tr>
-                                        <td>Жами</td>
+                                        <td>Итого</td>
                                         <td className={styles.totalTd}>
                                             {numberValue(allDebitOborot)}
                                         </td>

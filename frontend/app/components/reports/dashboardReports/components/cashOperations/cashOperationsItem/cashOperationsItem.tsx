@@ -54,7 +54,7 @@ export const CashOperationsItem = ({className, item, references, ...props }: Cas
             }
 
             // Для межпредприятийного LeaveCash аналитика лежит во 2-м субконто контр-стороны.
-            // Показываем её в колонке "Изох", т.к. в "Объект" виден общий склад (COMMON), а не аналитика.
+            // Показываем её в колонке "Примечание", т.к. в "Объект" виден общий склад (COMMON), а не аналитика.
             const isGlobalLeaveCash =
                 element?.documentType === 'LeaveCash' &&
                 (element?.debet === Schet.S41 || element?.kredit === Schet.S41);
@@ -64,7 +64,7 @@ export const CashOperationsItem = ({className, item, references, ...props }: Cas
                 : '';
 
             const izoh = analiticName
-                ? `ким учун: ${analiticName}${element?.description ? ` | ${element.description}` : ''}`
+                ? `для кого: ${analiticName}${element?.description ? ` | ${element.description}` : ''}`
                 : (element?.description || '-');
 
             const userName =
@@ -86,8 +86,8 @@ export const CashOperationsItem = ({className, item, references, ...props }: Cas
                         
             <div className={styles.sumBox}>
                 <div className={styles.row}>
-                    <div className={styles.title}>Бошлангич колдик</div>
-                    <div className={styles.value}>{item?.startBalans ? numberValue(item?.startBalans) : 'колдик мавжуд эмас'}</div>
+                    <div className={styles.title}>Начальный остаток</div>
+                    <div className={styles.value}>{item?.startBalans ? numberValue(item?.startBalans) : 'остаток отсутствует'}</div>
                 </div>
                 
                 {rows.length > 0 && (
@@ -96,13 +96,13 @@ export const CashOperationsItem = ({className, item, references, ...props }: Cas
                             <thead>
                                 <tr>
                                     <th className={styles.tableHeader}>№</th>
-                                    <th className={styles.tableHeader}>Сана</th>
-                                    <th className={styles.tableHeader}>Хужжат тури</th>
+                                    <th className={styles.tableHeader}>Дата</th>
+                                    <th className={styles.tableHeader}>Тип документа</th>
                                     <th className={styles.tableHeader}>Объект</th>
-                                    <th className={styles.tableHeader}>Изох</th>
-                                    <th className={styles.tableHeader}>Фойдаланувчи</th>
-                                    <th className={styles.tableHeader}>Кирим</th>
-                                    <th className={styles.tableHeader}>Чиким</th>
+                                    <th className={styles.tableHeader}>Примечание</th>
+                                    <th className={styles.tableHeader}>Пользователь</th>
+                                    <th className={styles.tableHeader}>Приход</th>
+                                    <th className={styles.tableHeader}>Расход</th>
 
                                 </tr>
                             </thead>
@@ -114,7 +114,7 @@ export const CashOperationsItem = ({className, item, references, ...props }: Cas
                                         data-report-doc-anchor={element?.docId || undefined}
                                         className={cn(styles.tableRow, { [styles.clickableRow]: !!element?.docId })}
                                         onDoubleClick={() => openDocument(element?.docId)}
-                                        title={element?.docId ? 'Хужжатни очиш (икки марта босинг)' : undefined}
+                                        title={element?.docId ? 'Открыть документ (двойной клик)' : undefined}
                                     >
                                         <td className={cn(styles.tableCell, styles.number)}>{key+1}</td>
                                         <td className={cn(styles.tableCell, styles.date)}>{secondsToDateString(element?.date) || '-'}</td>
@@ -129,7 +129,7 @@ export const CashOperationsItem = ({className, item, references, ...props }: Cas
                             </tbody>
                             <tfoot>
                                 <tr className={cn(styles.tableRow, styles.totalRow)}>
-                                    <td className={cn(styles.tableCell, styles.total)} colSpan={6}>Жами</td>
+                                    <td className={cn(styles.tableCell, styles.total)} colSpan={6}>Итого</td>
                                     <td className={cn(styles.tableCell, styles.total)}>
                                         {numberValue(
                                             item.results
@@ -156,14 +156,14 @@ export const CashOperationsItem = ({className, item, references, ...props }: Cas
 
                 {rows.length === 0 && (
                     <div className={styles.resultsTable}>
-                        <div className={styles.empty}>Маълумот мавжуд эмас</div>
+                        <div className={styles.empty}>Нет данных</div>
                     </div>
                 )}
 
                 
                 <div className={styles.row}>
-                    <div className={styles.title}>Охирги колдик</div> 
-                    <div className={styles.value}>{item?.endBalans ? numberValue(item?.endBalans) : 'колдик мавжуд эмас'}</div>
+                    <div className={styles.title}>Конечный остаток</div> 
+                    <div className={styles.value}>{item?.endBalans ? numberValue(item?.endBalans) : 'остаток отсутствует'}</div>
                 </div>  
             </div>
             

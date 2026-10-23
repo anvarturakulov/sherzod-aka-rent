@@ -14,6 +14,7 @@ import {
   askPrintCopyCount,
   DEFAULT_PRINT_COPIES,
 } from '../../../printCopies/printCopies';
+import { useToolsDocumentBlockSettings } from '@/app/service/settings/useToolsDocumentBlockSettings';
 
 export const useTransferToolsPrint = () => {
   const printRef = useRef<HTMLDivElement>(null);
@@ -21,6 +22,7 @@ export const useTransferToolsPrint = () => {
   const { currentDocument } = mainData.document;
   const token = mainData.users.user?.token;
   const { data: references } = useAllReferences(token);
+  const { showClientGoodsSale, showExtraCharge } = useToolsDocumentBlockSettings();
 
   const clientId = Number(currentDocument?.docValues?.receiverId) || 0;
   const asOf = Number(currentDocument?.date) || Date.now();
@@ -33,17 +35,20 @@ export const useTransferToolsPrint = () => {
   const [printBasisOverride, setPrintBasisOverride] = useState<string | null>(null);
   const [copyCount, setCopyCount] = useState(DEFAULT_PRINT_COPIES);
   const [shouldPrint, setShouldPrint] = useState(false);
+  const [showPriceAndSum, setShowPriceAndSum] = useState(true);
 
   const contractBasis =
     printBasisOverride ?? formatRentalContractBasisUz(activeContract);
 
-  const toolNames = useMemo(() => {
-    const map: Record<number, string> = {};
+  const { toolNames, toolArticles } = useMemo(() => {
+    const names: Record<number, string> = {};
+    const articles: Record<number, string> = {};
     (references || []).forEach((ref: ReferenceModel) => {
       if (ref.id == null) return;
-      map[ref.id] = ref.name;
+      names[ref.id] = ref.name;
+      articles[ref.id] = ref.article || '';
     });
-    return map;
+    return { toolNames: names, toolArticles: articles };
   }, [references]);
 
   const clientName = references?.find(
@@ -52,7 +57,7 @@ export const useTransferToolsPrint = () => {
 
   const printFn = useReactToPrint({
     contentRef: printRef,
-    documentTitle: `Ускуналарни топшириш кабул килиш далолатномаси ${currentDocument?.id ?? ''}`,
+    documentTitle: `Акт приёма-передачи инструмента ${currentDocument?.id ?? ''}`,
   });
 
   useEffect(() => {
@@ -84,10 +89,14 @@ export const useTransferToolsPrint = () => {
         clientName={clientName}
         contractBasis={contractBasis}
         toolNames={toolNames}
+        toolArticles={toolArticles}
         copyCount={copyCount}
+        showClientGoodsSale={showClientGoodsSale}
+        showExtraCharge={showExtraCharge}
+        showPriceAndSum={showPriceAndSum}
       />
     </div>
   ) : null;
 
-  return { handlePrint, PrintContent };
+  return { handlePrint, PrintContent, showPriceAndSum, setShowPriceAndSum };
 };

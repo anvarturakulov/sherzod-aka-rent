@@ -61,7 +61,7 @@ export const PersonalItem = ({className, item, ...props }: PersonalItemProps) :J
                       data-report-doc-anchor={element?.docId || undefined}
                       className={cn({ [styles.clickableRow]: !!element?.docId })}
                       onDoubleClick={() => openDocument(element?.docId)}
-                      title={element?.docId ? 'Хужжатни очиш (икки марта босинг)' : undefined}
+                      title={element?.docId ? 'Открыть документ (двойной клик)' : undefined}
                     >
                       <td className={styles.number}>{key+1}</td>
                       <td></td>

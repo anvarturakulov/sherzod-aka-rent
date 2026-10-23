@@ -94,27 +94,27 @@ export const ToolsCurrentBalance = ({
   return (
     <div className={styles.container} {...props}>
       <div className={styles.title}>
-        Ускуналар — жорий қолдиқ
+        Инструменты — текущий остаток
         {enterpriseName && <span> - {enterpriseName}</span>}
       </div>
 
       {values?.balanceDate ? (
         <div className={styles.subtitle}>
-          Қолдиқ вақти: {formatDisplayDateTime(values.balanceDate)}
+          Время остатка: {formatDisplayDateTime(values.balanceDate)}
           {values.warehouseId
-            ? ` · Умум склад: ${values.warehouseName}`
-            : ` · ${values.warehouseName || 'Умум булим топилмади'}`}
+            ? ` · Общий склад: ${values.warehouseName}`
+            : ` · ${values.warehouseName || 'Общий отдел не найден'}`}
         </div>
       ) : (
         <div className={styles.subtitle}>
-          Танланган сана-вақтда ускуналар қолдиғи (омборда — умум склад, мижозда)
+          Остаток инструментов на выбранную дату-время (на складе — общий склад, у клиента)
         </div>
       )}
 
       <div className={styles.filters}>
         <div className={styles.dateField}>
           <label className={styles.dateLabel} htmlFor="toolsBalanceAsOf">
-            Сана ва вақт
+            Дата и время
           </label>
           <input
             id="toolsBalanceAsOf"
@@ -125,14 +125,14 @@ export const ToolsCurrentBalance = ({
           />
         </div>
         <div className={styles.checkboxField}>
-          <span className={styles.checkboxLabel}>Кўрсатиш</span>
+          <span className={styles.checkboxLabel}>Показать</span>
           <label className={styles.checkboxRow}>
             <input
               type="checkbox"
               checked={showZeros}
               onChange={(e) => setShowZeros(e.target.checked)}
             />
-            Нольларини кўрсатиш
+            Показывать нули
           </label>
         </div>
         <button
@@ -145,12 +145,12 @@ export const ToolsCurrentBalance = ({
       </div>
 
       {!values && (
-        <div className={styles.emptyMessage}>Маълумотлар юкланмоқда</div>
+        <div className={styles.emptyMessage}>Загрузка данных</div>
       )}
 
       {values && visibleRows.length === 0 && (
         <div className={styles.emptyMessage}>
-          Қолдиқли ускуналар топилмади
+          Инструменты с остатком не найдены
         </div>
       )}
 
@@ -160,11 +160,11 @@ export const ToolsCurrentBalance = ({
             <tr>
               <th className={`${styles.center} ${styles.indexCol}`}>№</th>
               <th className={styles.articleCol}>Артикул</th>
-              <th>Ускуна</th>
-              <th className={styles.numeric}>Омборда</th>
-              <th className={styles.numeric}>Мижозда</th>
-              <th className={styles.numeric}>Жами</th>
-              <th className={styles.numeric}>Сумма (омбор)</th>
+              <th>Инструмент</th>
+              <th className={styles.numeric}>На складе</th>
+              <th className={styles.numeric}>У клиента</th>
+              <th className={styles.numeric}>Итого</th>
+              <th className={styles.numeric}>Сумма (склад)</th>
             </tr>
           </thead>
           <tbody>
@@ -178,7 +178,7 @@ export const ToolsCurrentBalance = ({
                   onClick={() => openAtClientDetails(row)}
                   title={
                     hasAtClient
-                      ? 'Мижоздаги қолдиқни кўриш'
+                      ? 'Смотреть остаток у клиента'
                       : undefined
                   }
                 >
@@ -204,7 +204,7 @@ export const ToolsCurrentBalance = ({
             })}
             <tr className={styles.summaryRow}>
               <td colSpan={3} className={styles.center}>
-                Жами
+                Итого
               </td>
               <td className={styles.numeric}>
                 {numberValue(visibleTotals.warehouseQty)}

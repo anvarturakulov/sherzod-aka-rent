@@ -43,7 +43,7 @@ export const useEnterpriseName = (): string | null => {
   // Получаем название предприятия
   const enterpriseName = useMemo(() => {
     if (canUseSelectedEnterprise && isAllEnterprisesSelected) {
-      return 'Барча корхоналар';
+      return 'Все предприятия';
     }
     if (!enterpriseId || !enterprises || !Array.isArray(enterprises)) {
       return null;

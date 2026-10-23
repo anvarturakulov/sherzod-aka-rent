@@ -38,7 +38,9 @@ import { cancelInterEnterpriseProvodka } from '@/app/service/documents/interEnte
 import IcoTrash from '@/app/components/journals/journal/ico/trash.svg';
 import { useTransferToolsPrint } from '../docValues/components/transferToolsPrintSection/transferToolsPrintSection';
 import { useReceiveToolsPrint } from '../docValues/components/receiveToolsPrintSection/receiveToolsPrintSection';
+import { useSaleEquipmentPrint } from '../docValues/components/saleEquipmentPrintSection/saleEquipmentPrintSection';
 import {
+    isReceiveToolsPaymentCheckEnabled,
     isReceiveToolsPaymentFilled,
     isReceiveToolsPaymentGatePassed,
 } from '@/app/service/documents/optionalPaymentFields';
@@ -47,10 +49,11 @@ import { getBalanceTargetDate } from '../docValues/components/clientBalanceInfo/
 import PaymentNotFilledModal from '../docValues/components/paymentNotFilledModal/paymentNotFilledModal';
 import { createTransferFromRentalOrder } from '@/app/service/documents/rentalOrdersApi';
 import { getDocumentById } from '@/app/service/documents/getDocumentById';
+import { recalcReceiveToolsReturnTable } from '@/app/service/documents/receiveToolsRent';
 
 function formatImportProgressLabel(progress: { processed: number; total: number } | null): string {
-    if (!progress) return 'Юкланмокда...';
-    return `Юкланмокда... ${progress.processed}/${progress.total}`;
+    if (!progress) return 'Загрузка...';
+    return `Загрузка... ${progress.processed}/${progress.total}`;
 }
 
 export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
@@ -75,8 +78,14 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
     const [showPaymentNotFilledModal, setShowPaymentNotFilledModal] = useState(false)
     const [creatingTransfer, setCreatingTransfer] = useState(false)
 
-    const { handlePrint: handleTransferToolsPrint, PrintContent: transferToolsPrintContent } = useTransferToolsPrint();
+    const {
+        handlePrint: handleTransferToolsPrint,
+        PrintContent: transferToolsPrintContent,
+        showPriceAndSum,
+        setShowPriceAndSum,
+    } = useTransferToolsPrint();
     const { handlePrint: handleReceiveToolsPrint, PrintContent: receiveToolsPrintContent } = useReceiveToolsPrint();
+    const { handlePrint: handleSaleEquipmentPrint, PrintContent: saleEquipmentPrintContent } = useSaleEquipmentPrint();
 
     const REFERENCES_ALL_KEY = `${process.env.NEXT_PUBLIC_DOMAIN}/api/references/all/`
 
@@ -183,7 +192,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
         
         // HEADGLOBAL и GUEST могут только просматривать
         if (user?.role == UserRoles.HEADGLOBAL || user?.role == UserRoles.GUEST) {
-            alert('Узр. Сиз факат кўриш хукукига эгасиз')
+            alert('Извините. У вас есть только право просмотра')
             releaseSaving()
             return false
         }
@@ -202,7 +211,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
             body.docValues?.senderId && 
             body.docValues?.receiverId && 
             body.docValues.senderId === body.docValues.receiverId) {
-            showMessage('Олувчи ва жунатувчи бир хил бўлмайди', 'error', setMainData);
+            showMessage('Получатель и отправитель не могут совпадать', 'error', setMainData);
             releaseSaving()
             return false
         }
@@ -224,8 +233,11 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
             docTableItems: getFilledDocTableItems(body.docTableItems),
         };
 
-        if (body.documentType === DocumentType.TransferToolsToClient) {
-            const settlementDate = Number(body.docValues?.settlementDate || 0);
+        if (
+            body.documentType === DocumentType.TransferToolsToClient ||
+            body.documentType === DocumentType.TransferSubleaseToolsToClient
+        ) {
+            const documentDate = Number(body.date) || Date.now();
             const rentTariffType =
                 body.docValues?.rentTariffType === RentTariffType.TRANSFER
                     ? RentTariffType.TRANSFER
@@ -234,9 +246,26 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                 ...body,
                 docValues: {
                     ...body.docValues,
-                    settlementDate: settlementDate > 0 ? settlementDate : Date.now(),
-                    rentTariffType,
+                    settlementDate: documentDate,
+                    ...(body.documentType === DocumentType.TransferToolsToClient
+                        ? { rentTariffType }
+                        : {}),
                 },
+            };
+        }
+
+        if (
+            body.documentType === DocumentType.ReceiveToolsFromClient ||
+            body.documentType === DocumentType.ReceiveSubleaseToolsFromClient
+        ) {
+            const documentDate = Number(body.date) || Date.now();
+            body = {
+                ...body,
+                docValues: {
+                    ...body.docValues,
+                    returnDateTime: documentDate,
+                },
+                docTableItems: recalcReceiveToolsReturnTable(body.docTableItems, documentDate),
             };
         }
 
@@ -262,34 +291,40 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
         }
 
         if (!saveOnly && (body.documentType === DocumentType.ReceiveToolsFromClient || body.documentType === DocumentType.ReceiveSubleaseToolsFromClient)) {
-            const clientId = Number(body.docValues?.senderId || 0);
-            let paymentGatePassed = false;
+            const skipKaytarishPaymentCheck =
+                body.documentType === DocumentType.ReceiveToolsFromClient &&
+                !(await isReceiveToolsPaymentCheckEnabled(user?.token));
 
-            if (clientId > 0 && user?.token) {
-                try {
-                    const beforeS40 = await fetchClientS40Balance({
-                        clientId,
-                        endDate: getBalanceTargetDate(body.date),
-                        token: user.token,
-                        enterpriseId: body.enterpriseId ?? user.enterpriseId,
-                    });
-                    paymentGatePassed = isReceiveToolsPaymentGatePassed(
-                        body.docValues,
-                        body.docTableItems,
-                        beforeS40,
-                    );
-                } catch {
-                    // Баланс недоступен — строгое поведение: требуем заполненную оплату
+            if (!skipKaytarishPaymentCheck) {
+                const clientId = Number(body.docValues?.senderId || 0);
+                let paymentGatePassed = false;
+
+                if (clientId > 0 && user?.token) {
+                    try {
+                        const beforeS40 = await fetchClientS40Balance({
+                            clientId,
+                            endDate: getBalanceTargetDate(body.date),
+                            token: user.token,
+                            enterpriseId: body.enterpriseId ?? user.enterpriseId,
+                        });
+                        paymentGatePassed = isReceiveToolsPaymentGatePassed(
+                            body.docValues,
+                            body.docTableItems,
+                            beforeS40,
+                        );
+                    } catch {
+                        // Баланс недоступен — строгое поведение: требуем заполненную оплату
+                        paymentGatePassed = isReceiveToolsPaymentFilled(body.docValues);
+                    }
+                } else {
                     paymentGatePassed = isReceiveToolsPaymentFilled(body.docValues);
                 }
-            } else {
-                paymentGatePassed = isReceiveToolsPaymentFilled(body.docValues);
-            }
 
-            if (!paymentGatePassed) {
-                setShowPaymentNotFilledModal(true);
-                releaseSaving();
-                return;
+                if (!paymentGatePassed) {
+                    setShowPaymentNotFilledModal(true);
+                    releaseSaving();
+                    return;
+                }
             }
         }
 
@@ -396,7 +431,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
         ) {
             if (
                 confirm(
-                    'Проводкани бекор килишни хохлайсизми? Барча проводкалар, stocks ва oborots бекор килинади.',
+                    'Отменить проводку? Все проводки, stocks и oborots будут отменены.',
                 )
             ) {
                 cancelInterEnterpriseProvodka(currentDocument.id, setMainData, mainData);
@@ -405,7 +440,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
         }
 
         if (
-            confirm('Проводкани бекор қилиб, хужжатни таҳрирлаш учун очасизми?')
+            confirm('Отменить проводку и открыть документ для редактирования?')
         ) {
             deleteItemDocument(
                 currentDocument.id,
@@ -427,14 +462,14 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
             const created = await createTransferFromRentalOrder(orderId, user.token);
             if (created?.id) {
                 setMainData('contentName', DocumentType.TransferToolsToClient);
-                setMainData('contentTitle', 'Топшириш');
+                setMainData('contentTitle', 'Выдача');
                 getDocumentById(created.id, setMainData, user.token, true, mainData);
             }
         } catch (error: any) {
             const raw =
                 error?.response?.data?.message ||
                 error?.message ||
-                'Топшириш яратишда хатолик';
+                'Ошибка при создании выдачи';
             const message = Array.isArray(raw) ? raw.join('; ') : String(raw);
             showMessage(message, 'error', setMainData);
         } finally {
@@ -492,7 +527,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
             // Обновляем документ в контексте
             if (setMainData) {
                 setMainData('currentDocument', updatedDocument);
-                showMessage('Таннарх успешно кайта хисобланди', 'success', setMainData);
+                showMessage('Себестоимость успешно пересчитана', 'success', setMainData);
             }
             
             console.log('✅ [FRONTEND] ========== ЗАВЕРШЕНИЕ ПЕРЕСЧЕТА СЕБЕСТОИМОСТИ ==========\n');
@@ -526,7 +561,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
         const receiverId = currentDocument?.docValues?.receiverId
         if (!senderId || !receiverId) {
             const proceed = window.confirm(
-                'Жунатувчи (sender) ва/ёки олувчи (receiver) танланмаган. Импортни давом эттирамизми? Хужжатни саклашдан олдин уларни киритинг.'
+                'Отправитель (sender) и/или получатель (receiver) не выбраны. Продолжить импорт? Перед сохранением документа укажите их.'
             )
             if (!proceed) {
                 if (remainsFileInputRef.current) remainsFileInputRef.current.value = ''
@@ -601,7 +636,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
         const receiverId = currentDocument?.docValues?.receiverId
         if (!senderId || !receiverId) {
             const proceed = window.confirm(
-                'Жунатувчи (sender) ва/ёки олувчи (receiver) танланмаган. Импортни давом эттирамизми? Хужжатни саклашдан олдин уларни киритинг.'
+                'Отправитель (sender) и/или получатель (receiver) не выбраны. Продолжить импорт? Перед сохранением документа укажите их.'
             )
             if (!proceed) {
                 if (osRemainsFileInputRef.current) osRemainsFileInputRef.current.value = ''
@@ -726,9 +761,9 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                             className={styles.button}
                             disabled={disabled || isRecalculating}
                             onClick={handleRecalculateCosts}
-                            title="Таннархни кайта хисоблаш"
+                            title="Пересчитать себестоимость"
                         >
-                            {isRecalculating ? 'Кайта хисобланмокда...' : '💰 Таннархни кайта хисоблаш'}
+                            {isRecalculating ? 'Пересчёт...' : '💰 Пересчитать себестоимость'}
                         </button>
                     )}
 
@@ -747,7 +782,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                                 className={styles.button}
                                 disabled={disabled || isImportingRemains}
                                 onClick={handleImportRemainsClick}
-                                title="Колдикларни xlsx файлдан киритиш (вакт.)"
+                                title="Ввод остатков из xlsx (врем.)"
                             >
                                 {isImportingRemains
                                     ? formatImportProgressLabel(importRemainsProgress)
@@ -780,11 +815,11 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                                 className={styles.button}
                                 disabled={disabled || isImportingAttrs}
                                 onClick={handleImportAttrsClick}
-                                title="Ўлчам, ранг ва ишлаб чиқарувчи xlsx файлдан янгилаш"
+                                title="Обновить размер, цвет и производителя из xlsx"
                             >
                                 {isImportingAttrs
                                     ? formatImportProgressLabel(importAttrsProgress)
-                                    : 'Импорт ўлчам/ранг (xlsx)'}
+                                    : 'Импорт размер/цвет (xlsx)'}
                             </button>
                         </>
                     )}
@@ -803,7 +838,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                                 className={styles.button}
                                 disabled={disabled || isImportingOsRemains}
                                 onClick={handleImportOsRemainsClick}
-                                title="Асосий воситалар колдигини xlsx файлдан киритиш"
+                                title="Ввод остатков ОС из xlsx"
                             >
                                 {isImportingOsRemains
                                     ? formatImportProgressLabel(importOsRemainsProgress)
@@ -818,7 +853,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                         disabled = {disabled || isRecalculating || isImportingRemains || isImportingAttrs || isImportingOsRemains} 
                         onClick={() => onSubmit(mainData, setMainData, true)}
                         data-document-save
-                        title="Сақлаш (проводкасиз)"
+                        title="Сохранить (без проводки)"
                         onKeyDown={(e) => {
                             if (e.key === 'ArrowRight') {
                                 if (docBoxRef.current && focusNextFocusable(docBoxRef.current, e.currentTarget)) {
@@ -832,7 +867,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                                 <polyline points="17 21 17 13 7 13 7 21"/>
                                 <polyline points="7 3 7 8 15 8"/>
                             </svg>
-                            Саклаш
+                            Сохранить
                     </button>
 
                     <button 
@@ -840,7 +875,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                         className={styles.buttonOk}
                         disabled = {disabled || isRecalculating || isImportingRemains || isImportingAttrs || isImportingOsRemains} 
                         onClick={() => onSubmit(mainData, setMainData, false)}
-                        title="Сақлаш ва ўтказиш"
+                        title="Сохранить и провести"
                         onKeyDown={(e) => {
                             if (e.key === 'ArrowLeft') {
                                 if (docBoxRef.current && focusPreviousFocusable(docBoxRef.current, e.currentTarget)) {
@@ -852,7 +887,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="20 6 9 17 4 12"/>
                             </svg>
-                            {disabled ? 'Сақланмоқда...' : 'OK'}
+                            {disabled ? 'Сохранение...' : 'OK'}
                     </button>
                     
                     <button
@@ -863,13 +898,13 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                             if (savingRef.current) return;
                             cancelSubmit(setMainData, mainData);
                         }}
-                        title="Бекор қилиш"
+                        title="Отмена"
                     >
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"/>
                                 <line x1="6" y1="6" x2="18" y2="18"/>
                             </svg>
-                            Бекор килиш
+                            Отмена
                     </button>
                 </>
             }
@@ -881,29 +916,49 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                     className={styles.button}
                     disabled={creatingTransfer}
                     onClick={handleCreateTransferFromOrder}
-                    title="Топшириш яратиш"
+                    title="Создать выдачу"
                 >
-                    {creatingTransfer ? 'Яратилмоқда...' : 'Топшириш яратиш'}
+                    {creatingTransfer ? 'Создание...' : 'Создать выдачу'}
                 </button>
             )}
             {currentDocument.documentType === DocumentType.TransferToolsToClient && (
-                <button
-                    type="button"
-                    className={styles.button}
-                    onClick={() => handleTransferToolsPrint()}
-                    title="Чоп этиш"
-                >
-                    🖨️ Чоп этиш
-                </button>
+                <>
+                    <button
+                        type="button"
+                        className={styles.button}
+                        onClick={() => handleTransferToolsPrint()}
+                        title="Печать"
+                    >
+                        🖨️ Печать
+                    </button>
+                    <label className={styles.printPriceToggle}>
+                        <input
+                            type="checkbox"
+                            checked={showPriceAndSum}
+                            onChange={(e) => setShowPriceAndSum(e.target.checked)}
+                        />
+                        Цена и сумма
+                    </label>
+                </>
             )}
             {currentDocument.documentType === DocumentType.ReceiveToolsFromClient && (
                 <button
                     type="button"
                     className={styles.button}
                     onClick={() => handleReceiveToolsPrint()}
-                    title="Чоп этиш"
+                    title="Печать"
                 >
-                    Чоп этиш
+                    Печать
+                </button>
+            )}
+            {currentDocument.documentType === DocumentType.SaleEquipment && (
+                <button
+                    type="button"
+                    className={styles.button}
+                    onClick={() => handleSaleEquipmentPrint()}
+                    title="Печать накладной"
+                >
+                    Печать
                 </button>
             )}
         </div>
@@ -955,6 +1010,7 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
             <DocValues/>
             {currentDocument.documentType === DocumentType.TransferToolsToClient && transferToolsPrintContent}
             {currentDocument.documentType === DocumentType.ReceiveToolsFromClient && receiveToolsPrintContent}
+            {currentDocument.documentType === DocumentType.SaleEquipment && saleEquipmentPrintContent}
             {BtnBox}
             {showReopenProvedenButton && (
                 <div className={styles.boxBtnReopen} data-doc-reopen-actions>
@@ -963,10 +1019,10 @@ export const Doc = ({className, ...props }: DocProps) :JSX.Element => {
                         className={styles.buttonReopen}
                         disabled={disabled}
                         onClick={handleReopenProveden}
-                        title="Проводкани бекор қилиш ва таҳрирлаш учун очиш"
+                        title="Отменить проводку и открыть для редактирования"
                     >
                         <IcoTrash className={styles.icoTrashReopen} aria-hidden />
-                        Проводкани бекор қилиш
+                        Отменить проводку
                     </button>
                 </div>
             )}

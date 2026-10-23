@@ -23,15 +23,15 @@ export const NormaItem = ({className, item,  ...props }: NormaItemProps) :JSX.El
                 <div>{item?.section}</div>
                 <div className={cn(styles.topTitleCount, styles.blue, {
                     [styles.red]: !item?.countHamirs,
-                })}>{item?.countHamirs ? `${item?.countHamirs} та хамир` : '**?**' }</div>
+                })}>{item?.countHamirs ? `${item?.countHamirs} теста` : '**?**' }</div>
             </Htag>
             <div className={styles.row}>
-                <div className={cn(styles.title, styles.topRow)}>Ном</div>
-                <div className={cn(styles.title, styles.topRow, styles.value)}>Хакикат</div>
+                <div className={cn(styles.title, styles.topRow)}>Наименование</div>
+                <div className={cn(styles.title, styles.topRow, styles.value)}>Факт</div>
                 <div className={cn(styles.title, styles.topRow, styles.value)}>Норма</div>
-                <div className={cn(styles.title, styles.topRow, styles.value)}>Фарк</div>
+                <div className={cn(styles.title, styles.topRow, styles.value)}>Отклонение</div>
             </div>
-            {/* <Htag tag='h2' className={styles.h2}>Сон буйича</Htag> */}
+            {/* <Htag tag='h2' className={styles.h2}>Кол-во буйича</Htag> */}
             {
 
                 data

@@ -47,44 +47,44 @@ export interface DataForSelect {
 }
 
 export const typePartnersList: DataForSelect[] = [
-  { name: '', title: 'Хамкор турини танланг' },
-  { name: TypePartners.CLIENTS, title: 'Мижоз' },
-  { name: TypePartners.DEPARTMENTS, title: 'Ички корхона' },
-  { name: TypePartners.SUPPLIERS, title: 'Таъминотчи' }
+  { name: '', title: 'Выберите тип партнёра' },
+  { name: TypePartners.CLIENTS, title: 'Клиент' },
+  { name: TypePartners.DEPARTMENTS, title: 'Внутреннее подразделение' },
+  { name: TypePartners.SUPPLIERS, title: 'Поставщик' }
 ]
 
 export const typeTMZList: DataForSelect[] = [
-  { name: '', title: 'ТМБ турини танланг' },
-  { name: TypeTMZ.PRODUCT, title: 'Тайёр махсулот' },
+  { name: '', title: 'Выберите тип ТМЦ' },
+  { name: TypeTMZ.PRODUCT, title: 'Готовая продукция' },
   { name: TypeTMZ.MATERIAL, title: 'Материал' },
-  { name: TypeTMZ.HALFSTUFF, title: 'Ярим тайёр махсулот' },
-  { name: TypeTMZ.OS, title: 'Асосий восита' },
-  { name: TypeTMZ.TOOLS, title: 'Ускуна (ижара)' },
+  { name: TypeTMZ.HALFSTUFF, title: 'Полуфабрикат' },
+  { name: TypeTMZ.OS, title: 'Основное средство' },
+  { name: TypeTMZ.TOOLS, title: 'Инструмент (аренда)' },
   { name: TypeTMZ.TOVAR, title: 'Товар' },
 ]
 
 export const typeSectionList: DataForSelect[] = [
-  { name: '', title: 'Булим турини танланг' },
-  { name: TypeSECTION.COMMON, title: 'Умум булим' },
-  { name: TypeSECTION.PRODUCTION, title: 'Ишлаб чикариш цех' },
+  { name: '', title: 'Выберите тип раздела' },
+  { name: TypeSECTION.COMMON, title: 'Общий раздел' },
+  { name: TypeSECTION.PRODUCTION, title: 'Производственный цех' },
   { name: TypeSECTION.STORAGE, title: 'Склад' },
-  { name: TypeSECTION.PARTNER_TOOLS, title: 'Субаренда (ҳамкор омбори)' },
-  { name: TypeSECTION.CASH, title: 'Накд' },
+  { name: TypeSECTION.PARTNER_TOOLS, title: 'Субаренда (склад партнёра)' },
+  { name: TypeSECTION.CASH, title: 'Наличные' },
   { name: TypeSECTION.BANK, title: 'Банк' },
   { name: TypeSECTION.PLASTIK, title: 'Пластик' },
-  { name: TypeSECTION.FOUNDER, title: 'Таъсисчи' },
+  { name: TypeSECTION.FOUNDER, title: 'Учредитель' },
 ]
 
 export const carTypeList: DataForSelect[] = [
-  { name: '', title: 'Автомобил турини танланг' },
+  { name: '', title: 'Выберите тип автомобиля' },
   { name: CarType.VIP, title: 'VIP' },
-  { name: CarType.OWN, title: 'Узимизники' },
-  { name: CarType.STRANGER, title: 'Бегона' }
+  { name: CarType.OWN, title: 'Свой' },
+  { name: CarType.STRANGER, title: 'Чужой' }
 ]
 
 export const mediatorTypeList: DataForSelect[] = [
-  { name: '', title: 'Воситачи турини танланг' },
-  { name: TypeMediator.DRIVER, title: 'Шофёр' },
+  { name: '', title: 'Выберите тип посредника' },
+  { name: TypeMediator.DRIVER, title: 'Водитель' },
   { name: TypeMediator.MASTER, title: 'Мастер' }
 ]
 

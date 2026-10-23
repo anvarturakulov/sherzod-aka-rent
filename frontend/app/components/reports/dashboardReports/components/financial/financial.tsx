@@ -48,7 +48,7 @@ export const Financial = ({ className, data, ...props }: FinancialProps): JSX.El
   return (
     <>
       <div className={styles.title}>
-        Пул окими - умум корхона буйича
+        Денежный поток — по всему предприятию
         {enterpriseName && <span> - {enterpriseName}</span>}
       </div>
 
@@ -59,81 +59,81 @@ export const Financial = ({ className, data, ...props }: FinancialProps): JSX.El
               <tr
                 onDoubleClick={() => setMainData && setMainData('currentFinancialInnerReportType', 'startBalans')}
               >
-                <td>Давр бошига колдик пуллар</td>
+                <td>Остаток денег на начало периода</td>
                 <td className={styles.totalTd}>{numberValue(totals.startBalans)}</td>
               </tr>
               <tr>
-                <td>Пул кирими</td>
+                <td>Приход денег</td>
                 <td className={styles.totalTd}></td>
               </tr>
               <tr
                 onDoubleClick={() => setMainData && setMainData('currentFinancialInnerReportType', 'incomeFromClients')}
               >
-                <th>Корхонага кирган пул (мижозлардан) </th>
+                <th>Деньги, поступившие на предприятие (от клиентов) </th>
                 <th className={styles.totalTd}>{numberValue(totals.incomeFromClients)}</th>
               </tr>
               <tr
                 onDoubleClick={() => setMainData && setMainData('currentFinancialInnerReportType', 'incomeFromDepartments')}
               >
-                <th>Корхонага кирган пул (ички корхоналардан)</th>
+                <th>Деньги, поступившие на предприятие (от внутренних предприятий)</th>
                 <th className={styles.totalTd}>{numberValue(totals.incomeFromDepartments)}</th>
               </tr>
               {/* <tr
                 onDoubleClick={() => setMainData && setMainData('currentFinancialInnerReportType', 'incomeOther')}
               >
-                <th>Четдан хамкорлардан кирган пул</th>
+                <th>Деньги от внешних контрагентов</th>
                 <th className={styles.totalTd}>{numberValue(totals.incomeOther)}</th>
               </tr> */}
               <tr>
-                <td>Жами</td>
+                <td>Итого</td>
                 <td className={styles.totalTd}>{numberValue(totals.incomeAll)}</td>
               </tr>
               <tr>
-                <td>Пул нимага харажат килинди</td>
+                <td>На что израсходованы деньги</td>
                 <td className={styles.totalTd}></td>
               </tr>
               <tr
                 onDoubleClick={() => setMainData && setMainData('currentFinancialInnerReportType', 'outForZP')}
               >
-                <th>Ходимларга ойлик берилди</th>
+                <th>Выдана зарплата сотрудникам</th>
                 <th className={styles.totalTd}>{numberValue(totals.outForZP)}</th>
               </tr>
               <tr
                 onDoubleClick={() => setMainData && setMainData('currentFinancialInnerReportType', 'outForCharges')}
               >
-                <th>Корхона учун харажат килинди</th>
+                <th>Израсходовано для предприятия</th>
                 <th className={styles.totalTd}>{numberValue(totals.outForCharges)}</th>
               </tr>
               <tr
                 onDoubleClick={() => setMainData && setMainData('currentFinancialInnerReportType', 'outForSuppliers')}
               >
-                <th>Таъминотчиларга берилди</th>
+                <th>Выдано поставщикам</th>
                 <th className={styles.totalTd}>{numberValue(totals.outForSuppliers)}</th>
               </tr>
               <tr
                 onDoubleClick={() => setMainData && setMainData('currentFinancialInnerReportType', 'outForDepartments')}
               >
-                <th>Ички корхоналарга берилди</th>
+                <th>Выдано внутренним предприятиям</th>
                 <th className={styles.totalTd}>{numberValue(totals.outForDepartments)}</th>
               </tr>
               <tr
                 onDoubleClick={() => setMainData && setMainData('currentFinancialInnerReportType', 'outForFounders')}
               >
-                <th>Таъсисчига берилди</th>
+                <th>Выдано учредителю</th>
                 <th className={styles.totalTd}>{numberValue(totals.outForFounders)}</th>
               </tr>
               <tr>
-                <td>Жами</td>
+                <td>Итого</td>
                 <td className={styles.totalTd}>{numberValue(totals.outAll)}</td>
               </tr>
               <tr>
-                <td>Бугунги пулдан колди</td>
+                <td>Осталось от сегодняшних денег</td>
                 <td className={styles.totalTd}>{numberValue((totals.incomeAll - totals.outAll)>0 ? (totals.incomeAll - totals.outAll): 0)}</td>
               </tr>
               <tr
                 onDoubleClick={() => setMainData && setMainData('currentFinancialInnerReportType', 'endBalans')}
               >
-                <td>Давр охирига колдик пул</td>
+                <td>Остаток денег на конец периода</td>
                 <td className={styles.totalTd}>{numberValue(totals.endBalans)}</td>
               </tr>
             </thead>
@@ -143,7 +143,7 @@ export const Financial = ({ className, data, ...props }: FinancialProps): JSX.El
           <table className={styles.table}>
             <thead>
               <tr>
-                <td className={styles.innerName}>Номи</td>
+                <td className={styles.innerName}>Наименование</td>
                 <td className={styles.innerValue}>Сумма</td>
               </tr>
               {innerValues.map((element: any, index: number) => (
@@ -153,7 +153,7 @@ export const Financial = ({ className, data, ...props }: FinancialProps): JSX.El
                 </tr>
               ))}
               <tr>
-                <td className={styles.innerName}>Жами</td>
+                <td className={styles.innerName}>Итого</td>
                 <td className={styles.totalTd}>{numberValue(total(currentFinancialInnerReportType, financialData))}</td>
               </tr>
             </thead>

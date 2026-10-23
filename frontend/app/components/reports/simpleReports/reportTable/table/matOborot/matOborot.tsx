@@ -9,17 +9,17 @@ const TableHead = () => (
     <thead>
         <tr>
             <td>№</td>
-            <td>ТМБ</td>
+            <td>ТМЦ</td>
             <td>Артикул</td>
-            <td>улч. бир.</td>
-            <td>Колдик сон</td>
-            <td>Колдик сумма</td>
-            <td>Кирим сон</td>
-            <td>Кирим сумма</td>
-            <td>Чиким сон</td>
-            <td>Чиким сумма</td>
-            <td>Колдик сон</td>
-            <td>Колдик сумма</td>
+            <td>ед. изм.</td>
+            <td>Остаток кол-во</td>
+            <td>Остаток сумма</td>
+            <td>Приход кол-во</td>
+            <td>Приход сумма</td>
+            <td>Расход кол-во</td>
+            <td>Расход сумма</td>
+            <td>Остаток кол-во</td>
+            <td>Остаток сумма</td>
         </tr>
     </thead>
 );
@@ -70,7 +70,7 @@ export const MatOborot = ({className, ...props }: MatOborotProps) :JSX.Element =
     if (filteredDatas.length === 0) {
         return (
             <div>
-                {sectionTitle} бўйича маълумот мавжуд эмас
+                Нет данных по: {sectionTitle}
             </div>
         )
     }

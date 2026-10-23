@@ -28,7 +28,12 @@ export const deleteTableItem = (
 ) => {
   if (setMainData && items.length > 0 && index >= 0 && index < items.length) {
     // Создаем новый массив без удаляемого элемента
-    const newItems = [...items.slice(0, index), ...items.slice(index + 1)];
+    const deleted = items[index];
+    const newItems =
+      deleted?.assemblyRowKey &&
+      (deleted.billingRole === 'COLUMN' || deleted.billingRole === 'COLUMN_COMPONENT')
+        ? items.filter((item) => item.assemblyRowKey !== deleted.assemblyRowKey)
+        : [...items.slice(0, index), ...items.slice(index + 1)];
     
     // Обновляем документ
     const newObj = { ...currentDocument };

@@ -246,7 +246,7 @@ export class PublicCatalogService {
     return null;
   }
 
-  /** Соатлик тариф (firstPrice) и суточная аренда (× 24) для инструментов. */
+  /** Кунлик тариф (firstPrice) для инструментов. */
   private async resolveRentalPrices(
     referenceId: number,
     rv: RefValues,
@@ -257,7 +257,7 @@ export class PublicCatalogService {
     dailyPrice: number | null;
   }> {
     const today = Date.now();
-    let hourly: number | null = null;
+    let daily: number | null = null;
 
     for (const ent of enterpriseTryOrder) {
       const v = await this.pereodicService.getPeredicValueForDate(
@@ -268,27 +268,24 @@ export class PublicCatalogService {
       );
       const n = Number(v);
       if (Number.isFinite(n) && n > 0) {
-        hourly = n;
+        daily = n;
         break;
       }
     }
 
-    if (hourly == null) {
+    if (daily == null) {
       if (
         rv.firstPrice != null &&
         !Number.isNaN(Number(rv.firstPrice)) &&
         Number(rv.firstPrice) > 0
       ) {
-        hourly = Number(rv.firstPrice);
+        daily = Number(rv.firstPrice);
       }
     }
 
-    const daily =
-      hourly != null ? Math.round(hourly * 24 * 100) / 100 : null;
-
     return {
       displayPrice: null,
-      hourlyPrice: hourly,
+      hourlyPrice: null,
       dailyPrice: daily,
     };
   }

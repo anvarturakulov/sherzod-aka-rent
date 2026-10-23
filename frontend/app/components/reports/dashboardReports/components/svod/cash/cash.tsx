@@ -21,14 +21,14 @@ export const Cash = ({className, data, ...props }: CashProps) :JSX.Element => {
 
     return (
        <div>
-            <div className={styles.title}>Касса колдиги</div>
+            <div className={styles.title}>Остаток кассы</div>
             <table className={styles.table}>
                 <thead className={styles.thead}>
                     <tr>
                         <td>№</td>
-                        <td>Номи</td>
-                        <td>Бошл. кол. сумма</td>
-                        <td>Охирги кол. сумма</td>
+                        <td>Наименование</td>
+                        <td>Нач. остаток</td>
+                        <td>Кон. остаток</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,7 +41,7 @@ export const Cash = ({className, data, ...props }: CashProps) :JSX.Element => {
                     }
                     <tr>
                         <td className={styles.totalTd}></td>
-                        <td className={styles.totalTd}>Жами</td>
+                        <td className={styles.totalTd}>Итого</td>
                         <td className={styles.totalTd}>{numberValue(totalStartBalans)}</td>
                         <td className={styles.totalTd}>{numberValue(totalEndBalans)}</td>
                     </tr>

@@ -365,7 +365,7 @@ export class RentalClientTelegramNotifierService {
       );
     }
     if (breakdown.total > 0) {
-      lines.push(`Жами тўлов: <b>${formatMoneyRu(breakdown.total)}</b> so'm`);
+      lines.push(`Итого оплата: <b>${formatMoneyRu(breakdown.total)}</b> so'm`);
     }
     return lines;
   }

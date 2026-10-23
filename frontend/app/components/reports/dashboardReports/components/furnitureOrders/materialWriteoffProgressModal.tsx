@@ -126,7 +126,7 @@ export function MaterialWriteoffProgressModal({
       <div className={styles.modal} role="dialog" aria-modal="true">
         <div className={styles.head}>
           <div>
-            <h3 className={styles.title}>Хом ашё чикими — режа / факт</h3>
+            <h3 className={styles.title}>Списание сырья — план / факт</h3>
             <p className={styles.subtitle}>
               {orderLabel}
               {productName ? ` · ${productName}` : ''}
@@ -138,20 +138,20 @@ export function MaterialWriteoffProgressModal({
         </div>
 
         <div className={styles.body}>
-          {loading && <div className={styles.loading}>Юкланмоқда...</div>}
+          {loading && <div className={styles.loading}>Загрузка...</div>}
           {!loading && error && <div className={styles.error}>{error}</div>}
           {!loading && !error && progress.length === 0 && (
-            <div className={styles.empty}>Маълумот йўқ</div>
+            <div className={styles.empty}>Нет данных</div>
           )}
           {!loading && !error && progress.length > 0 && (
             <div className={styles.progressTable}>
               <div className={styles.progressHead}>
-                <span>Хом ашё</span>
+                <span>Сырьё</span>
                 <span>Ед.</span>
-                <span>Режа</span>
-                <span>Чиким килинган</span>
-                <span>Колдик</span>
-                <span>Нарх</span>
+                <span>План</span>
+                <span>Израсходовано</span>
+                <span>Остаток</span>
+                <span>Цена</span>
                 <span>Сумма</span>
               </div>
               {progress.map((row) => {
@@ -165,7 +165,7 @@ export function MaterialWriteoffProgressModal({
                     <span className={styles.materialName}>
                       {row.name || (id ? `#${id}` : '—')}
                       {isExtra && (
-                        <span className={styles.addedBadge}>қўшилган</span>
+                        <span className={styles.addedBadge}>добавлено</span>
                       )}
                     </span>
                     <span>{row.unit || '—'}</span>
@@ -186,7 +186,7 @@ export function MaterialWriteoffProgressModal({
                 );
               })}
               <div className={`${styles.progressRow} ${styles.totalsRow}`}>
-                <span className={styles.materialName}>Жами</span>
+                <span className={styles.materialName}>Итого</span>
                 <span />
                 <span>{formatQty(totals.planned)}</span>
                 <span>{formatQty(totals.writtenOff)}</span>

@@ -161,6 +161,7 @@ export const useSelectReferenceData = ({
     if (contentName === DocumentType.ComeCashFromClients && type === 'sender') return 'CLIENTS';
     if (contentName === DocumentType.TransferToolsToClient && type === 'receiver') return 'CLIENTS';
     if (contentName === DocumentType.OrderToolsToClient && type === 'receiver') return 'CLIENTS';
+    if (contentName === DocumentType.SaleEquipment && type === 'receiver') return 'CLIENTS';
     if (contentName === DocumentType.TransferSubleaseToolsToClient && type === 'receiver') return 'CLIENTS';
     if (contentName === DocumentType.ReceiveToolsFromClient && type === 'sender') return 'CLIENTS';
     if (contentName === DocumentType.ReceiveSubleaseToolsFromClient && type === 'sender') return 'CLIENTS';

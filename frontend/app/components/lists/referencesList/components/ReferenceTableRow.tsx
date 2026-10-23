@@ -93,7 +93,7 @@ export const ReferenceTableRow = memo<ReferenceTableRowProps>(({
       const enterprise = enterprises.find((e: any) => e.id === item.enterpriseId);
       return enterprise?.name || '';
     }
-    return item.enterpriseId === null ? 'Умум' : '';
+    return item.enterpriseId === null ? 'Общ.' : '';
   };
 
   const getEnterpriseCode = () => {
@@ -355,7 +355,7 @@ export const ReferenceTableRow = memo<ReferenceTableRowProps>(({
           <IcoView
             className={styles.icoShow}
             onClick={handleFindUsage}
-            title="Боғланишларни топиш"
+            title="Найти связи"
           />
           {canDelete && (
             <IcoTrash
@@ -363,7 +363,7 @@ export const ReferenceTableRow = memo<ReferenceTableRowProps>(({
                 [styles.deleted]: item.refValues?.markToDeleted,
               })}
               onClick={handleDeleteClick}
-              title="Клик: ўчиришга белгилаш; Ctrl+клик: тўлиқ ўчириш"
+              title="Клик: пометить на удаление; Ctrl+клик: полное удаление"
             />
           )}
         </div>

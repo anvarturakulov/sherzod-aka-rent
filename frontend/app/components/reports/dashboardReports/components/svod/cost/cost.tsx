@@ -35,18 +35,18 @@ export const Cost = ({className, data, ...props }: CostProps) :JSX.Element => {
 
     return (
        <>
-            <div className={styles.title}>Таннарх буйича маълумот</div>
+            <div className={styles.title}>Данные по себестоимости</div>
             <table className={styles.table}>
                 <thead className={styles.thead}>
                     <tr>
                         <td>№</td>
-                        <td>Цех номи</td>
-                        <td>Ишлаб чикар. сон</td>
-                        <td>Хамир сони</td>
-                        <td>Жами савдо</td>
-                        <td>Жами харажат</td>
-                        <td>Жами фойда</td>
-                        <td>Таннарх</td>
+                        <td>Наименование цеха</td>
+                        <td>Кол-во произведено</td>
+                        <td>Кол-во теста</td>
+                        <td>Итого продаж</td>
+                        <td>Итого расходов</td>
+                        <td>Итого прибыль</td>
+                        <td>Себестоимость</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,7 +59,7 @@ export const Cost = ({className, data, ...props }: CostProps) :JSX.Element => {
                     }
                     <tr>
                         <td className={styles.totalTd}></td>
-                        <td className={styles.totalTd}>Жами</td>
+                        <td className={styles.totalTd}>Итого</td>
                         <td className={styles.totalTd}>{numberValue(totalCount)}</td>
                         <td className={styles.totalTd}>{numberValue(totalHamirCount)}</td>
                         <td className={styles.totalTd}>{numberValue(totalSale)}</td>

@@ -90,7 +90,7 @@ export const PrintRegistry = forwardRef<HTMLDivElement, PrintRegistryProps>(
 
     const title =
       contentName === 'ALL_DOCUMENTS'
-        ? 'Барча хужжатлар'
+        ? 'Все документы'
         : getDescriptionDocument(contentName as DocumentType);
 
     const dateRangeText = `${secondsToDateString(
@@ -116,34 +116,34 @@ export const PrintRegistry = forwardRef<HTMLDivElement, PrintRegistryProps>(
           <thead>
             {isGateIncome ? (
               <tr>
-                <th>Раками</th>
-                <th>Сана</th>
+                <th>Номер</th>
+                <th>Дата</th>
                 <th>Номер машины</th>
                 <th>Модель авто</th>
-                <th>Изох</th>
-                <th>Холат</th>
-                <th>Фойдаланувчи</th>
+                <th>Комментарий</th>
+                <th>Статус</th>
+                <th>Пользователь</th>
               </tr>
             ) : (
               <tr>
-                <th>Раками</th>
-                <th>Сана</th>
-                <th>Корхона</th>
-                {contentName === 'ALL_DOCUMENTS' && <th>Хужжат тури</th>}
+                <th>Номер</th>
+                <th>Дата</th>
+                <th>Организация</th>
+                {contentName === 'ALL_DOCUMENTS' && <th>Вид документа</th>}
                 <th>Сумма</th>
-                {showToolsRentalColumns && <th>Ижара</th>}
+                {showToolsRentalColumns && <th>Аренда</th>}
                 {(contentName === 'ALL_DOCUMENTS' ||
                   contentName === DocumentType.LeaveCash ||
                   contentName === DocumentType.MoveCash) && <th>USD</th>}
-                <th>Олувчи</th>
-                <th>Берувчи</th>
+                <th>Получатель</th>
+                <th>Отправитель</th>
                 {(contentName === 'ALL_DOCUMENTS' ||
                   isDocumentWithAnalitic(contentName as DocumentType)) && (
                   <th>Аналитика</th>
                 )}
                 {showOrderColumn && <th>Заказ</th>}
-                <th>Изох</th>
-                <th>Фойдаланувчи</th>
+                <th>Комментарий</th>
+                <th>Пользователь</th>
               </tr>
             )}
           </thead>
@@ -293,7 +293,7 @@ export const PrintRegistry = forwardRef<HTMLDivElement, PrintRegistryProps>(
           <tfoot>
             <tr className={styles.footerRow}>
               <td colSpan={4}>
-                Жами хужжатлар сони: {count || safeDocuments.length}
+                Всего документов: {count || safeDocuments.length}
               </td>
               {!isGateIncome && (
                 <td
@@ -310,7 +310,7 @@ export const PrintRegistry = forwardRef<HTMLDivElement, PrintRegistryProps>(
                         : 2
                   }
                 >
-                  Жами сумма: {numberValue(total)}
+                  Итого сумма: {numberValue(total)}
                 </td>
               )}
               {isGateIncome && (

@@ -35,16 +35,16 @@ export default function PaymentLessThanIncomeModal({
       >
         <div className={styles.header}>
           <div className={styles.headerMain}>
-            <div className={styles.badge}>Диққат</div>
+            <div className={styles.badge}>Внимание</div>
             <h3 id="payment-less-than-income-title" className={styles.title}>
-              Тулов суммаси начислениедан кам
+              Сумма оплаты меньше начисления
             </h3>
           </div>
           <button
             type="button"
             className={styles.closeBtn}
             onClick={onClose}
-            aria-label="Ёпиш"
+            aria-label="Закрыть"
           >
             ×
           </button>
@@ -52,17 +52,17 @@ export default function PaymentLessThanIncomeModal({
 
         <div className={styles.body}>
           <p className={styles.instruction}>
-            Хужжатни ўтказиш учун тўловлар суммаси начислениедан кам бўлмаслиги керак:
+            Для проведения документа сумма оплат не должна быть меньше начисления:
           </p>
           <ul className={styles.optionsList}>
-            <li>Накд + Пластик + (Курс × USD) + Насияга</li>
-            <li>≥ Итог (қайтариш/сотиш + доставка + брак)</li>
+            <li>Наличные + Карта + (Курс × USD) + В долг</li>
+            <li>≥ Итог (возврат/продажа + доставка + брак)</li>
           </ul>
         </div>
 
         <div className={styles.footer}>
           <button type="button" className={styles.btnConfirm} onClick={onClose}>
-            Тушундим
+            Понятно
           </button>
         </div>
       </div>

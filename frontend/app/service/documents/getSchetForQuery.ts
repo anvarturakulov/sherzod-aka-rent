@@ -35,6 +35,7 @@ export const getSchetForQuery = (contentName: string) : DocumentTypeForReference
     `${DocumentType.LeaveTools}`,
     `${DocumentType.TransferToolsToClient}`,
     `${DocumentType.OrderToolsToClient}`,
+    `${DocumentType.SaleEquipment}`,
     `${DocumentType.ReceiveToolsFromClient}`,
   ]
 

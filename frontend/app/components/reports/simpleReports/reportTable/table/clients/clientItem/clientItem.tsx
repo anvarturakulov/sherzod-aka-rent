@@ -59,7 +59,7 @@ export const ClientItem = ({className, item, section, ...props }: ClientItemProp
         <thead>
           <tr className={styles.total}>
               <td></td>
-              <td>Жами</td>
+              <td>Итого</td>
               <td></td>
               <td></td>
               <td className={styles.totalTd}>{numberValue(POKOL)}</td>

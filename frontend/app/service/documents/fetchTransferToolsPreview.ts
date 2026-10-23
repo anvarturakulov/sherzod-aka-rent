@@ -1,5 +1,9 @@
 import axios from 'axios';
-import { DocumentModel, TransferToolsPreviewRow } from '@/app/interfaces/document.interface';
+import {
+  DocumentModel,
+  TransferColumnPreview,
+  TransferToolsPreviewRow,
+} from '@/app/interfaces/document.interface';
 
 export const getTransferToolsPreviewParams = (
   currentDocument: DocumentModel,
@@ -38,6 +42,27 @@ export const fetchTransferToolsPreview = async (
 
   const { data } = await axios.get<TransferToolsPreviewRow[]>(
     `${process.env.NEXT_PUBLIC_DOMAIN}/api/documents/transfer-tools/preview`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+      params,
+    },
+  );
+
+  return Array.isArray(data) ? data : [];
+};
+
+export const fetchTransferColumnPreview = async (
+  currentDocument: DocumentModel,
+  token: string | undefined,
+  enterpriseId: number | null | undefined,
+): Promise<TransferColumnPreview[]> => {
+  const { params, error } = getTransferToolsPreviewParams(currentDocument, enterpriseId);
+  if (error) {
+    throw new Error(error);
+  }
+
+  const { data } = await axios.get<TransferColumnPreview[]>(
+    `${process.env.NEXT_PUBLIC_DOMAIN}/api/documents/transfer-tools/columns`,
     {
       headers: { Authorization: `Bearer ${token}` },
       params,

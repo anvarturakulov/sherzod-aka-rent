@@ -30,7 +30,7 @@ export const getClientTotalPaidDetails = async (
     }
   }
 
-  showMessage('Маълумот юкланмокда. Кутуб туринг', 'warm', setMainData);
+  showMessage('Данные загружаются. Подождите', 'warm', setMainData);
   
   try {
     const response = await axios.get(url, config);

@@ -71,7 +71,7 @@ export const RentalExpectedIncome = ({
     const rawValue = asOfInputRef.current?.value || asOfLocal;
     const asOf = resolveAsOfMs(rawValue);
     if (!asOf) {
-      setError('Сана ва вақтни танланг');
+      setError('Выберите дату и время');
       return;
     }
 
@@ -88,7 +88,7 @@ export const RentalExpectedIncome = ({
         : selectedEnterpriseId ?? user?.enterpriseId;
 
     if (enterpriseId == null || Number(enterpriseId) <= 0) {
-      setError('Корхонани танланг');
+      setError('Выберите предприятие');
       return;
     }
 
@@ -112,7 +112,7 @@ export const RentalExpectedIncome = ({
       const message =
         (typeof axiosMessage === 'string' && axiosMessage) ||
         (e instanceof Error ? e.message : null) ||
-        'Маълумот юклашда хатолик юз берди';
+        'Ошибка при загрузке данных';
       setError(message);
       setReportData(null);
     } finally {
@@ -131,24 +131,24 @@ export const RentalExpectedIncome = ({
   return (
     <div className={styles.container} {...props}>
       <div className={styles.title}>
-        Ижара — кутилаётган даромад
+        Аренда — ожидаемый доход
         {enterpriseName && <span> - {enterpriseName}</span>}
       </div>
 
       {reportData?.asOf ? (
         <div className={styles.subtitle}>
-          Ҳисоблаш вақти: {formatDisplayDateTime(reportData.asOf)}
-          {' — '}агар шу пайтда қайтарилса
+          Время расчёта: {formatDisplayDateTime(reportData.asOf)}
+          {' — '}если вернуть в этот момент
         </div>
       ) : (
         <div className={styles.subtitle}>
-          Кўрсатилган сана-вақтда мижоз қайтарса — ҳисобланган ижара даромади
+          Если клиент вернёт в указанную дату-время — рассчитанный доход от аренды
         </div>
       )}
 
       <div className={styles.filters}>
         <label className={styles.dateLabel} htmlFor="rentalExpectedAsOf">
-          Сана ва вақт
+          Дата и время
         </label>
         <div className={styles.filtersRow}>
           <input
@@ -174,24 +174,24 @@ export const RentalExpectedIncome = ({
             onClick={loadData}
             disabled={loading}
           >
-            {loading ? 'Юкланмокда...' : 'ОК'}
+            {loading ? 'Загрузка...' : 'ОК'}
           </button>
         </div>
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
-      {loading && <div className={styles.loading}>Маълумот юкланмокда...</div>}
+      {loading && <div className={styles.loading}>Загрузка данных...</div>}
 
       {!loading && !error && reportData && clients.length === 0 && (
         <div className={styles.emptyMessage}>
-          Очиқ ижарадаги ускуналар топилмади
+          Инструменты в открытой аренде не найдены
         </div>
       )}
 
       {!loading && clients.length > 0 && (
         <>
           <div className={styles.grandTotal}>
-            <span>Жами кутилаётган даромад</span>
+            <span>Итого ожидаемый доход</span>
             <span>{numberValue(reportData?.grandTotal ?? 0)}</span>
           </div>
 
@@ -205,12 +205,13 @@ export const RentalExpectedIncome = ({
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>Ускуна</th>
-                      <th>Сони</th>
-                      <th>Ҳисоб бошланиши</th>
-                      <th>Соат</th>
-                      <th>Тариф / соат</th>
-                      <th>Даромад</th>
+                      <th>Инструмент</th>
+                      <th>Количество</th>
+                      <th>Начало расчёта</th>
+                      <th>Дней</th>
+                      <th>Тариф / день</th>
+                      <th>Доход</th>
+                      <th>Комментарий</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -234,6 +235,7 @@ export const RentalExpectedIncome = ({
                         <td className={styles.numeric}>
                           {numberValue(tool.rentSum)}
                         </td>
+                        <td>{tool.comment}</td>
                       </tr>
                     ))}
                   </tbody>

@@ -48,12 +48,12 @@ const getMissingStorageMessage = (
   typeDocumentByComeOut: TypeDocumentByComeOut,
 ): string => {
   if (currentDocument?.documentType === DocumentType.TransferSubleaseToolsToClient) {
-    return 'Ҳамкор омборини танланг';
+    return 'Выберите склад партнёра';
   }
   if (typeDocumentByComeOut === 'come') {
-    return 'Қабул қилувчи складни танланг';
+    return 'Выберите принимающий склад';
   }
-  return 'Жунатувчи складни танланг';
+  return 'Выберите склад-отправитель';
 };
 
 interface ProductCatalogIntegrationProps {
@@ -113,8 +113,10 @@ export const ProductCatalogIntegration = memo<ProductCatalogIntegrationProps>(({
     // Субаренда: остаток партнёра неизвестен — не запрашиваем и не блокируем
     const isSubleaseTransfer =
       documentType === DocumentType.TransferSubleaseToolsToClient;
+    const skipStock =
+      isSubleaseTransfer || documentType === DocumentType.SaleEquipment;
     let stockData = null;
-    if (!isSubleaseTransfer) {
+    if (!skipStock) {
     try {
       let actualWarehouseId =
         warehouseId ||
@@ -386,7 +388,8 @@ export const ProductCatalogIntegration = memo<ProductCatalogIntegrationProps>(({
     () =>
       currentDocument?.documentType ===
         DocumentType.TransferSubleaseToolsToClient ||
-      currentDocument?.documentType === DocumentType.OrderToolsToClient,
+      currentDocument?.documentType === DocumentType.OrderToolsToClient ||
+      currentDocument?.documentType === DocumentType.SaleEquipment,
     [currentDocument?.documentType],
   );
 

@@ -79,14 +79,17 @@ export const convertProductToDocTableItem = (
   const isSubleaseDoc =
     documentType === DocumentType.TransferSubleaseToolsToClient ||
     documentType === DocumentType.ReceiveSubleaseToolsFromClient;
+  const isSaleEquipment = documentType === DocumentType.SaleEquipment;
 
   // Для приходных документов (comeProd) не рассчитываем себестоимость
-  if (typeDocumentByComeOut === 'come' || isSubleaseDoc) {
+  if (typeDocumentByComeOut === 'come' || isSubleaseDoc || isSaleEquipment) {
     costPrice = 0;
     console.log(
-      isSubleaseDoc
-        ? '📥 Субаренда — себестоимость со склада не рассчитывается'
-        : '📥 Приходной документ - себестоимость не рассчитывается',
+      isSaleEquipment
+        ? '📥 Реализация оборудования — себестоимость со склада не рассчитывается'
+        : isSubleaseDoc
+          ? '📥 Субаренда — себестоимость со склада не рассчитывается'
+          : '📥 Приходной документ - себестоимость не рассчитывается',
     );
   } else {
     // Для остальных документов рассчитываем по средней цене (AVEKO)

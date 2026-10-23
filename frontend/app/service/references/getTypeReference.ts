@@ -9,7 +9,7 @@ export const getTypeReference = (contentName: string): TypeReference => {
   }
   
   // Если нет, ищем по description (для обратной совместимости)
-  const menuItem = MenuData.filter(item => item.title == 'Номлар')[0]?.subMenu?.find(el => el.description == contentName);
+  const menuItem = MenuData.filter(item => item.title == 'Справочники')[0]?.subMenu?.find(el => el.description == contentName);
   const title = menuItem?.title;
 
   switch (title) {

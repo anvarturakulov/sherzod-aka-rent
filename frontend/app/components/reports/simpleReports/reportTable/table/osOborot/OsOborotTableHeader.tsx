@@ -13,29 +13,29 @@ export const OsOborotTableHeader = (): JSX.Element => (
         Артикул
       </td>
       <td className={styles.groupHead} colSpan={3}>
-        Бошлангич колдик
+        Начальный остаток
       </td>
       <td className={styles.groupHead} colSpan={2}>
-        Кирим
+        Приход
       </td>
       <td className={styles.groupHead} colSpan={2}>
-        Чиким
+        Расход
       </td>
       <td className={styles.groupHead} colSpan={3}>
-        Охирги колдик
+        Конечный остаток
       </td>
     </tr>
     <tr>
-      <td className={styles.subHead}>Баланс киймат</td>
+      <td className={styles.subHead}>Балансовая стоимость</td>
       <td className={styles.subHead}>Амортизация</td>
-      <td className={styles.subHead}>Колдик киймат</td>
-      <td className={styles.subHead}>Асосий восита</td>
+      <td className={styles.subHead}>Остаточная стоимость</td>
+      <td className={styles.subHead}>Основное средство</td>
       <td className={styles.subHead}>Амортизация</td>
-      <td className={styles.subHead}>Асосий восита</td>
+      <td className={styles.subHead}>Основное средство</td>
       <td className={styles.subHead}>Амортизация</td>
-      <td className={styles.subHead}>Баланс киймат</td>
+      <td className={styles.subHead}>Балансовая стоимость</td>
       <td className={styles.subHead}>Амортизация</td>
-      <td className={styles.subHead}>Колдик киймат</td>
+      <td className={styles.subHead}>Остаточная стоимость</td>
     </tr>
   </thead>
 );

@@ -7,10 +7,10 @@ import { useEnterpriseName } from '../../hooks/useEnterpriseName';
 export const Section = ({className, data, sectionType, currentSection, ...props }: SectionProps) :JSX.Element => {
     const enterpriseName = useEnterpriseName();
     let title 
-    if (sectionType == 'delivery') title = 'ЮК ЕТКАЗУВЧИЛАР'
-    if (sectionType == 'filial') title = 'ЦЕХЛАР'
-    if (sectionType == 'buxgalter') title = 'КАССА КАРТОЧКА'
-    if (sectionType == 'founder') title = 'ТАЪСИСЧИЛАР'
+    if (sectionType == 'delivery') title = 'ДОСТАВЩИКИ'
+    if (sectionType == 'filial') title = 'ЦЕХА'
+    if (sectionType == 'buxgalter') title = 'КАССОВАЯ КАРТОЧКА'
+    if (sectionType == 'founder') title = 'УЧРЕДИТЕЛИ'
 
     let datas = data ? data.filter((item: any) => item?.reportType == `SECTION-${sectionType.toLocaleUpperCase()}`)[0]?.values : []
 

@@ -10,54 +10,54 @@ interface Result {
 export const getOptionsByReportType = (reportType:string, schet: Schet):Result => {
     switch (reportType) {
         case ReportType.Personal:
-            return {label:'Ходим', typeReference: TypeReference.WORKERS}
+            return {label:'Сотрудник', typeReference: TypeReference.WORKERS}
         case ReportType.MediatorPersonal:
-            return {label:'Воситачи', typeReference: TypeReference.PARTNERS}
+            return {label:'Посредник', typeReference: TypeReference.PARTNERS}
         case ReportType.DelivererPersonal:
             return {label:'Доставщик', typeReference: TypeReference.DELIVERERS}
         case ReportType.MatOborot:
             if (schet === Schet.S12) {
-                return { label: 'Мижоз', typeReference: TypeReference.PARTNERS }
+                return { label: 'Клиент', typeReference: TypeReference.PARTNERS }
             }
-            return { label: 'Булим ёки цех', typeReference: TypeReference.STORAGES }
+            return { label: 'Подразделение или цех', typeReference: TypeReference.STORAGES }
         case ReportType.OsOborot:
-            return { label: 'Булим ёки цех', typeReference: TypeReference.STORAGES }
+            return { label: 'Подразделение или цех', typeReference: TypeReference.STORAGES }
         case ReportType.Clients:
-            return { label: 'Булим', typeReference: TypeReference.STORAGES }
+            return { label: 'Подразделение', typeReference: TypeReference.STORAGES }
         case ReportType.AktSverka:
-            return { label: 'Хамкор', typeReference: TypeReference.PARTNERS }
+            return { label: 'Контрагент', typeReference: TypeReference.PARTNERS }
         case ReportType.Oborotka:
             switch(schet) {
                 case Schet.S10:
-                    return { label: 'Хом ашё', typeReference: TypeReference.STORAGES }    
+                    return { label: 'Сырьё', typeReference: TypeReference.STORAGES }    
                 case Schet.S20:
-                    return { label: 'Харажатлар', typeReference: TypeReference.STORAGES }
+                    return { label: 'Затраты', typeReference: TypeReference.STORAGES }
                 case Schet.S23:
                     return { label: '23 счет', typeReference: TypeReference.STORAGES }
                 case Schet.S28:
-                    return { label: 'Тайёр махсулот', typeReference: TypeReference.STORAGES }    
+                    return { label: 'Готовая продукция', typeReference: TypeReference.STORAGES }    
                 case Schet.S40:
-                    return { label: 'Мижозлар', typeReference: TypeReference.PARTNERS }
+                    return { label: 'Клиенты', typeReference: TypeReference.PARTNERS }
                 case Schet.S41:
-                    return { label: 'Ички корхоналар', typeReference: TypeReference.PARTNERS }
+                    return { label: 'Внутренние предприятия', typeReference: TypeReference.PARTNERS }
                 case Schet.S60:
-                    return { label: 'Хамкорлар', typeReference: TypeReference.PARTNERS }
+                    return { label: 'Контрагенты', typeReference: TypeReference.PARTNERS }
                 case Schet.S50:
                     return { label: 'Касса', typeReference: TypeReference.STORAGES }
                 case Schet.S66:
-                    return { label: 'Таъсисчилар', typeReference: TypeReference.STORAGES }
+                    return { label: 'Учредители', typeReference: TypeReference.STORAGES }
                 case Schet.S67:
-                    return { label: 'Ходимлар иш хакиси', typeReference: TypeReference.WORKERS }
+                    return { label: 'Зарплата сотрудников', typeReference: TypeReference.WORKERS }
                 case Schet.S65:
-                    return { label: 'Воситачилар бонуси', typeReference: TypeReference.PARTNERS }
+                    return { label: 'Бонус посредников', typeReference: TypeReference.PARTNERS }
                 case Schet.S64:
-                    return { label: 'Доставщиклар', typeReference: TypeReference.DELIVERERS }
+                    return { label: 'Доставщики', typeReference: TypeReference.DELIVERERS }
                 case Schet.S68:
-                    return { label: 'Хамёнлар', typeReference: TypeReference.STORAGES }
+                    return { label: 'Кошельки', typeReference: TypeReference.STORAGES }
                 default:
-                    return { label: 'Ноаник', typeReference: TypeReference.STORAGES }
+                    return { label: 'Неизвестно', typeReference: TypeReference.STORAGES }
             }
         default:
-            return { label: 'Корхона', typeReference: TypeReference.PARTNERS }
+            return { label: 'Предприятие', typeReference: TypeReference.PARTNERS }
     }
 }

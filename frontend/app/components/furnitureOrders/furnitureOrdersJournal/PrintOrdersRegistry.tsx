@@ -48,15 +48,15 @@ export const PrintOrdersRegistry = forwardRef<HTMLDivElement, PrintOrdersRegistr
                     <thead>
                         <tr>
                             <th>№</th>
-                            <th>Рақам</th>
+                            <th>Номер</th>
                             <th>Тип</th>
-                            <th>Мижоз</th>
-                            <th>Маҳсулот</th>
+                            <th>Клиент</th>
+                            <th>Продукция</th>
                             <th>Этап</th>
-                            <th>Сана</th>
-                            <th>Муддат</th>
-                            <th>Жами</th>
-                            <th>Изоҳ</th>
+                            <th>Дата</th>
+                            <th>Срок</th>
+                            <th>Итого</th>
+                            <th>Комментарий</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -81,9 +81,9 @@ export const PrintOrdersRegistry = forwardRef<HTMLDivElement, PrintOrdersRegistr
                     </tbody>
                     <tfoot>
                         <tr className={styles.footerRow}>
-                            <td colSpan={8}>Жами заявкалар: {safeOrders.length}</td>
+                            <td colSpan={8}>Всего заявок: {safeOrders.length}</td>
                             <td className={styles.sumCell} colSpan={2}>
-                                Жами сумма: {totalSum.toLocaleString()}
+                                Итого сумма: {totalSum.toLocaleString()}
                             </td>
                         </tr>
                     </tfoot>

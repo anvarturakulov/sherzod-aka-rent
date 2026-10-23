@@ -78,6 +78,7 @@ import { ClientContractsModule } from "./clientContracts/clientContracts.module"
 import { RentalContract } from "./rentalContracts/rentalContract.model";
 import { RentalContractsModule } from "./rentalContracts/rentalContracts.module";
 import { ClientToolBatchesModule } from "./clientToolBatches/clientToolBatches.module";
+import { ToolComponentsModule } from "./toolComponents/tool-components.module";
 import { SubleaseToolBatchesModule } from "./subleaseToolBatches/subleaseToolBatches.module";
 import { PricingPolicyModule } from "./pricingPolicy/pricing-policy.module";
 import { TimeModule } from "./common/time.module";
@@ -205,6 +206,7 @@ import { PricingPolicySnapshotValue } from "./pricingPolicy/pricingPolicySnapsho
     ClientContractsModule,
     RentalContractsModule,
     ClientToolBatchesModule,
+    ToolComponentsModule,
     SubleaseToolBatchesModule,
     PricingPolicyModule,
     TimeModule,

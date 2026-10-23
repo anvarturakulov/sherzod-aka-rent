@@ -2,22 +2,21 @@
 const nextConfig = {}
 
 module.exports = {
+    typescript: {
+        // Только для deploy/laptop/package-for-laptop.ps1. Обычная сборка по-прежнему проверяет типы.
+        ignoreBuildErrors: process.env.LAPTOP_PACKAGE_BUILD === '1',
+    },
     // NEXT_PUBLIC_* подставляется при next build; задайте NEXT_PUBLIC_DOMAIN в .env.production на сервере перед сборкой.
     env: {
         NEXT_PUBLIC_DOMAIN:
             process.env.NEXT_PUBLIC_DOMAIN ||
             (process.env.NODE_ENV === 'production'
-                ? 'https://jbi.kord.uz'
-                : 'http://localhost:7007'),
+                ? 'http://localhost:7008'
+                : 'http://localhost:7008'),
     },
     images: {
         // Обновлено для Next.js 16 - используем remotePatterns вместо domains
         remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: 'jbi.kord.uz',
-                pathname: '/api/upload/image/**',
-            },
             {
                 protocol: 'https',
                 hostname: 'mebers.kord.uz',
@@ -26,7 +25,13 @@ module.exports = {
             {
                 protocol: 'http',
                 hostname: 'localhost',
-                port: '7007',
+                port: '7008',
+                pathname: '/api/upload/image/**',
+            },
+            {
+                protocol: 'http',
+                hostname: '127.0.0.1',
+                port: '7008',
                 pathname: '/api/upload/image/**',
             },
         ],

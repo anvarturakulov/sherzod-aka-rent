@@ -62,7 +62,7 @@ export const EnterpriseIntercompanyReport = ({ className, data, ...props }: Ente
 
         console.log('handleCellClick:', { columnType, item, storageIds: item.storageIds, finalEnterpriseId });
 
-        showMessage('Маълумот юкланмокда. Кутуб туринг', 'warm', setMainData);
+        showMessage('Данные загружаются. Подождите', 'warm', setMainData);
 
         try {
             const config = {
@@ -444,13 +444,13 @@ export const EnterpriseIntercompanyReport = ({ className, data, ...props }: Ente
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th className={styles.enterpriseColumn}>Корхона</th>
-                        <th className={styles.numberColumn}>Пул олган</th>
-                        <th className={styles.numberColumn}>Материал ва хизмат олган</th>
-                        <th className={`${styles.numberColumn} ${styles.totalColumn}`}>Жами олгани</th>
-                        <th className={styles.numberColumn}>Материал ва хизмат берган</th>
-                        <th className={styles.numberColumn}>Пул берган</th>
-                        <th className={`${styles.numberColumn} ${styles.totalColumn}`}>Жами бергани</th>
+                        <th className={styles.enterpriseColumn}>Предприятие</th>
+                        <th className={styles.numberColumn}>Получил деньги</th>
+                        <th className={styles.numberColumn}>Получил материалы и услуги</th>
+                        <th className={`${styles.numberColumn} ${styles.totalColumn}`}>Итого получено</th>
+                        <th className={styles.numberColumn}>Отдал материалы и услуги</th>
+                        <th className={styles.numberColumn}>Отдал деньги</th>
+                        <th className={`${styles.numberColumn} ${styles.totalColumn}`}>Итого отдано</th>
                     </tr>
                 </thead>
                 <tbody>

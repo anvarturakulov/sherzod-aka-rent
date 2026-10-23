@@ -63,7 +63,7 @@ export const ReferencesListSearch = memo<ReferencesListSearchProps>(({
         )}
         <input
           type="text"
-          placeholder="Номи бўйича излаш (+(комбинация), -(ёки), !(йук))..."
+          placeholder="Поиск по наименованию (+(комбинация), -(или), !(нет))..."
           value={nameValue}
           onChange={handleNameChange}
           className={`${styles.searchInput} ${styles.searchInputName}`}

@@ -65,11 +65,11 @@ export const MaterialByDepartment = ({ className, data, ...props }: MaterialByDe
         return (
             <div className={styles.container}>
                 <div className={styles.title}>
-                    ХОМ АШЁ ЧИКИМИ - ЦЕХЛАР БУЙИЧА
+                    СПИСАНИЕ СЫРЬЯ — ПО ЦЕХАМ
                     {enterpriseName && <span> - {enterpriseName}</span>}
                 </div>
                 <div className={styles.emptyMessage}>
-                    Маълумотлар топилмади
+                    Данные не найдены
                 </div>
             </div>
         );
@@ -78,7 +78,7 @@ export const MaterialByDepartment = ({ className, data, ...props }: MaterialByDe
     return (
         <div className={styles.container} {...props}>
             <div className={styles.title}>
-                ХОМ АШЁ ЧИКИМИ - ЦЕХЛАР БУЙИЧА
+                СПИСАНИЕ СЫРЬЯ — ПО ЦЕХАМ
                 {enterpriseName && <span> - {enterpriseName}</span>}
             </div>
 
@@ -89,7 +89,7 @@ export const MaterialByDepartment = ({ className, data, ...props }: MaterialByDe
                         onClick={() => toggleDept(dept.departmentId)}
                     >
                         <span className={styles.departmentName}>{dept.departmentName}</span>
-                        <span className={styles.departmentTotal}>Жами: {numberValue(dept.totalSumma)}</span>
+                        <span className={styles.departmentTotal}>Итого: {numberValue(dept.totalSumma)}</span>
                     </div>
                     
                     {expandedDepts.has(dept.departmentId) && (
@@ -97,7 +97,7 @@ export const MaterialByDepartment = ({ className, data, ...props }: MaterialByDe
                             <thead>
                                 <tr>
                                     <th>Материал</th>
-                                    <th>Сон</th>
+                                    <th>Кол-во</th>
                                     <th>Сумма</th>
                                 </tr>
                             </thead>
@@ -110,7 +110,7 @@ export const MaterialByDepartment = ({ className, data, ...props }: MaterialByDe
                                     </tr>
                                 ))}
                                 <tr className={styles.totalRow}>
-                                    <td>Жами</td>
+                                    <td>Итого</td>
                                     <td className={styles.totalTd}>{numberValue(dept.totalCount)}</td>
                                     <td className={styles.totalTd}>{numberValue(dept.totalSumma)}</td>
                                 </tr>
@@ -121,7 +121,7 @@ export const MaterialByDepartment = ({ className, data, ...props }: MaterialByDe
             ))}
 
             <div className={styles.grandTotal}>
-                <span className={styles.grandTotalLabel}>УМУМИЙ ЖАМИ:</span>
+                <span className={styles.grandTotalLabel}>ОБЩИЙ ИТОГО:</span>
                 <span className={styles.grandTotalValue}>{numberValue(grandTotals.summa)}</span>
             </div>
         </div>

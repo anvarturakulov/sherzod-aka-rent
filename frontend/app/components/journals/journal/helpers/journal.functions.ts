@@ -82,12 +82,12 @@ export const deleteItemDocument = async (
   // Для документов со статусом PROVEDEN — уполномоченные роли или ZAVSKLAD для своих типов
   if (documentStatus === DocSTATUS.PROVEDEN) {
     if (!canDeleteProvedenDocument(user?.role) && !zavskladOk) {
-      alert('Узр. Хисоботларга кушилган хужжат рахбар ёки бухгалтер томонидан учирилиши мумкин');
+      alert('Извините. Документ, попавший в отчёты, может удалить только руководитель или бухгалтер');
       return;
     }
     // Форма документа уже спрашивает confirm перед reopen
     if (!options?.reopen) {
-      if (!confirm('Проводкани бекор қилиб, хужжатни таҳрирлаш учун очасизми?')) {
+      if (!confirm('Отменить проводку и открыть документ для редактирования?')) {
         return;
       }
     }
@@ -104,7 +104,7 @@ export const deleteItemDocument = async (
   ) {
     markToDeleteDocument(id, setMainData, token, mainData, options?.reopen)
   } else {
-    alert('Узр. Факат админлар учириш хукукига эга')
+    alert('Извините. Удалять могут только администраторы')
   }
 }
 
@@ -180,7 +180,7 @@ export const setProvodkaToDoc = async (id: number | undefined, docDate: number| 
       (immediateProvodka && !(isMoveCash && receiverHasBuxgalter)));
 
   if (docStatus == DocSTATUS.OPEN || pendingAllowSetProvodka) {
-    let yes = confirm('Хужжатга проводка берамизми')
+    let yes = confirm('Провести документ?')
     
     let docUserId: number | undefined;
     let docType: DocumentType | string | undefined;
@@ -211,14 +211,14 @@ export const setProvodkaToDoc = async (id: number | undefined, docDate: number| 
         setIsDisabled(false)
       }
     } else {
-      alert('Узр. Сиз ушбу хужжатга проводка бера олмайсиз')
+      alert('Извините. Вы не можете провести этот документ')
     }
   } else if (docStatus === DocSTATUS.PENDING) {
     alert(
-      'Бу хужжат тасдиклашни кутмокда. Проводка фақат HEADGLOBAL томонидан тасдиклаш орқали берилади.',
+      'Этот документ ожидает утверждения. Проводка возможна только после утверждения HEADGLOBAL.',
     );
   } else {
-    alert('Аввал, хужжат холатини узгартиринг');
+    alert('Сначала измените статус документа');
   }
 }
 
@@ -231,7 +231,7 @@ export const cleanDocs = (dateStart: number, dateEnd: number, token: string | un
   const dateEndInString = dateNumberToString(dateEnd)
   
   if (nowInString == dateEndInString) {
-      if (confirm('Хужжатларни тозалашга бугунги кунги хужжатлар ха кираяпти. Сиз розимизсиз?')) {
+      if (confirm('При очистке документов также попадут документы за сегодня. Вы согласны?')) {
         deleteComeProducts(dateStart, dateEnd, token, setMainData)
       }
   } else {

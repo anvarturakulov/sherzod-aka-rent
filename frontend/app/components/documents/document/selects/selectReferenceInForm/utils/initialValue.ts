@@ -18,7 +18,7 @@ export const getInitialValue = ({
   type,
   isNewDocument
 }: GetInitialValueParams): string => {
-  if (!data || data.length === 0) return 'Танланмаган';
+  if (!data || data.length === 0) return 'Не выбрано';
 
 
   // Поиск элемента по ID
@@ -30,7 +30,7 @@ export const getInitialValue = ({
     }
   });
 
-  if (!foundItem) return 'Танланмаган';
+  if (!foundItem) return 'Не выбрано';
 
   // Для автомобилей показываем название, модель и тип
   if (type === 'car' && foundItem.refValues?.carModel) {

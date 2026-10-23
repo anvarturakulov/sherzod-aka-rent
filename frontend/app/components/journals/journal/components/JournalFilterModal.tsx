@@ -310,7 +310,7 @@ export const JournalFilterModal = memo<JournalFilterModalProps>(function Journal
                                                         })
                                                     }
                                                 >
-                                                    <option value="">Танланмаган</option>
+                                                    <option value="">Не выбрано</option>
                                                     {enterpriseOptions.map((e) => (
                                                         <option key={e.id} value={e.id}>
                                                             {e.name}
@@ -332,7 +332,7 @@ export const JournalFilterModal = memo<JournalFilterModalProps>(function Journal
                                                         })
                                                     }
                                                 >
-                                                    <option value="">Танланмаган</option>
+                                                    <option value="">Не выбрано</option>
                                                     {documentTypeOptions.map((opt) => (
                                                         <option key={opt.value} value={opt.value}>
                                                             {opt.label}
@@ -371,7 +371,7 @@ export const JournalFilterModal = memo<JournalFilterModalProps>(function Journal
                                                             ? allDocumentsOrgOptions
                                                             : undefined
                                                     }
-                                                    placeholder="Танланмаган"
+                                                    placeholder="Не выбрано"
                                                 />
                                             ) : (
                                                 <input

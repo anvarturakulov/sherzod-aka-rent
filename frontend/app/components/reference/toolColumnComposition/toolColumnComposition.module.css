@@ -1,0 +1,45 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0 12px;
+  padding: 8px;
+  border: 1px solid var(--border-color-light, #ddd);
+  border-radius: 8px;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.note {
+  font-size: 12px;
+  color: #666;
+}
+
+.row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.select {
+  flex: 1;
+  min-width: 0;
+}
+
+.qty {
+  width: 90px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.add,
+.save,
+.remove {
+  cursor: pointer;
+}

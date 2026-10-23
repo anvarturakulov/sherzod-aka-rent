@@ -124,7 +124,7 @@ export const getAnalitic = (
     headers: { Authorization: `Bearer ${token}` },
   };
 
-  showMessage('Маълумот юкланмокда. Кутуб туринг', 'warm', setMainData);
+  showMessage('Данные загружаются. Подождите', 'warm', setMainData);
   axios
     .get(url, config)
     .then(function (response) {

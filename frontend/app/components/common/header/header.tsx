@@ -259,7 +259,7 @@ export default function Header({
                             type="button"
                             className={styles.readyOrdersHint}
                             onClick={() => setMainData && setMainData('showReadyRentalOrdersModal', true)}
-                            title="Ёпиш мумкин бўлган буюртмалар"
+                            title="Заказы, которые можно закрыть"
                         >
                             <span className={styles.readyOrdersCount}>
                                 {readyRentalPayload?.orders?.length || 0}
@@ -301,7 +301,7 @@ export default function Header({
                                     onClick={onBack}
                                     disabled={uploadingDashboard}
                                 >
-                                    Орқага
+                                    Назад
                                 </button>
                             )}
                             {onRefresh && (
@@ -311,7 +311,7 @@ export default function Header({
                                     onClick={onRefresh}
                                     disabled={uploadingDashboard}
                                 >
-                                    {uploadingDashboard ? 'Юкланмокда...' : 'Янгилаш'}
+                                    {uploadingDashboard ? 'Загрузка...' : 'Обновить'}
                                 </button>
                             )}
                             {onPrint && (
@@ -321,7 +321,7 @@ export default function Header({
                                     onClick={onPrint}
                                     disabled={uploadingDashboard}
                                 >
-                                    Чоп этиш
+                                    Печать
                                 </button>
                             )}
                         </div>
@@ -434,7 +434,7 @@ export default function Header({
                                 type="button"
                                 className={styles.readyOrdersHint}
                                 onClick={() => setMainData && setMainData('showReadyRentalOrdersModal', true)}
-                                title="Ёпиш мумкин бўлган буюртмалар"
+                                title="Заказы, которые можно закрыть"
                             >
                                 <span className={styles.readyOrdersCount}>
                                     {readyRentalPayload?.orders?.length || 0}

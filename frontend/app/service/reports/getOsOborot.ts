@@ -76,7 +76,7 @@ export const getOsOborot = (
         const msg =
           error.response?.data?.message ||
           error.message ||
-          'Хисоботни шакллантириб бўлмади';
+          'Не удалось сформировать отчёт';
         showMessage(msg, 'error', setMainData);
         setMainData('uploadingDashboard', false);
       }

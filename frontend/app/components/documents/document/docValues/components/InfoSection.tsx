@@ -172,31 +172,27 @@ const InfoSection = memo<InfoSectionProps>(({
     <div className={styles.infoBox}>
       {1 && (
         <div style={{ marginBottom: '10px', padding: '8px', background: '#f0f0f0', borderRadius: '4px', fontSize: '14px' }}>
-          <strong>Корхона:</strong> {userEnterpriseName || documentEnterpriseName}
+          <strong>Предприятие:</strong> {userEnterpriseName || documentEnterpriseName}
         </div>
       )}
       <div className={styles.dataBox}>
         {contentName === DocumentType.TransferToolsToClient ||
         contentName === DocumentType.OrderToolsToClient ||
-        contentName === DocumentType.TransferSubleaseToolsToClient ? (
-          <div className={styles.transferInfoCol}>
-            <div className={styles.dataBoxDates}>
+        contentName === DocumentType.TransferSubleaseToolsToClient ||
+        contentName === DocumentType.ReceiveToolsFromClient ||
+        contentName === DocumentType.ReceiveSubleaseToolsFromClient ? (
+          <div className={styles.dataBoxDates}>
+            <div className={styles.dateTimeField}>
               <InputForDateTime
-                label="Сана ва вақт"
+                label="Дата и время"
                 id="date"
                 autoFocus={isNewDocument}
               />
-              {contentName !== DocumentType.OrderToolsToClient && (
-                <InputForDateTime
-                  label="Ҳисоблаш санаси"
-                  id="settlementDate"
-                />
-              )}
             </div>
             {(contentName === DocumentType.TransferToolsToClient ||
               contentName === DocumentType.OrderToolsToClient) && (
               <div className={styles.rentTariffTypeBox}>
-                <div className={styles.rentTariffTypeLabel}>Тариф ижара</div>
+                <div className={styles.rentTariffTypeLabel}>Тариф аренды</div>
                 <div className={styles.rentTariffTypeOptions}>
                   <label className={styles.rentTariffTypeOption}>
                     <input
@@ -207,7 +203,7 @@ const InfoSection = memo<InfoSectionProps>(({
                       disabled={!isTransferTariffEditable}
                       onChange={() => handleRentTariffTypeChange(RentTariffType.CASH)}
                     />
-                    Нақд / физ.шахс
+                    Наличные / физ.лицо
                   </label>
                   <label className={styles.rentTariffTypeOption}>
                     <input
@@ -224,34 +220,21 @@ const InfoSection = memo<InfoSectionProps>(({
               </div>
             )}
           </div>
-        ) : contentName === DocumentType.ReceiveToolsFromClient ||
-          contentName === DocumentType.ReceiveSubleaseToolsFromClient ? (
-          <div className={styles.dataBoxDates}>
-            <InputForDateTime
-              label="Сана ва вақт"
-              id="date"
-              autoFocus={isNewDocument}
-            />
-            <InputForDateTime
-              label="Кайтариш санаси ва вакти"
-              id="returnDateTime"
-            />
-          </div>
         ) : (
-          <InputForDate label={'Сана'} id='date' autoFocus={isNewDocument} />
+          <InputForDate label={'Дата'} id='date' autoFocus={isNewDocument} />
         )}
         <Info content={`${documentId}`} label='№' className={styles.docNumber} />
         {Number(currentDocument?.docValues?.sourceRentalOrderDocId) > 0 && (
           <Info
             content={`${currentDocument.docValues.sourceRentalOrderDocId}`}
-            label='Буюртма'
+            label='Заказ'
             className={styles.docNumber}
           />
         )}
         {Number(currentDocument?.docValues?.fulfilledByTransferDocId) > 0 && (
           <Info
             content={`${currentDocument.docValues.fulfilledByTransferDocId}`}
-            label='Топшириш'
+            label='Выдача'
             className={styles.docNumber}
           />
         )}

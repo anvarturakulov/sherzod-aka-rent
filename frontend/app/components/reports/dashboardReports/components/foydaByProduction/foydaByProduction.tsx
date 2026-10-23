@@ -49,12 +49,12 @@ export const FoydaByProduction = ({ className, data, ...props }: FoydaByProducti
     
     // Маппинг типов расходов на счета
     const expenseTypeMapping: Record<string, { debet: Schet, kredit: Schet, label: string }> = {
-        cashExpenses: { debet: Schet.S20, kredit: Schet.S50, label: 'Пуллик харажатлар' },
-        materialExpenses: { debet: Schet.S20, kredit: Schet.S10, label: 'Цемент ва арматура харажати' },
+        cashExpenses: { debet: Schet.S20, kredit: Schet.S50, label: 'Денежные расходы' },
+        materialExpenses: { debet: Schet.S20, kredit: Schet.S10, label: 'Расход цемента и арматуры' },
         productionExpenses: { debet: Schet.S20, kredit: Schet.S28, label: 'Производственные расходы' },
-        internalExpenses: { debet: Schet.S20, kredit: Schet.S41, label: 'Автохизмат ва булимлардан келган харажатлар' },
-        supplierExpenses: { debet: Schet.S20, kredit: Schet.S60, label: 'Электроэнергия ва таъминот. келган харажатлар' },
-        salaryExpenses: { debet: Schet.S20, kredit: Schet.S67, label: 'Иш хаки харажатлари' }
+        internalExpenses: { debet: Schet.S20, kredit: Schet.S41, label: 'Расходы от автосервиса и отделов' },
+        supplierExpenses: { debet: Schet.S20, kredit: Schet.S60, label: 'Расходы на электроэнергию и от поставщиков' },
+        salaryExpenses: { debet: Schet.S20, kredit: Schet.S67, label: 'Расходы на зарплату' }
     };
     
     const handleCellClick = async (column: string, item: any) => {
@@ -68,7 +68,7 @@ export const FoydaByProduction = ({ className, data, ...props }: FoydaByProducti
             ? (selectedEnterpriseId as any)?.id 
             : selectedEnterpriseId;
         
-        showMessage('Маълумот юкланмокда. Кутуб туринг', 'warm', setMainData);
+        showMessage('Данные загружаются. Подождите', 'warm', setMainData);
         
         try {
             let url = `${process.env.NEXT_PUBLIC_DOMAIN}/api/reports/expense-entries?` +
@@ -141,7 +141,7 @@ export const FoydaByProduction = ({ className, data, ...props }: FoydaByProducti
     return (
         <>
             <div className={styles.title}>
-                ФОЙДА ХИСОБИ (ЦЕХЛАР БУЙИЧА)
+                РАСЧЁТ ПРИБЫЛИ (ПО ЦЕХАМ)
                 {enterpriseName && <span> - {enterpriseName}</span>}
             </div>
             <div className={styles.tableContainer} data-report-scroll>
@@ -150,17 +150,17 @@ export const FoydaByProduction = ({ className, data, ...props }: FoydaByProducti
                         <tr>
                             <td>№</td>
                             <td>Цех</td>
-                            <td>Ишлаб чик. махсулот (сотиш нархида)</td>
-                            <td>Пуллик харажатлар</td>
-                            <td>Хом ашёлар харажатлари</td>
-                            <td>Ички булимлардан келган харажатлар</td>
-                            <td>Электроэнергия ва таъминот. келган харажатлар</td>
-                            <td>Иш хаки харажатлари</td>
-                            <td>Жорий харажатлар</td>
-                            <td>Жорий фойда</td>
-                            <td>ИТР ва умумий харажатлар</td>
-                            <td>Жами харажатлар</td>
-                            <td>Фойда</td>
+                            <td>Произведённая продукция (по цене продажи)</td>
+                            <td>Денежные расходы</td>
+                            <td>Расходы на сырьё</td>
+                            <td>Расходы от внутренних отделов</td>
+                            <td>Расходы на электроэнергию и от поставщиков</td>
+                            <td>Расходы на зарплату</td>
+                            <td>Текущие расходы</td>
+                            <td>Текущая прибыль</td>
+                            <td>ИТР и общие расходы</td>
+                            <td>Итого расходов</td>
+                            <td>Прибыль</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -214,7 +214,7 @@ export const FoydaByProduction = ({ className, data, ...props }: FoydaByProducti
                         ))}
                         <tr className={styles.totalRow}>
                             <td></td>
-                            <td>ЖАМИ</td>
+                            <td>ИТОГО</td>
                             <td>{numberValue(totalIncome)}</td>
                             <td>{numberValue(totalCashExpenses)}</td>
                             <td>{numberValue(totalMaterialExpenses)}</td>

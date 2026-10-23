@@ -15,7 +15,7 @@ export const setProvodkaByReciever = (
   }
 
   if (proveden != undefined && proveden == false) {
-    let yes = confirm('Хужжатни кабул киласизми');
+    let yes = confirm('Принять документ?');
     if ( yes ) {
       setProvodkaToDocument(id, setMainData, mainData)
     } 

@@ -10,13 +10,13 @@ import IcoSettings from './ico/settings.svg'
 import IcoFurniture from './ico/furniture.svg'
 
 const ICON_BY_TITLE: Record<string, JSX.Element> = {
-    'Асосий натижалар': <IcoCube />,
+    'Основные показатели': <IcoCube />,
     'КПП': <IcoTable />,
-    'Хужжатлар': <IcoCircle />,
-    'Номлар': <IcoChart />,
-    'Хисоботлар': <IcoEqual />,
-    'Дастур': <IcoSettings />,
-    'Мебель ишлаб чиқариш': <IcoFurniture />,
+    'Документы': <IcoCircle />,
+    'Справочники': <IcoChart />,
+    'Отчёты': <IcoEqual />,
+    'Программа': <IcoSettings />,
+    'Производство мебели': <IcoFurniture />,
 }
 
 export default function Icons({title, className, ...props}:IconsProps):JSX.Element {

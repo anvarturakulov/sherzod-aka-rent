@@ -86,27 +86,27 @@ export const ClientOperationsSummary = (): JSX.Element | null => {
   }
 
   const rows: SummaryRow[] = [
-    { key: 'before', label: 'Мижоз қарзи бошида', value: beforeDebt },
-    { key: 'rent', label: 'Ижарадан даромад', value: summary.rentIncome, sign: '+' },
-    { key: 'sale', label: 'Ускуна сотишдан даромад', value: summary.saleIncome, sign: '+' },
-    { key: 'tovar', label: 'Товар сотиш', value: summary.tovarIncome, sign: '+' },
-    { key: 'payments', label: 'Тўловлар', value: summary.payments, sign: '−' },
+    { key: 'before', label: 'Долг клиента на начало', value: beforeDebt },
+    { key: 'rent', label: 'Доход от аренды', value: summary.rentIncome, sign: '+' },
+    { key: 'sale', label: 'Доход от продажи инструмента', value: summary.saleIncome, sign: '+' },
+    { key: 'tovar', label: 'Продажа товара', value: summary.tovarIncome, sign: '+' },
+    { key: 'payments', label: 'Оплаты', value: summary.payments, sign: '−' },
     {
       key: 'defect',
-      label: 'Брак буйича харажатлар',
+      label: 'Расходы по браку',
       value: summary.defectCost,
       sign: '+',
     },
     { key: 'delivery', label: 'Доставка', value: summary.deliverySum, sign: '+' },
     {
       key: 'changeToClient',
-      label: 'Кайтим',
+      label: 'Сдача',
       value: summary.changeToClient,
       sign: '+',
     },
     {
       key: 'after',
-      label: 'Қолдиқ хужжатдан кейин',
+      label: 'Остаток после документа',
       value: afterDebt,
       isTotal: true,
     },
@@ -121,7 +121,7 @@ export const ClientOperationsSummary = (): JSX.Element | null => {
           onClick={handleRefresh}
           disabled={loading}
         >
-          {loading ? '...' : 'Янгилаш'}
+          {loading ? '...' : 'Обновить'}
         </button>
       </div>
 

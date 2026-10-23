@@ -19,18 +19,18 @@ export const generateSimpleReport = (
   const { startDate, endDate, firstReferenceId } = reportOption;
 
   if (!startDate || !endDate || isNaN(startDate) || isNaN(endDate)) {
-    showMessage('Санани тулдиринг', 'error', setMainData);
+    showMessage('Укажите даты', 'error', setMainData);
     return;
   }
 
   if (startDate > endDate) {
-    showMessage('Бошлангич сана охирги санадан катта бўлмаслиги керак', 'error', setMainData);
+    showMessage('Дата начала не должна быть позже даты окончания', 'error', setMainData);
     return;
   }
 
   if (contentName == ReportType.AktSverka) {
     if (firstReferenceId === null || firstReferenceId === undefined || firstReferenceId === 0) {
-      showMessage('Хамкорни танланг', 'error', setMainData);
+      showMessage('Выберите контрагента', 'error', setMainData);
       return;
     }
   }

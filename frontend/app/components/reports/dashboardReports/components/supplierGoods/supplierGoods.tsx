@@ -18,7 +18,7 @@ const TYPE_TMZ_LABELS: Record<string, string> = {
   [TypeTMZ.PRODUCT]: 'Товар',
   [TypeTMZ.HALFSTUFF]: 'Ярм-фабрикат',
   [TypeTMZ.OS]: 'ОС',
-  [TypeTMZ.TOOLS]: 'Ускуна',
+  [TypeTMZ.TOOLS]: 'Инструмент',
   [TypeTMZ.TOVAR]: 'Товар',
 };
 
@@ -65,7 +65,7 @@ export const SupplierGoods = ({
     }
 
     if (!dateStart || !dateEnd) {
-      setError('Саналарни танланг');
+      setError('Выберите даты');
       return;
     }
 
@@ -74,7 +74,7 @@ export const SupplierGoods = ({
       firstReferenceId === undefined ||
       firstReferenceId === 0
     ) {
-      setError('Таъминотчини танланг');
+      setError('Выберите поставщика');
       return;
     }
 
@@ -91,7 +91,7 @@ export const SupplierGoods = ({
       setReportData(data);
     } catch (e: unknown) {
       const message =
-        e instanceof Error ? e.message : 'Маълумот юклашда хатолик юз берди';
+        e instanceof Error ? e.message : 'Ошибка при загрузке данных';
       setError(message);
       setReportData(null);
     } finally {
@@ -112,13 +112,13 @@ export const SupplierGoods = ({
   return (
     <div className={styles.container} {...props}>
       <div className={styles.title}>
-        Таъминотчи — товар ва материаллар
+        Поставщик — товары и материалы
         {enterpriseName && <span> — {enterpriseName}</span>}
       </div>
 
       <div className={styles.filters}>
         <SelectReference
-          label="Таъминотчи"
+          label="Поставщик"
           visible={true}
           typeReference={TypeReference.PARTNERS}
           id="firstReferenceId"
@@ -129,28 +129,28 @@ export const SupplierGoods = ({
           onClick={loadData}
           disabled={loading}
         >
-          {loading ? 'Юкланмокда...' : 'Янгилаш'}
+          {loading ? 'Загрузка...' : 'Обновить'}
         </button>
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
-      {loading && <div className={styles.loading}>Маълумот юкланмокда...</div>}
+      {loading && <div className={styles.loading}>Загрузка данных...</div>}
 
       {!loading && !error && reportData && items.length === 0 && (
         <div className={styles.emptyMessage}>
           {values?.supplierName
-            ? `${values.supplierName} таъминотчиси бўйича маълумот топилмади`
-            : 'Маълумот мавжуд эмас'}
+            ? `${values.supplierName} — данные по поставщику не найдены`
+            : 'Нет данных'}
         </div>
       )}
 
       {!loading && items.length > 0 && values && (
         <>
           <div className={styles.subtitle}>
-            Таъминотчи: {values.supplierName || '-'} · Давр:{' '}
+            Поставщик: {values.supplierName || '-'} · Период:{' '}
             {formatPeriodDate(values.periodStart)} —{' '}
-            {formatPeriodDate(values.periodEnd)} · Ҳужжатлар:{' '}
-            {totals?.documentsCount ?? 0} · Операциялар:{' '}
+            {formatPeriodDate(values.periodEnd)} · Документы:{' '}
+            {totals?.documentsCount ?? 0} · Операции:{' '}
             {totals?.operationsCount ?? 0}
           </div>
 
@@ -158,13 +158,13 @@ export const SupplierGoods = ({
             <thead>
               <tr>
                 <th className={`${styles.center} ${styles.indexCol}`}>№</th>
-                <th className={styles.dateCol}>Сана</th>
+                <th className={styles.dateCol}>Дата</th>
                 <th className={styles.articleCol}>Артикул</th>
-                <th>Номи</th>
-                <th className={styles.typeCol}>Тури</th>
-                <th className={styles.unitCol}>Улч. бир.</th>
-                <th className={styles.numeric}>Сони</th>
-                <th className={styles.numeric}>Нарх</th>
+                <th>Наименование</th>
+                <th className={styles.typeCol}>Тип</th>
+                <th className={styles.unitCol}>Ед. изм.</th>
+                <th className={styles.numeric}>Кол-во</th>
+                <th className={styles.numeric}>Цена</th>
                 <th className={styles.numeric}>Сумма</th>
               </tr>
             </thead>
@@ -196,7 +196,7 @@ export const SupplierGoods = ({
               ))}
               <tr className={styles.summaryRow}>
                 <td colSpan={6} className={styles.center}>
-                  Жами
+                  Итого
                 </td>
                 <td className={styles.numeric}>
                   {numberValue(Number(totals?.totalCount) || 0)}

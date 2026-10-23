@@ -1,16 +1,16 @@
 import { DocumentType } from '@/app/interfaces/document.interface';
 
 export const DOC_TABLE_LABELS = {
-  WORKER: 'Ходим',
-  PARTNER: 'Хамкор',
-  NAME: 'Номи',
-  BALANCE: 'Колдик',
-  COUNT: 'Сони',
-  PRICE: 'Нархи',
-  TOTAL: 'Суммаси',
-  RECEIVER: 'Олувчи',
-  RECEIVED_CASH: 'Олинган пул',
-  COMMENT: 'Изох',
+  WORKER: 'Сотрудник',
+  PARTNER: 'Партнёр',
+  NAME: 'Наименование',
+  BALANCE: 'Остаток',
+  COUNT: 'Количество',
+  PRICE: 'Цена',
+  TOTAL: 'Сумма',
+  RECEIVER: 'Получатель',
+  RECEIVED_CASH: 'Полученные деньги',
+  COMMENT: 'Комментарий',
   DELETE_PLACEHOLDER: '____'
 } as const;
 

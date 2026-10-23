@@ -49,14 +49,14 @@ export const onSubmit = (
 
     if (isTmzAttributeDictionaryType(typeReference)) {
         if (body.name.trim().length === 0) {
-            showMessage('Қийматни тулдиринг', 'error', setMainData);
+            showMessage('Заполните значение', 'error', setMainData);
             return;
         }
         if (
             typeReference === TypeReference.TMZ_SHORT_NAME &&
             body.refValues?.typeTMZ == undefined
         ) {
-            showMessage('ТМБ турини танланг', 'error', setMainData);
+            showMessage('Выберите тип ТМЦ', 'error', setMainData);
             return;
         }
         updateCreateReference(body, typeReference, isNewReference, setMainData, token, mutate, inlineInstanceId, inlineSlotKey);
@@ -64,14 +64,14 @@ export const onSubmit = (
     }
 
     if (typeReference == TypeReference.TMZ && body.refValues?.typeTMZ == undefined) {
-        showMessage('ТМБ турини танланг', 'error', setMainData);
+        showMessage('Выберите тип ТМЦ', 'error', setMainData);
         return
     }
 
     if (typeReference == TypeReference.TMZ) {
         const article = body.article?.trim() || '';
         if (article.length < 1 || article.length > 15) {
-            showMessage('Артикул мажбурий: 1 дан 15 гача белги', 'error', setMainData);
+            showMessage('Артикул обязателен: от 1 до 15 символов', 'error', setMainData);
             return
         }
     }
@@ -79,7 +79,7 @@ export const onSubmit = (
     if (typeReference == TypeReference.STORAGES) {
         const article = body.article?.trim() || '';
         if (article.length > 15) {
-            showMessage('Артикул: 1 дан 15 гача белги', 'error', setMainData);
+            showMessage('Артикул: от 1 до 15 символов', 'error', setMainData);
             return
         }
     }
@@ -87,7 +87,7 @@ export const onSubmit = (
     if (typeReference == TypeReference.WORKS) {
         const article = body.article?.trim() || '';
         if (article.length < 1 || article.length > 15) {
-            showMessage('Артикул мажбурий: 1 дан 15 гача белги', 'error', setMainData);
+            showMessage('Артикул обязателен: от 1 до 15 символов', 'error', setMainData);
             return
         }
     }
@@ -97,7 +97,7 @@ export const onSubmit = (
         const hasAnyPart = hasTmzNameParts(parts);
         const existingName = (body.name ?? '').trim();
         if (!hasAnyPart && !existingName) {
-            showMessage('Қисқа номини тулдиринг', 'error', setMainData);
+            showMessage('Заполните краткое наименование', 'error', setMainData);
             return;
         }
         if (hasAnyPart) {
@@ -129,7 +129,7 @@ export const onSubmit = (
     if (body.name.trim().length != 0) {
         updateCreateReference(body, typeReference, isNewReference, setMainData, token, mutate, inlineInstanceId, inlineSlotKey);
     } else {
-        showMessage('Номини тулдиринг', 'error', setMainData);
+        showMessage('Заполните наименование', 'error', setMainData);
     }
 }
 

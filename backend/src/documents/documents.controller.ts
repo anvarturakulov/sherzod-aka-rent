@@ -727,6 +727,34 @@ export class DocumentsController {
   }
 
   @ApiOperation({
+    summary: "Колонны для выдачи: норма состава и остатки деталей на S11",
+  })
+  @Roles("ALL")
+  @UseGuards(RolesGuard)
+  @Get("transfer-tools/columns")
+  async getTransferColumnPreview(
+    @Query("warehouseId") warehouseId: string,
+    @Query("date") date: string,
+    @Query("rentTariffType") rentTariffType: string | undefined,
+    @CurrentEnterprise() enterpriseId: number | null,
+  ) {
+    if (!enterpriseId) {
+      throw new BadRequestException("enterpriseId обязателен");
+    }
+    const warehouse = Number(warehouseId);
+    const documentDate = Number(date);
+    if (!warehouse || !documentDate) {
+      throw new BadRequestException("warehouseId и date обязательны");
+    }
+    return this.documentsService.getTransferColumnPreview(
+      warehouse,
+      documentDate,
+      enterpriseId,
+      rentTariffType,
+    );
+  }
+
+  @ApiOperation({
     summary: "Предпросмотр открытых партий субаренды для возврата",
   })
   @Roles("ALL")

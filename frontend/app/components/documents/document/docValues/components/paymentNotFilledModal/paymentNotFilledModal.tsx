@@ -35,16 +35,16 @@ export default function PaymentNotFilledModal({
       >
         <div className={styles.header}>
           <div className={styles.headerMain}>
-            <div className={styles.badge}>Диққат</div>
+            <div className={styles.badge}>Внимание</div>
             <h3 id="payment-not-filled-title" className={styles.title}>
-              Тулов тулдирилмаган
+              Оплата не заполнена
             </h3>
           </div>
           <button
             type="button"
             className={styles.closeBtn}
             onClick={onClose}
-            aria-label="Ёпиш"
+            aria-label="Закрыть"
           >
             ×
           </button>
@@ -52,19 +52,19 @@ export default function PaymentNotFilledModal({
 
         <div className={styles.body}>
           <p className={styles.instruction}>
-            Хужжатни ўтказиш учун тўловни тўлдиринг (камида битта вариант):
+            Для проведения документа заполните оплату (хотя бы один вариант):
           </p>
           <ul className={styles.optionsList}>
-            <li>Накд</li>
-            <li>Пластик</li>
+            <li>Наличные</li>
+            <li>Карта</li>
             <li>Курс + USD</li>
-            <li>Насияга + Насия учун изох</li>
+            <li>В долг + комментарий к долгу</li>
           </ul>
         </div>
 
         <div className={styles.footer}>
           <button type="button" className={styles.btnConfirm} onClick={onClose}>
-            Тушундим
+            Понятно
           </button>
         </div>
       </div>

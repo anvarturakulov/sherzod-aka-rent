@@ -8,8 +8,8 @@ export const getSubleaseReceivePreviewParams = (
   const clientId = currentDocument?.docValues?.senderId;
   const partnerId = currentDocument?.docValues?.partnerId;
   const returnDateTime =
-    Number(currentDocument?.docValues?.returnDateTime) ||
     Number(currentDocument?.date) ||
+    Number(currentDocument?.docValues?.returnDateTime) ||
     0;
 
   if (!clientId || !returnDateTime) {

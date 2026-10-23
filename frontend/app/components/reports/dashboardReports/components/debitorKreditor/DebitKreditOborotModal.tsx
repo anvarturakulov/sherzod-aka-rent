@@ -143,23 +143,23 @@ export function DebitKreditOborotModal({
                 type="button"
                 className={styles.closeBtn}
                 onClick={onClose}
-                aria-label="Ёпиш"
+                aria-label="Закрыть"
               >
                 ×
               </button>
             </div>
-            <p className={styles.subtitle}>Субконто бўйича оборот</p>
+            <p className={styles.subtitle}>Оборот по субконто</p>
 
             <div className={styles.body}>
               {items.length === 0 ? (
-                <div className={styles.empty}>Маълумот топилмади</div>
+                <div className={styles.empty}>Данные не найдены</div>
               ) : (
                 <div className={styles.tableWrap}>
                   <table className={styles.table}>
                     <thead>
                       <tr>
                         <th className={styles.numCol}>№</th>
-                        <th className={styles.nameCol}>Номи</th>
+                        <th className={styles.nameCol}>Наименование</th>
                         <th className={styles.amountCol}>Сумма</th>
                       </tr>
                     </thead>
@@ -170,7 +170,7 @@ export function DebitKreditOborotModal({
                           className={styles.row}
                           role="button"
                           tabIndex={0}
-                          title="Проводкаларни кўриш"
+                          title="Смотреть проводки"
                           onClick={() => void openSubcontoEntries(item)}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
@@ -188,7 +188,7 @@ export function DebitKreditOborotModal({
                     <tfoot>
                       <tr>
                         <td colSpan={2} className={styles.footerLabel}>
-                          Жами
+                          Итого
                         </td>
                         <td className={styles.amountCol}>
                           {numberValue(items.reduce((acc, i) => acc + i.value, 0))}
@@ -202,7 +202,7 @@ export function DebitKreditOborotModal({
 
             {items.length > 0 ? (
               <div className={styles.footer}>
-                <p className={styles.footerHint}>Қаторни босинг — проводкаларни кўриш</p>
+                <p className={styles.footerHint}>Нажмите на строку — смотреть проводки</p>
               </div>
             ) : null}
           </div>

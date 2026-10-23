@@ -2,6 +2,8 @@ import {
   combineZonedDateAndTime,
   formatZonedYmd,
   getZonedParts,
+  isZonedCalendarDayAfter,
+  rentCalendarDays,
   zonedDateTimeToMs,
 } from "./appTime";
 import {
@@ -25,6 +27,28 @@ describe("appTime Asia/Tashkent", () => {
     const midnight = zonedDateTimeToMs(2026, 9, 8, 0, 0, 0, 0);
     expect(formatZonedYmd(midnight)).toBe("2026-09-08");
     expect(new Date(midnight).toISOString().split("T")[0]).toBe("2026-09-07");
+  });
+
+  it("counts rental days without the send day; same day is 0", () => {
+    const send = zonedDateTimeToMs(2026, 9, 1, 18, 0, 0, 0);
+    const sameDay = zonedDateTimeToMs(2026, 9, 1, 23, 30, 0, 0);
+    const nextMorning = zonedDateTimeToMs(2026, 9, 2, 0, 30, 0, 0);
+    const fourth = zonedDateTimeToMs(2026, 9, 4, 9, 0, 0, 0);
+    expect(rentCalendarDays(send, sameDay)).toBe(0);
+    expect(rentCalendarDays(send, nextMorning)).toBe(1);
+    expect(rentCalendarDays(send, fourth)).toBe(3);
+    expect(rentCalendarDays(fourth, send)).toBe(0);
+    expect(rentCalendarDays(Number.NaN, send)).toBe(0);
+  });
+
+  it("treats a later calendar day as after, and the same day as not", () => {
+    const day29Morning = zonedDateTimeToMs(2026, 9, 29, 0, 0, 0, 0);
+    const day29Evening = zonedDateTimeToMs(2026, 9, 29, 18, 0, 0, 0);
+    const day30 = zonedDateTimeToMs(2026, 9, 30, 0, 30, 0, 0);
+    expect(isZonedCalendarDayAfter(day30, day29Morning)).toBe(true);
+    expect(isZonedCalendarDayAfter(day29Evening, day29Morning)).toBe(false);
+    expect(isZonedCalendarDayAfter(day29Morning, day30)).toBe(false);
+    expect(isZonedCalendarDayAfter(Number.NaN, day29Morning)).toBe(false);
   });
 
   it("keeps afternoon time when combining a new calendar day", () => {

@@ -18,7 +18,7 @@ export const Svod = ({className, data, ...props }: SvodProps) :JSX.Element => {
     if (!datas) {
         return (
             <div className={styles.title}>
-                Умум жамланма - маълумотлар топилмади
+                Сводный отчёт — данные не найдены
                 {enterpriseName && <span> - {enterpriseName}</span>}
             </div>
         )
@@ -27,7 +27,7 @@ export const Svod = ({className, data, ...props }: SvodProps) :JSX.Element => {
     return (
        <>
             <div className={styles.title}>
-                Умум жамланма
+                Сводный отчёт
                 {enterpriseName && <span> - {enterpriseName}</span>}
             </div>
             <div className={styles.box}>

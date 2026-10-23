@@ -284,7 +284,7 @@ export const MenuVisibilitySettingsComponent = ({ menuVisibility, onChange }: Me
                     {/* Мебель ишлаб чиқариш */}
                     {itemsByType.furniture.length > 0 && (
                         <div className={styles.typeSection}>
-                            <h5 className={styles.typeTitle}>Мебель ишлаб чиқариш</h5>
+                            <h5 className={styles.typeTitle}>Производство мебели</h5>
                             <div className={styles.itemsGrid}>
                                 {itemsByType.furniture.map(item => (
                                     <label key={item.value} className={styles.checkboxLabel}>

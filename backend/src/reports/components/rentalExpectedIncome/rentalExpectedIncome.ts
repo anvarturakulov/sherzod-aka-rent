@@ -1,10 +1,11 @@
+import { Op } from "sequelize";
 import { ClientToolBatchesService } from "src/clientToolBatches/clientToolBatches.service";
 import { ReferencesService } from "src/references/references.service";
+import { rentCalendarDays } from "src/common/appTime";
+import { Document } from "src/documents/document.model";
+import { DocValues } from "src/docValues/docValues.model";
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
-
-/** Same minimum as receive-tools return billing (`MIN_RENT_HOURS` / buildPreviewRows). */
-const MIN_RENT_HOURS = 24;
 
 export type RentalExpectedIncomeToolRow = {
   toolId: number;
@@ -15,6 +16,7 @@ export type RentalExpectedIncomeToolRow = {
   rentHours: number;
   rentSum: number;
   transferDocId: number;
+  comment: string;
 };
 
 export type RentalExpectedIncomeClientRow = {
@@ -37,6 +39,7 @@ export async function rentalExpectedIncome(
   clientId: number | null | undefined,
   clientToolBatchesService: ClientToolBatchesService,
   referencesService: ReferencesService,
+  documentRepository: typeof Document,
 ): Promise<RentalExpectedIncomeResult> {
   const batches = await clientToolBatchesService.findOpenBatches(
     enterpriseId,
@@ -70,15 +73,14 @@ export async function rentalExpectedIncome(
   for (const batch of batches) {
     const openQty = Number(batch.openQty);
     if (openQty <= 0) continue;
+    if (batch.billingRole === "COLUMN_COMPONENT") continue;
 
     const settlementDate = Number(batch.settlementDate);
     // Only tools already issued by asOf («выданы до Сана ва вақт»)
     if (!Number.isFinite(settlementDate) || settlementDate > asOf) continue;
 
     const hourlyTariff = Number(batch.hourlyTariff) || 0;
-    const rentHours = round2(
-      Math.max(MIN_RENT_HOURS, (asOf - settlementDate) / 3_600_000),
-    );
+    const rentHours = rentCalendarDays(settlementDate, asOf);
     const rentSum = round2(rentHours * hourlyTariff * openQty);
 
     const cid = Number(batch.clientId);
@@ -103,6 +105,7 @@ export async function rentalExpectedIncome(
       rentHours,
       rentSum,
       transferDocId: Number(batch.transferDocId),
+      comment: "",
     });
     group.totalRentSum = round2(group.totalRentSum + rentSum);
   }
@@ -110,6 +113,34 @@ export async function rentalExpectedIncome(
   const clients = Array.from(byClient.values()).sort((a, b) =>
     a.clientName.localeCompare(b.clientName, "ru"),
   );
+
+  const docIds = [
+    ...new Set(
+      clients.flatMap((client) =>
+        client.tools
+          .map((tool) => Number(tool.transferDocId))
+          .filter((id) => Number.isFinite(id) && id > 0),
+      ),
+    ),
+  ];
+
+  const commentByDocId = new Map<number, string>();
+  if (docIds.length) {
+    const docs = await documentRepository.findAll({
+      where: { id: { [Op.in]: docIds } },
+      attributes: ["id"],
+      include: [{ model: DocValues, attributes: ["comment"] }],
+    });
+    for (const doc of docs) {
+      commentByDocId.set(Number(doc.id), doc.docValues?.comment || "");
+    }
+  }
+
+  for (const client of clients) {
+    for (const tool of client.tools) {
+      tool.comment = commentByDocId.get(tool.transferDocId) || "";
+    }
+  }
 
   const grandTotal = round2(
     clients.reduce((sum, c) => sum + c.totalRentSum, 0),

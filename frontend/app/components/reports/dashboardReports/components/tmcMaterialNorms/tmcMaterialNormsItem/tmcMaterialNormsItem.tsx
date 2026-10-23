@@ -26,9 +26,9 @@ export const TmcMaterialNormsItem = ({className, item,  ...props }: TmcMaterialN
                 </div>}
             </Htag>
             <div className={styles.row}>
-                <div className={cn(styles.title, styles.topRow)}>Материал номи</div>
+                <div className={cn(styles.title, styles.topRow)}>Наименование материала</div>
                 <div className={cn(styles.title, styles.topRow, styles.value)}>Норма</div>
-                <div className={cn(styles.title, styles.topRow, styles.value)}>Ўлчов бирлиги</div>
+                <div className={cn(styles.title, styles.topRow, styles.value)}>Единица измерения</div>
             </div>
             {
                 materialNorms.length > 0 ? (
@@ -45,7 +45,7 @@ export const TmcMaterialNormsItem = ({className, item,  ...props }: TmcMaterialN
                     })
                 ) : (
                     <div className={styles.emptyMessage}>
-                        Материаллар нормаси топилмади
+                        Нормы материалов не найдены
                     </div>
                 )
             }

@@ -70,7 +70,7 @@ export const SubleaseExpectedIncome = ({
     const rawValue = asOfInputRef.current?.value || asOfLocal;
     const asOf = resolveAsOfMs(rawValue);
     if (!asOf) {
-      setError('Сана ва вақтни танланг');
+      setError('Выберите дату и время');
       return;
     }
 
@@ -87,7 +87,7 @@ export const SubleaseExpectedIncome = ({
         : selectedEnterpriseId ?? user?.enterpriseId;
 
     if (enterpriseId == null || Number(enterpriseId) <= 0) {
-      setError('Корхонани танланг');
+      setError('Выберите предприятие');
       return;
     }
 
@@ -111,7 +111,7 @@ export const SubleaseExpectedIncome = ({
       const message =
         (typeof axiosMessage === 'string' && axiosMessage) ||
         (e instanceof Error ? e.message : null) ||
-        'Маълумот юклашда хатолик юз берди';
+        'Ошибка при загрузке данных';
       setError(message);
       setReportData(null);
     } finally {
@@ -130,25 +130,25 @@ export const SubleaseExpectedIncome = ({
   return (
     <div className={styles.container} {...props}>
       <div className={styles.title}>
-        Субаренда — кутилаётган даромад
+        Субаренда — ожидаемый доход
         {enterpriseName && <span> - {enterpriseName}</span>}
       </div>
 
       {reportData?.asOf ? (
         <div className={styles.subtitle}>
-          Ҳисоблаш вақти: {formatDisplayDateTime(reportData.asOf)}
-          {' — '}агар шу пайтда қайтарилса
+          Время расчёта: {formatDisplayDateTime(reportData.asOf)}
+          {' — '}если вернуть в этот момент
         </div>
       ) : (
         <div className={styles.subtitle}>
-          Кўрсатилган сана-вақтда мижоз қайтарса — мижоздан даромад, ҳамкорга
-          тўлаш суммаси ва маржа
+          Если клиент вернёт в указанную дату-время — доход с клиента, сумма
+          оплаты партнёру и маржа
         </div>
       )}
 
       <div className={styles.filters}>
         <label className={styles.dateLabel} htmlFor="subleaseExpectedAsOf">
-          Сана ва вақт
+          Дата и время
         </label>
         <div className={styles.filtersRow}>
           <input
@@ -174,17 +174,17 @@ export const SubleaseExpectedIncome = ({
             onClick={loadData}
             disabled={loading}
           >
-            {loading ? 'Юкланмокда...' : 'ОК'}
+            {loading ? 'Загрузка...' : 'ОК'}
           </button>
         </div>
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
-      {loading && <div className={styles.loading}>Маълумот юкланмокда...</div>}
+      {loading && <div className={styles.loading}>Загрузка данных...</div>}
 
       {!loading && !error && reportData && clients.length === 0 && (
         <div className={styles.emptyMessage}>
-          Очиқ субарендадаги ускуналар топилмади
+          Инструменты в открытой субаренде не найдены
         </div>
       )}
 
@@ -193,13 +193,13 @@ export const SubleaseExpectedIncome = ({
           <div className={styles.grandTotals}>
             <div className={styles.grandTotalsItem}>
               <span className={styles.grandTotalsItemLabel}>
-                Мижоздан даромад:
+                Доход с клиента:
               </span>
               <span>{numberValue(reportData?.grandTotalClientRent ?? 0)}</span>
             </div>
             <div className={styles.grandTotalsItem}>
               <span className={styles.grandTotalsItemLabel}>
-                Ҳамкорга тўлаш суммаси:
+                Сумма оплаты партнёру:
               </span>
               <span>{numberValue(reportData?.grandTotalPartnerCost ?? 0)}</span>
             </div>
@@ -213,15 +213,15 @@ export const SubleaseExpectedIncome = ({
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Мижоз</th>
-                  <th>Ускуна</th>
-                  <th>Сони</th>
-                  <th>Ҳисоб бошланиши</th>
-                  <th>Соат</th>
-                  <th>Тариф мижоз</th>
-                  <th>Тариф ҳамкор</th>
-                  <th>Мижоздан даромад</th>
-                  <th>Ҳамкорга тўлаш суммаси</th>
+                  <th>Клиент</th>
+                  <th>Инструмент</th>
+                  <th>Количество</th>
+                  <th>Начало расчёта</th>
+                  <th>Дней</th>
+                  <th>Тариф клиент</th>
+                  <th>Тариф партнёр</th>
+                  <th>Доход с клиента</th>
+                  <th>Сумма оплаты партнёру</th>
                   <th>Маржа</th>
                 </tr>
               </thead>
@@ -262,7 +262,7 @@ export const SubleaseExpectedIncome = ({
                     ))}
                     <tr className={styles.subtotalRow}>
                       <td colSpan={7}>
-                        <strong>Жами ({client.clientName})</strong>
+                        <strong>Итого ({client.clientName})</strong>
                       </td>
                       <td className={styles.numeric}>
                         <strong>{numberValue(client.totalClientRent)}</strong>

@@ -17,7 +17,7 @@ interface ImageUploadProps {
   onImageChange: (imagePath: string) => void;
   className?: string;
   disabled?: boolean;
-  /** Подпись над блоком (по умолчанию «ТМБ сурати») */
+  /** Подпись над блоком (по умолчанию «Изображение ТМЦ») */
   label?: string;
 }
 
@@ -81,7 +81,7 @@ export const ImageUpload = memo<ImageUploadProps>(({
   onImageChange,
   className,
   disabled = false,
-  label = 'ТМБ сурати',
+  label = 'Изображение ТМЦ',
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentImage || null);
@@ -95,12 +95,12 @@ export const ImageUpload = memo<ImageUploadProps>(({
 
   const uploadImageFile = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
-      alert('ТМБ сурати танланг');
+      alert('Выберите изображение ТМЦ');
       return;
     }
 
     if (file.size > MAX_IMAGE_BYTES) {
-      alert('ТМБ сурати узунлиги 2MB дан ортиқ бўлмаслик керак');
+      alert('Размер изображения ТМЦ не должен превышать 2 МБ');
       return;
     }
 
@@ -121,14 +121,14 @@ export const ImageUpload = memo<ImageUploadProps>(({
       });
 
       if (!response.ok) {
-        throw new Error('ТМБ сурати юкланмокда хатолик юз берди');
+        throw new Error('Ошибка при загрузке изображения ТМЦ');
       }
 
       const result = await response.json();
       onImageChange(result.imagePath);
     } catch (error) {
-      console.error('❌ ТМБ сурати юкланмокда хатолик юз берди:', error);
-      alert('ТМБ сурати юкланмокда хатолик юз берди');
+      console.error('❌ Ошибка при загрузке изображения ТМЦ:', error);
+      alert('Ошибка при загрузке изображения ТМЦ');
       setPreview(currentImage || null);
     } finally {
       setIsUploading(false);
@@ -166,10 +166,10 @@ export const ImageUpload = memo<ImageUploadProps>(({
           }
         }
       }
-      alert('Буферда расм топилмади. Аввал расмни нусхаланг (PrtSc ёки «Расмни нусхалаш»).');
+      alert('В буфере нет изображения. Сначала скопируйте снимок (PrtSc или «Копировать изображение»).');
     } catch {
       uploadAreaRef.current?.focus();
-      alert('Буферга кириш рухсат берилмади. Буфердан Ctrl+V ишлатинг ёки браузер рухсатини йўқинг.');
+      alert('Нет доступа к буферу. Вставьте через Ctrl+V или разрешите доступ в браузере.');
     }
   };
 
@@ -250,26 +250,26 @@ export const ImageUpload = memo<ImageUploadProps>(({
           <div className={styles.imagePreview}>
             <img
               src={preview.startsWith('data:') ? preview : getImageUrl(preview)}
-              alt="ТМБ сурати"
+              alt="Изображение ТМЦ"
               className={styles.image}
               onDoubleClick={handleImageDoubleClick}
               title="Двойной клик для увеличения"
             />
             <div className={styles.imageActions}>
               {iconBtn(
-                'Буфердан',
+                'Из буфера',
                 handlePasteFromClipboard,
                 styles.pasteButton,
                 <ClipboardDocumentIcon className={styles.actionIcon} aria-hidden />,
               )}
               {iconBtn(
-                'Узгартириш',
+                'Изменить',
                 openFilePicker,
                 styles.changeButton,
                 <ArrowUpTrayIcon className={styles.actionIcon} aria-hidden />,
               )}
               {iconBtn(
-                'Учириш',
+                'Удалить',
                 handleRemoveImage,
                 styles.removeButton,
                 <TrashIcon className={styles.actionIcon} aria-hidden />,
@@ -283,20 +283,20 @@ export const ImageUpload = memo<ImageUploadProps>(({
           >
             <div className={styles.uploadIcon}>📷</div>
             <div className={styles.uploadText}>
-              {isUploading ? 'Юкланмокда...' : 'Расм қўшинг'}
+              {isUploading ? 'Загрузка...' : 'Добавьте изображение'}
             </div>
             <div className={styles.uploadHint}>
-              JPEG, PNG, GIF, WebP — 2MB гача
+              JPEG, PNG, GIF, WebP — до 2 МБ
             </div>
             <div className={styles.placeholderActions}>
               {iconBtn(
-                'Буфердан',
+                'Из буфера',
                 handlePasteFromClipboard,
                 styles.pasteButton,
                 <ClipboardDocumentIcon className={styles.actionIcon} aria-hidden />,
               )}
               {iconBtn(
-                'Файлдан',
+                'Из файла',
                 openFilePicker,
                 styles.fileButton,
                 <ArrowUpTrayIcon className={styles.actionIcon} aria-hidden />,

@@ -16,22 +16,22 @@ export const getLabelForAnalitic = (currentDocument: DocumentModel, options: Opt
   let {isPartner, isClient, isWorker, isMediator, isDeliverer, isDepartment} = currentDocument?.docValues || {}
 
   if (currentDocument && isPartner) {
-    return 'Таъминотчи'
+    return 'Поставщик'
   }
   if (currentDocument && isClient) {
     return 'Клиент'
   }
   if (currentDocument && isWorker) {
-    return 'Ходим'
+    return 'Сотрудник'
   }
   if (currentDocument && isMediator) {
-    return 'Воситачи'
+    return 'Посредник'
   }
   if (currentDocument && isDeliverer) {
     return 'Доставщик'
   }
   if (currentDocument && isDepartment) {
-    return 'Ички корхона'
+    return 'Внутреннее предприятие'
   }
   
   return options.analiticLabel
@@ -76,12 +76,12 @@ export const getLabelForReceiver = (
 ): string => {
   if (currentDocument?.documentType === DocumentType.SaleMaterial) {
     if (currentDocument.docValues?.isWorker) {
-      return 'Ходим';
+      return 'Сотрудник';
     }
     if (currentDocument.docValues?.isPartner) {
-      return 'Таъминотчи';
+      return 'Поставщик';
     }
-    return 'Мижоз';
+    return 'Клиент';
   }
   return options.receiverLabel;
 };

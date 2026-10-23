@@ -103,6 +103,17 @@ export function formatZonedYmd(ms: number): string {
   return `${parts.year}-${month}-${day}`;
 }
 
+/** Whole calendar days from send (exclusive) to return (inclusive). Same day is 0. */
+export function rentCalendarDays(sendMs: number, returnMs: number): number {
+  const send = getZonedParts(sendMs);
+  const ret = getZonedParts(returnMs);
+  if (!send || !ret) return 0;
+  const sendIndex = Date.UTC(send.year, send.month - 1, send.day);
+  const returnIndex = Date.UTC(ret.year, ret.month - 1, ret.day);
+  const diff = Math.round((returnIndex - sendIndex) / 86_400_000);
+  return diff > 0 ? diff : 0;
+}
+
 export function startOfZonedDay(ms: number): number | null {
   const parts = getZonedParts(ms);
   if (!parts) return null;

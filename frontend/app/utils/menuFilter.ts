@@ -32,7 +32,8 @@ function isItemVisible(
                     return true;
                 }
                 if (
-                    item.title === DocumentType.OrderToolsToClient &&
+                    (item.title === DocumentType.OrderToolsToClient ||
+                        item.title === DocumentType.SaleEquipment) &&
                     roleVisibility.visibleDocuments.includes(
                         DocumentType.TransferToolsToClient,
                     )

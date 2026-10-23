@@ -40,15 +40,15 @@ export function getToolsRentalAmountsLines(item: DocumentModel): string[] {
   const lines: string[] = [];
   const dv = item.docValues;
 
-  pushNonZeroAmount(lines, 'Сотиш', toolsSaleSum(item));
+  pushNonZeroAmount(lines, 'Продажа', toolsSaleSum(item));
   pushNonZeroAmount(lines, 'Товар', tovarSaleSum(item));
   pushNonZeroAmount(lines, 'Доставка', dv?.deliverySum);
   pushNonZeroAmount(lines, 'Брак', dv?.defectCost);
-  pushNonZeroAmount(lines, 'Нақд', dv?.initialPayment);
+  pushNonZeroAmount(lines, 'Наличные', dv?.initialPayment);
   pushNonZeroAmount(lines, 'Пластик', dv?.cashFromPartner);
   pushNonZeroAmount(lines, 'Дол', dv?.usd);
   pushNonZeroAmount(lines, 'Сдачи', dv?.changeToClient);
-  pushNonZeroAmount(lines, 'Насия', dv?.debtSum);
+  pushNonZeroAmount(lines, 'В долг', dv?.debtSum);
 
   return lines;
 }

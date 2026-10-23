@@ -64,7 +64,7 @@ export const updateCreateDocument = async (
   const sessionUserId = Number(user?.id) || 0;
   if (!sessionUserId) {
     if (setMainData) {
-      showMessage('Сессия недействительна. Қайта киринг.', 'error', setMainData);
+      showMessage('Сессия недействительна. Войдите снова.', 'error', setMainData);
     }
     onSaveOnlyDone?.();
     return false;
@@ -100,7 +100,7 @@ export const updateCreateDocument = async (
       body.docValues?.receiverId && 
       body.docValues.senderId === body.docValues.receiverId) {
     if (setMainData) {
-      showMessage('Олувчи ва жунатувчибир хил бўлмайди', 'error', setMainData);
+      showMessage('Получатель и отправитель не могут совпадать', 'error', setMainData);
     }
     onSaveOnlyDone?.();
     return false;
@@ -289,9 +289,9 @@ export const updateCreateDocument = async (
     try {
       const response = await axios.post(uriPost, postBody, config);
       if (saveOnly) {
-        actionSaveOnly('хужжат сақланди', response.data);
+        actionSaveOnly('документ сохранён', response.data);
       } else {
-        actionWithMainData('янги хужжати киритилди', response.data);
+        actionWithMainData('новый документ создан', response.data);
         await maybeAlertReadyRentalOrders(mainData, setMainData, body.documentType);
       }
       return true;
@@ -367,7 +367,7 @@ export const updateCreateDocument = async (
         '/send';
       try {
         await axios.post(sendUri, { enterpriseId: user.enterpriseId }, config);
-        actionWithMainData('хужжат сақланди ва жўнатилди');
+        actionWithMainData('документ сохранён и отправлен');
         return true;
       } catch (sendError: any) {
         if (setMainData) {
@@ -376,7 +376,7 @@ export const updateCreateDocument = async (
             sendError.message ||
             'Ошибка при отправке документа';
           showMessage(
-            `Хужжат сақланди, лекин жўнатишда хато: ${sendMsg}`,
+            `Документ сохранён, но ошибка при отправке: ${sendMsg}`,
             'error',
             setMainData,
           );
@@ -388,9 +388,9 @@ export const updateCreateDocument = async (
       }
     }
     if (saveOnly) {
-      actionSaveOnly('хужжат янгиланди');
+      actionSaveOnly('документ обновлён');
     } else {
-      actionWithMainData('хужжат янгиланди');
+      actionWithMainData('документ обновлён');
       await maybeAlertReadyRentalOrders(mainData, setMainData, body.documentType);
     }
     return true;

@@ -16,7 +16,7 @@ export const Production = ({className, data, currentSection, ...props }: Product
     return (
        <>
             <div className={styles.title}>
-                {'ЦЕХЛАР'}
+                {'ЦЕХА'}
                 
             </div>
             
@@ -24,9 +24,9 @@ export const Production = ({className, data, currentSection, ...props }: Product
                 <thead>
                     <tr>
                         <td>Цех</td>
-                        <td>Килинган хамир сони</td>
-                        <td>Ишлатилган загатовка</td>
-                        <td>Бир дона хамирга нис зувала</td>
+                        <td>Кол-во сделанного теста</td>
+                        <td>Использованная заготовка</td>
+                        <td>Зувала на 1 тесто</td>
                     </tr>
                 </thead>
                 
@@ -43,7 +43,7 @@ export const Production = ({className, data, currentSection, ...props }: Product
             
                 <thead>
                     <tr>
-                        <td>Жами</td>
+                        <td>Итого</td>
                         <td className={styles.totalTd}>{numberValue(totalByKey('countHamirs', datas))}</td>
                         <td className={styles.totalTd}>{numberValue(totalByKey('countZagatovka', datas))}</td>
                         <td className={styles.totalTd}>-</td>

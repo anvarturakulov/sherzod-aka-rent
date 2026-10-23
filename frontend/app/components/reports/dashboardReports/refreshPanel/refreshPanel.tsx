@@ -35,8 +35,8 @@ export const RefreshPanel = ({className, ...props }: RefreshPanelProps) :JSX.Ele
                             }}
                     />
                 </div>
-                <div>{`Cана: ${dateStartInStr} дан ${dateEndInStr} гача`}</div>
-                <Button className={styles.btn} appearance='primary' onClick={(e) => refreshReport(mainData, setMainData)}>Хисоботни шакиллантириш</Button>
+                <div>{`Дата: с ${dateStartInStr} по ${dateEndInStr}`}</div>
+                <Button className={styles.btn} appearance='primary' onClick={(e) => refreshReport(mainData, setMainData)}>Сформировать отчёт</Button>
             </div>
        </>
     )

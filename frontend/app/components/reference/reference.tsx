@@ -23,6 +23,7 @@ import { SelectForEnterprises } from './selectForEnterprises/selectForEnterprise
 import { UserRoles } from '@/app/interfaces/user.interface';
 import { ImageUpload } from './imageUpload/ImageUpload';
 import TmzProductTabs from './tmzProductTabs/TmzProductTabs';
+import ToolColumnComposition from './toolColumnComposition/toolColumnComposition';
 import { WindowControls } from '@/app/components/common/windowControls/windowControls';
 import { minimizeReference } from '@/app/service/common/minimizeWindow';
 import { getDataForSwr } from '@/app/service/common/getDataForSwr';
@@ -384,7 +385,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
         const raw = (body.article ?? '').trim();
         const prefixMatch = raw.match(/^[A-Za-z]{2}/);
         if (!prefixMatch) {
-            showMessage('Артикул бошидаги 2 та харфни киритинг (масалан MB)', 'error', setMainData);
+            showMessage('Введите 2 буквы в начале артикула (например MB)', 'error', setMainData);
             return;
         }
         const prefix = prefixMatch[0];
@@ -413,7 +414,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
         const raw = (body.article ?? '').trim();
         const prefixMatch = raw.match(/^G\d{3}/i);
         if (!prefixMatch) {
-            showMessage('Гуруҳни киритинг (масалан G006 ёки G005)', 'error', setMainData);
+            showMessage('Введите группу (например G006 или G005)', 'error', setMainData);
             return;
         }
         const prefix = prefixMatch[0].toUpperCase();
@@ -748,11 +749,11 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
             >
                 <WindowControls onClose={handleClose} />
                 <p style={{ padding: '16px', color: '#b91c1c' }}>
-                    Ушбу справочник учун рухсатингиз йўқ.
+                    У вас нет доступа к этому справочнику.
                 </p>
                 <div className={styles.boxBtn}>
                     <Button appearance="ghost" onClick={handleClose}>
-                        Бекор килиш
+                        Отмена
                     </Button>
                 </div>
             </div>
@@ -770,7 +771,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                 <WindowControls onMinimize={handleMinimize} onClose={handleClose} />
             )}
             <Input
-                label={isTmzDictType ? 'Қиймат' : 'Номи'}
+                label={isTmzDictType ? 'Значение' : 'Наименование'}
                 value={body.name}
                 type="text"
                 id='name'
@@ -784,12 +785,12 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                 typeReference === TypeReference.TMZ_SHORT_NAME &&
                 inlineCreation?.defaultRefValues?.typeTMZ == null && (
                 <div className={styles.box}>
-                    {Select(typeTMZList, body, 'ТМБ тури', 'typeTMZ', changeElements, false)}
+                    {Select(typeTMZList, body, 'Тип ТМЦ', 'typeTMZ', changeElements, false)}
                 </div>
             )}
             {typeReference === TypeReference.TMZ && !body.isFolder && (
                 <p className={styles.tmzNameHint}>
-                    Номи қисқа ном, ўлчам, ранг ва ишлаб чиқарувчидан автоматик шаклланади
+                    Наименование формируется автоматически из краткого наименования, размера, цвета и производителя
                 </p>
             )}
             {
@@ -797,7 +798,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                 isSharedDirectoryReferenceType(typeReference) &&
                 !isNewReference &&
                 <SelectForEnterprises 
-                    label='Корхона (справочник учун)' 
+                    label='Организация (для справочника)' 
                     currentEnterpriseId={body.enterpriseId} 
                     setEnterpriseId={setEnterpriseId}
                     isNewReference={isNewReference}
@@ -806,7 +807,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
             {
                 typeReference == TypeReference.PARTNERS && 
                 <div className={styles.box}>
-                    {Select(filteredTypePartnersList, body, 'Хамкор тури', 'typePartners', changeElements)}
+                    {Select(filteredTypePartnersList, body, 'Тип партнёра', 'typePartners', changeElements)}
                     <div className={styles.personTypeRow}>
                         <CheckBoxForReference
                             label="Физ.лицо"
@@ -871,11 +872,11 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 />
                             </div>
                             <Input
-                                label={'ЖШШИР'}
+                                label={'ПИНФЛ'}
                                 value={body.refValues?.jshshir || ''}
                                 type="text"
                                 id="jshshir"
-                                placeholder="14 рақам"
+                                placeholder="14 цифр"
                                 className={styles.input}
                                 onChange={(e) => changeElements(e)}
                             />
@@ -897,7 +898,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 value={body.refValues?.bankAccount || ''}
                                 type="text"
                                 id="bankAccount"
-                                placeholder="20 рақам"
+                                placeholder="20 цифр"
                                 className={styles.input}
                                 onChange={(e) => changeElements(e)}
                             />
@@ -916,7 +917,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                             value={body.refValues?.inn || ''}
                             type="text"
                             id="inn"
-                            placeholder="9 рақам"
+                            placeholder="9 цифр"
                             className={styles.input}
                             onChange={(e) => changeElements(e)}
                         />
@@ -932,13 +933,13 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                     />
                     <div className={styles.checkboxRow}>
                         <CheckBoxForReference
-                            label="Хайдовчи"
+                            label="Водитель"
                             setCheckbox={setCheckbox}
                             checked={body.refValues?.isMediatorDriver}
                             id="isMediatorDriver"
                         />
                         <CheckBoxForReference
-                            label="Уста"
+                            label="Мастер"
                             setCheckbox={setCheckbox}
                             checked={body.refValues?.isMediatorMaster}
                             id="isMediatorMaster"
@@ -992,7 +993,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                             onChange={(e)=>changeElements(e)}
                         />
                         <Input
-                            label={'Локация (Telegram, фақат кўриш)'}
+                            label={'Локация (Telegram, только просмотр)'}
                             value={formatPartnerLocationForDisplay(body.refValues?.location)}
                             type="text"
                             id="telegramLocationReadonly"
@@ -1011,7 +1012,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                           rel="noopener noreferrer"
                           className={styles.osmLink}
                         >
-                          Харитада кўриш (OpenStreetMap)
+                          Открыть на карте (OpenStreetMap)
                         </a>
                       );
                     })()}
@@ -1023,7 +1024,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                 isAdmin && 
                 (body.refValues?.typePartners === TypePartners.DEPARTMENTS || body.typeReference === TypeReference.STORAGES) &&
                 <SelectForEnterprises 
-                    label='Корхона' 
+                    label='Организация' 
                     currentEnterpriseId={body.enterpriseId} 
                     setEnterpriseId={setEnterpriseId}
                     isNewReference={isNewReference}
@@ -1118,7 +1119,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 }));
                             }}
                         >
-                            <option value="">— Цех танланмаган —</option>
+                            <option value="">— Цех не выбран —</option>
                             {productionDepts.map((d: ReferenceModel) => (
                                 <option key={d.id} value={d.id}>{d.name}</option>
                             ))}
@@ -1166,12 +1167,12 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 }}
                                 style={{ pointerEvents: 'auto', zIndex: 10 }}
                             >
-                                📅 Тарих
+                                📅 История
                             </button>
                         </div>
                     ) : (
                         <div style={{ marginTop: 8, fontSize: 13, color: '#64748b' }}>
-                            Сақлагандан сўнг нархни «Тарих» орқали киритиш мумкин.
+                            После сохранения цену можно ввести через «История».
                         </div>
                     )}
                 </div>
@@ -1184,11 +1185,11 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                         ? styles.boxTMZWithPrice 
                         : styles.boxTMZ
                 }> 
-                    {Select(typeTMZList, body, 'ТМБ тури', 'typeTMZ', changeElements, isTMZReadOnly)}
+                    {Select(typeTMZList, body, 'Тип ТМЦ', 'typeTMZ', changeElements, isTMZReadOnly)}
                     <TmzDictionarySelect
                         attrField="shortName"
                         dictionaryType={TMZ_ATTR_DICTIONARY_TYPE.shortName}
-                        label="Қисқа ном"
+                        label="Краткое наименование"
                         valueId={body.refValues?.shortNameId}
                         valueText={body.refValues?.shortName}
                         enterpriseId={body.enterpriseId}
@@ -1199,7 +1200,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                     />
                     {TMZ_CARD_SHOW_ATTRIBUTE_TEXT_FIELDS && (
                         <Input
-                            label={'Қисқа ном (текст, текширув)'}
+                            label={'Краткое наименование (текст, проверка)'}
                             value={body.refValues?.shortName || ''}
                             type="text"
                             id="shortName"
@@ -1213,7 +1214,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                             <TmzDictionarySelect
                                 attrField="size"
                                 dictionaryType={TMZ_ATTR_DICTIONARY_TYPE.size}
-                                label="Ўлчам"
+                                label="Размер"
                                 valueId={body.refValues?.sizeId}
                                 valueText={body.refValues?.size}
                                 enterpriseId={body.enterpriseId}
@@ -1223,12 +1224,12 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 onChange={(id, text) => setTmzDictionaryAttr('size', id, text)}
                             />
                             {TMZ_CARD_SHOW_ATTRIBUTE_TEXT_FIELDS && (
-                                <Input label={'Ўлчам (текст)'} value={body.refValues?.size || ''} type="text" id="size" className={styles.input} onChange={(e) => changeElements(e)} disabled={isTMZReadOnly} />
+                                <Input label={'Размер (текст)'} value={body.refValues?.size || ''} type="text" id="size" className={styles.input} onChange={(e) => changeElements(e)} disabled={isTMZReadOnly} />
                             )}
                             <TmzDictionarySelect
                                 attrField="color"
                                 dictionaryType={TMZ_ATTR_DICTIONARY_TYPE.color}
-                                label="Ранг"
+                                label="Цвет"
                                 valueId={body.refValues?.colorId}
                                 valueText={body.refValues?.color}
                                 enterpriseId={body.enterpriseId}
@@ -1238,7 +1239,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 onChange={(id, text) => setTmzDictionaryAttr('color', id, text)}
                             />
                             {TMZ_CARD_SHOW_ATTRIBUTE_TEXT_FIELDS && (
-                                <Input label={'Ранг (текст)'} value={body.refValues?.color || ''} type="text" id="color" className={styles.input} onChange={(e) => changeElements(e)} disabled={isTMZReadOnly} />
+                                <Input label={'Цвет (текст)'} value={body.refValues?.color || ''} type="text" id="color" className={styles.input} onChange={(e) => changeElements(e)} disabled={isTMZReadOnly} />
                             )}
                             <TmzDictionarySelect
                                 attrField="texture"
@@ -1258,7 +1259,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                             <TmzDictionarySelect
                                 attrField="manufacture"
                                 dictionaryType={TMZ_ATTR_DICTIONARY_TYPE.manufacture}
-                                label="Ишлаб чиқарувчи"
+                                label="Производитель"
                                 valueId={body.refValues?.manufactureId}
                                 valueText={body.refValues?.manufacture}
                                 enterpriseId={body.enterpriseId}
@@ -1268,7 +1269,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 onChange={(id, text) => setTmzDictionaryAttr('manufacture', id, text)}
                             />
                             {TMZ_CARD_SHOW_ATTRIBUTE_TEXT_FIELDS && (
-                                <Input label={'Ишлаб чиқарувчи (текст)'} value={body.refValues?.manufacture || ''} type="text" id="manufacture" className={styles.input} onChange={(e) => changeElements(e)} disabled={isTMZReadOnly} />
+                                <Input label={'Производитель (текст)'} value={body.refValues?.manufacture || ''} type="text" id="manufacture" className={styles.input} onChange={(e) => changeElements(e)} disabled={isTMZReadOnly} />
                             )}
                         </>
                     )}
@@ -1294,7 +1295,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                     <TmzDictionarySelect
                         attrField="unit"
                         dictionaryType={TMZ_ATTR_DICTIONARY_TYPE.unit}
-                        label="Улчов бирлиги"
+                        label="Единица измерения"
                         valueId={body.refValues?.unitId}
                         valueText={body.refValues?.unit}
                         enterpriseId={body.enterpriseId}
@@ -1304,13 +1305,13 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                         onChange={(id, text) => setTmzDictionaryAttr('unit', id, text)}
                     />
                     {TMZ_CARD_SHOW_ATTRIBUTE_TEXT_FIELDS && (
-                        <Input label={'Улчов бирлиги (текст)'} value={body.refValues?.unit || ''} type="text" id="unit" className={styles.input} onChange={(e) => changeElements(e)} disabled={isTMZReadOnly} />
+                        <Input label={'Единица измерения (текст)'} value={body.refValues?.unit || ''} type="text" id="unit" className={styles.input} onChange={(e) => changeElements(e)} disabled={isTMZReadOnly} />
                     )}
                     {
                         canShowParentGroup &&
                         <SelectForReferences
                             type='parent'
-                            label='Кайси гурухга киради'
+                            label='К какой группе относится'
                             referenceId={body.id}
                             typeReference={body.typeReference}
                             currentItemId={body.parentId}
@@ -1394,7 +1395,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                             </>
                         )}
                         <div style={{ width: '100%', gridColumn: '1 / -1' }}>
-                            <div>Ишлаб чиқариш цехлари</div>
+                            <div>Производственные цеха</div>
                             <div
                                 className={cn(styles.productionDeptList, {
                                     [styles.productionDeptListReadOnly]: isTMZReadOnly,
@@ -1402,7 +1403,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                             >
                                 {productionDepts.length === 0 && (
                                     <div className={styles.productionDeptEmpty}>
-                                        PRODUCTION цехлар топилмади
+                                        Производственные цеха не найдены
                                     </div>
                                 )}
                                 {productionDepts.map((item: ReferenceModel) => {
@@ -1458,7 +1459,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                     {body.refValues?.typeTMZ === TypeTMZ.OS && (
                         <>
                             <InputNum
-                                label={'Амортизация коэффициенти (йиллик %)'}
+                                label={'Коэффициент амортизации (годовой %)'}
                                 value={body.refValues?.amortizationCoefficient ?? ''}
                                 id='amortizationCoefficient'
                                 className={styles.input}
@@ -1466,7 +1467,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 disabled={isTMZReadOnly}
                             />
                             <Input
-                                label={'Амортизация бошланиш санаси'}
+                                label={'Дата начала амортизации'}
                                 value={
                                     body.refValues?.amortizationStartDate
                                         ? String(body.refValues.amortizationStartDate).slice(0, 10)
@@ -1485,7 +1486,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                     { false &&
                         ( user?.role == UserRoles.ADMINGLOBAL || user?.role == UserRoles.HEADCOMPANY || user?.role == UserRoles.GLAVBUX) &&        
                         <InputNum 
-                            label={'Сотиш нархи'} 
+                            label={'Цена продажи'} 
                             value={body.refValues?.firstPrice} 
                             id='firstPrice' 
                             className={styles.input} 
@@ -1549,7 +1550,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                         body.refValues?.typeTMZ === TypeTMZ.TOVAR && (
                         <div className={styles.priceSection}>
                             <InputNum
-                                label={'Сотиш нархи'}
+                                label={'Цена продажи'}
                                 value={firstPriceValue}
                                 id='firstPricePeriodicDisplay'
                                 className={styles.input}
@@ -1563,12 +1564,12 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                     e.preventDefault();
                                     e.stopPropagation();
                                     if (body.id && setMainData) {
-                                        showPereodicsListWindow(body.id, body.name, 'firstPrice', 'Сотиш нархи', setMainData);
+                                        showPereodicsListWindow(body.id, body.name, 'firstPrice', 'Цена продажи', setMainData);
                                     }
                                 }}
                                 style={{ pointerEvents: 'auto', zIndex: 10 }}
                             >
-                                📅 Тарих
+                                📅 История
                             </button>
                         </div>
                     )}
@@ -1596,16 +1597,16 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 }}
                                 style={{ pointerEvents: 'auto', zIndex: 10 }}
                             >
-                                📅 Тарих
+                                📅 История
                             </button>
                         </div>
                     )}
-                    {/* Соатлик тариф (часовой тариф аренды) — только для TOOLS, периодический firstPrice */}
+                    {/* Кунлик тариф (дневной тариф аренды) — только для TOOLS, периодический firstPrice */}
                     {
                         body.refValues?.typeTMZ === TypeTMZ.TOOLS && (
                         <div className={styles.priceSection}>
                             <InputNum
-                                label={'Соатлик тариф (ижара)'}
+                                label={'Суточный тариф (аренда)'}
                                 value={firstPriceValue}
                                 id='firstPricePeriodicDisplay'
                                 className={styles.input}
@@ -1619,21 +1620,21 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                     e.preventDefault();
                                     e.stopPropagation();
                                     if (body.id && setMainData) {
-                                        showPereodicsListWindow(body.id, body.name, 'firstPrice', 'Соатлик тариф', setMainData);
+                                        showPereodicsListWindow(body.id, body.name, 'firstPrice', 'Суточный тариф', setMainData);
                                     }
                                 }}
                                 style={{ pointerEvents: 'auto', zIndex: 10 }}
                             >
-                                📅 Тарих
+                                📅 История
                             </button>
                         </div>
                     )}
-                    {/* Соатлик тариф по перечислению — TOOLS, периодический thirdPrice */}
+                    {/* Кунлик тариф по перечислению — TOOLS, периодический thirdPrice */}
                     {
                         body.refValues?.typeTMZ === TypeTMZ.TOOLS && (
                         <div className={styles.priceSection}>
                             <InputNum
-                                label={'Соатлик тариф (перечисление)'}
+                                label={'Суточный тариф (перечисление)'}
                                 value={thirdPriceValue}
                                 id='thirdPricePeriodicDisplay'
                                 className={styles.input}
@@ -1647,21 +1648,21 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                     e.preventDefault();
                                     e.stopPropagation();
                                     if (body.id && setMainData) {
-                                        showPereodicsListWindow(body.id, body.name, 'thirdPrice', 'Соатлик тариф (перечисление)', setMainData);
+                                        showPereodicsListWindow(body.id, body.name, 'thirdPrice', 'Суточный тариф (перечисление)', setMainData);
                                     }
                                 }}
                                 style={{ pointerEvents: 'auto', zIndex: 10 }}
                             >
-                                📅 Тарих
+                                📅 История
                             </button>
                         </div>
                     )}
-                    {/* Соатлик тариф партнёра (субаренда) — TOOLS, периодический secondPrice */}
+                    {/* Кунлик тариф партнёра (субаренда) — TOOLS, периодический secondPrice */}
                     {
                         body.refValues?.typeTMZ === TypeTMZ.TOOLS && (
                         <div className={styles.priceSection}>
                             <InputNum
-                                label={'Соатлик тариф (ҳамкор / субаренда)'}
+                                label={'Суточный тариф (партнёр / субаренда)'}
                                 value={secondPriceValue}
                                 id='secondPricePeriodicDisplay'
                                 className={styles.input}
@@ -1675,12 +1676,12 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                     e.preventDefault();
                                     e.stopPropagation();
                                     if (body.id && setMainData) {
-                                        showPereodicsListWindow(body.id, body.name, 'secondPrice', 'Ҳамкор тарифи', setMainData);
+                                        showPereodicsListWindow(body.id, body.name, 'secondPrice', 'Тариф партнёра', setMainData);
                                     }
                                 }}
                                 style={{ pointerEvents: 'auto', zIndex: 10 }}
                             >
-                                📅 Тарих
+                                📅 История
                             </button>
                         </div>
                     )}
@@ -1688,7 +1689,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                         body.refValues?.typeTMZ === TypeTMZ.TOOLS && (
                         <div className={styles.checkBoxs}>
                             <CheckBoxForReference
-                                label="Субаренда ускунаси"
+                                label="Инструмент субаренды"
                                 setCheckbox={setCheckbox}
                                 checked={Boolean(body.refValues?.isSubleaseTool)}
                                 id="isSubleaseTool"
@@ -1700,7 +1701,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                         body.refValues?.typeTMZ === TypeTMZ.TOOLS && (
                         <>
                             <div>
-                                <div className={styles.label}>Опалубка элементи</div>
+                                <div className={styles.label}>Элемент опалубки</div>
                                 <select
                                     className={styles.select}
                                     id="formworkKind"
@@ -1708,7 +1709,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                     onChange={(e) => changeElements(e)}
                                     disabled={isTMZReadOnly}
                                 >
-                                    <option value="">— Опалубка эмас —</option>
+                                    <option value="">— Не опалубка —</option>
                                     {Object.values(FormworkKind).map((kind) => (
                                         <option key={kind} value={kind}>
                                             {FORMWORK_KIND_LABELS[kind]}
@@ -1723,7 +1724,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                     <InputNum
                                         label={
                                             body.refValues?.formworkKind === FormworkKind.PANEL
-                                                ? 'Қалқон эни, мм'
+                                                ? 'Ширина щита, мм'
                                                 : 'Бурчак елкаси, мм'
                                         }
                                         value={body.refValues?.width ?? ''}
@@ -1733,7 +1734,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                         disabled={isTMZReadOnly}
                                     />
                                     <InputNum
-                                        label={'Баландлиги, мм'}
+                                        label={'Высота, мм'}
                                         value={body.refValues?.height ?? ''}
                                         id='height'
                                         className={styles.input}
@@ -1755,6 +1756,14 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 />
                             )}
                         </>
+                    )}
+                    {body.refValues?.typeTMZ === TypeTMZ.TOOLS && !body.isFolder && (
+                        <ToolColumnComposition
+                            referenceId={body.id}
+                            token={user?.token}
+                            disabled={isTMZReadOnly}
+                            setMainData={setMainData}
+                        />
                     )}
                     {/* Иккинчи нарх, Учинчи нарх — только для PRODUCT */}
                     {
@@ -1781,7 +1790,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 }}
                                 style={{ pointerEvents: 'auto', zIndex: 10 }}
                             >
-                                📅 Тарих
+                                📅 История
                             </button>
                         </div>
                         <div className={styles.priceSection}>
@@ -1805,7 +1814,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 }}
                                 style={{ pointerEvents: 'auto', zIndex: 10 }}
                             >
-                                📅 Тарих
+                                📅 История
                             </button>
                         </div>
                         </>
@@ -1822,21 +1831,21 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                     <div className={styles.catalogWebsiteSection}>
                         <div className={styles.productGalleryRow}>
                             <ImageUpload
-                                label="1-сурат (асосий)"
+                                label="1-е фото (основное)"
                                 currentImage={body.refValues?.imagePath}
                                 onImageChange={(p) => setGalleryImage(1, p)}
                                 className={styles.imageUpload}
                                 disabled={isTMZReadOnly}
                             />
                             <ImageUpload
-                                label="2-сурат"
+                                label="2-е фото"
                                 currentImage={body.refValues?.imagePath2}
                                 onImageChange={(p) => setGalleryImage(2, p)}
                                 className={styles.imageUpload}
                                 disabled={isTMZReadOnly}
                             />
                             <ImageUpload
-                                label="3-сурат"
+                                label="3-е фото"
                                 currentImage={body.refValues?.imagePath3}
                                 onImageChange={(p) => setGalleryImage(3, p)}
                                 className={styles.imageUpload}
@@ -1844,13 +1853,13 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                             />
                         </div>
                         <CheckBoxForReference
-                            label='Каталогда сайтда кўрсатиш (mebers.../catalog)'
+                            label='Показывать в каталоге на сайте (mebers.../catalog)'
                             setCheckbox={setCheckbox}
                             checked={Boolean(body.refValues?.showOnWebsite)}
                             id={'showOnWebsite'}
                             disabled={isTMZReadOnly}
                         />
-                        <label className={styles.websiteDescLabel} htmlFor="websiteDescription">Сайт учун тавсиф / хусусиятлар</label>
+                        <label className={styles.websiteDescLabel} htmlFor="websiteDescription">Описание / характеристики для сайта</label>
                         <textarea
                             id="websiteDescription"
                             className={styles.websiteTextarea}
@@ -1864,7 +1873,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 }));
                             }}
                             disabled={isTMZReadOnly}
-                            placeholder="Масалан: ўлчамлар, материал, ранг…"
+                            placeholder="Например: размеры, материал, цвет…"
                         />
                     </div>
                 </div>
@@ -1875,21 +1884,21 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                 <div className={styles.imageUploadSection}>
                     <div className={styles.productGalleryRow}>
                         <ImageUpload
-                            label="1-сурат (асосий)"
+                            label="1-е фото (основное)"
                             currentImage={body.refValues?.imagePath}
                             onImageChange={(p) => setGalleryImage(1, p)}
                             className={styles.imageUpload}
                             disabled={isTMZReadOnly}
                         />
                         <ImageUpload
-                            label="2-сурат"
+                            label="2-е фото"
                             currentImage={body.refValues?.imagePath2}
                             onImageChange={(p) => setGalleryImage(2, p)}
                             className={styles.imageUpload}
                             disabled={isTMZReadOnly}
                         />
                         <ImageUpload
-                            label="3-сурат"
+                            label="3-е фото"
                             currentImage={body.refValues?.imagePath3}
                             onImageChange={(p) => setGalleryImage(3, p)}
                             className={styles.imageUpload}
@@ -1901,13 +1910,13 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                         body.refValues?.typeTMZ === TypeTMZ.TOOLS &&
                         <div className={styles.catalogWebsiteSection}>
                             <CheckBoxForReference
-                                label='Сайтда кўрсатиш (mebers.../tools)'
+                                label='Показывать на сайте (mebers.../tools)'
                                 setCheckbox={setCheckbox}
                                 checked={Boolean(body.refValues?.showOnWebsite)}
                                 id={'showOnWebsite'}
                                 disabled={isTMZReadOnly}
                             />
-                            <label className={styles.websiteDescLabel} htmlFor="websiteDescriptionTools">Сайт учун тавсиф / хусусиятлар</label>
+                            <label className={styles.websiteDescLabel} htmlFor="websiteDescriptionTools">Описание / характеристики для сайта</label>
                             <textarea
                                 id="websiteDescriptionTools"
                                 className={styles.websiteTextarea}
@@ -1921,7 +1930,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                     }));
                                 }}
                                 disabled={isTMZReadOnly}
-                                placeholder="Масалан: қувват, ўлчам, ишлаш шароити…"
+                                placeholder="Например: мощность, размер, условия работы…"
                             />
                         </div>
                     }
@@ -1951,7 +1960,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                     {
                         body.refValues?.typeSection === TypeSECTION.PARTNER_TOOLS &&
                         <div className={styles.input}>
-                            <div className={styles.label}>Ҳамкор (субаренда)</div>
+                            <div className={styles.label}>Партнёр (субаренда)</div>
                             <select
                                 className={styles.select}
                                 value={body.refValues?.partnerId ?? ''}
@@ -1967,7 +1976,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                     }));
                                 }}
                             >
-                                <option value="">— Ҳамкор танланмаган —</option>
+                                <option value="">— Партнёр не выбран —</option>
                                 {supplierPartners.map((p: ReferenceModel) => (
                                     <option key={p.id} value={p.id}>{p.name}</option>
                                 ))}
@@ -1982,7 +1991,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                 {
                     user?.role == UserRoles.ADMINGLOBAL && 
                     body.typeReference == TypeReference.CHARGES &&
-                    <CheckBoxForReference label='Ойлик харажат' setCheckbox={setCheckbox} checked={body.refValues.longCharge} id={'longCharge'}/>
+                    <CheckBoxForReference label='Месячный расход' setCheckbox={setCheckbox} checked={body.refValues.longCharge} id={'longCharge'}/>
                 }
 
                 { 
@@ -2063,7 +2072,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                     (user?.role == UserRoles.ADMINGLOBAL || user?.role == UserRoles.HEADCOMPANY || user?.role == UserRoles.GLAVBUX || user?.role == UserRoles.HEADGLOBAL) &&
                     <div>
                         <CheckBoxForReference 
-                            label='Бу элемент - гурух (папка)' 
+                            label='Этот элемент — группа (папка)' 
                             setCheckbox={setCheckbox} 
                             checked={body.isFolder} 
                             id={'isFolder'}
@@ -2073,7 +2082,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
 
                         {/* {!isNewReference && user?.role !== UserRoles.ADMINGLOBAL && user?.role !== UserRoles.HEADGLOBAL && body.refValues?.comment !== "I-am-understand-risk" && (
                             <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '5px' }}>
-                                Папка статусини Admin узгартириши мумкин, ёкиСтатус папки может изменить только администратор или введите I-am-understand-risk в комментарий
+                                Статус папки может изменить только администратор, либо введите I-am-understand-risk в комментарий
                             </div>
                         )} */}
                     </div>
@@ -2083,7 +2092,7 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                     canManageParentGroup &&
                     <SelectForReferences
                         type='parent'
-                        label='Кайси гурухга киради'
+                        label='К какой группе относится'
                         referenceId={body.id}
                         typeReference={body.typeReference}
                         currentItemId={body.parentId}
@@ -2102,10 +2111,10 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
 
             {body.typeReference !== TypeReference.WORKS && (
                 <>
-                    <Input label={'Изох'} value={body.refValues?.comment} type="text" id='comment' className={styles.input} onChange={(e)=>changeElements(e)} disabled={isTMZReadOnly}/>
+                    <Input label={'Комментарий'} value={body.refValues?.comment} type="text" id='comment' className={styles.input} onChange={(e)=>changeElements(e)} disabled={isTMZReadOnly}/>
                     {!isNewReference && user?.role !== UserRoles.ADMINGLOBAL && (
                         <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px', fontStyle: 'italic' }}>
-                            💡Папка мақомини ўзгартириш учун изоҳга «I-am-understand-risk» деб ёзинг.
+                            💡Чтобы изменить статус папки, введите в комментарий «I-am-understand-risk».
                         </div>
                     )}
                 </>
@@ -2125,9 +2134,9 @@ export const Reference = ({ className, mutate, inlineMode, typeReferenceOverride
                                 inlineInstanceId,
                                 inlineMode ? inlineSlot : undefined);
                 }}
-                    >Саклаш</Button>
+                    >Сохранить</Button>
             )}
-            <Button appearance='ghost' onClick={() => inlineMode ? handleClose() : cancelSubmit(setMainData)}>Бекор килиш</Button>
+            <Button appearance='ghost' onClick={() => inlineMode ? handleClose() : cancelSubmit(setMainData)}>Отмена</Button>
         </div> 
         
     </div>   

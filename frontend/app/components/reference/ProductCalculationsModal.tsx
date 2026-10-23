@@ -40,10 +40,10 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
   const loadMaterials = async () => {
     try {
       setLoading(true);
-      console.log('Материаллар юклашла...', { token: mainData.users.user?.token ? 'бор' : 'бой' });
+      console.log('Loading materials...', { token: mainData.users.user?.token ? 'present' : 'missing' });
       
       const allTMZ = await ReferencesService.getReferencesByType('TMZ', mainData.users.user?.token || '');
-      console.log('Барча TMZ юкланди:', allTMZ);
+      console.log('All TMZ loaded:', allTMZ);
       
       // Фильтруем только материалы (typeTMZ === 'MATERIAL')
       const materials = allTMZ.filter(item => 
@@ -52,17 +52,17 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
         !item.refValues?.markToDeleted
       );
       
-      console.log('Материаллар фильтрланди:', materials);
+      console.log('Materials filtered:', materials);
       setMaterials(materials || []);
     } catch (error) {
-      console.error('Материаллар юклашда хатолик юз берди:', error);
+      console.error('Ошибка загрузки материалов:', error);
       setMaterials([]);
       
       // Показываем пользователю более понятное сообщение об ошибке
       if (error instanceof TypeError && error.message.includes('fetch failed')) {
-        alert('Сервердан юклашда хатолик юз берди. Интернет манзилини текширинг.');
+        alert('Ошибка загрузки с сервера. Проверьте подключение к интернету.');
       } else {
-        alert(`Материаллар юклашда хатолик юз берди: ${error instanceof Error ? error.message : 'Маълумотларни текширинг.'}`);
+        alert(`Ошибка загрузки материалов: ${error instanceof Error ? error.message : 'Проверьте данные.'}`);
       }
     } finally {
       setLoading(false);
@@ -77,13 +77,13 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
       setCalculations(calculations || []);
       setOriginalCalculations(calculations || []); // Сохраняем оригинальный список для сравнения
     } catch (error) {
-      console.error('Махсулот калькуляцияси юклашла хатолик юз берди:', error);
+      console.error('Ошибка загрузки калькуляции продукции:', error);
       setCalculations([]);
       setOriginalCalculations([]);
       
       // Показываем пользователю более понятное сообщение об ошибке
       if (error instanceof TypeError && error.message.includes('fetch failed')) {
-        console.warn('Сервердан юклашда хатолик юз берди');
+        console.warn('Ошибка загрузки с сервера');
       }
     }
   };
@@ -114,7 +114,7 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
     // Получаем enterpriseId из пользователя
     const enterpriseId = mainData.users.user?.enterpriseId;
     if (!enterpriseId) {
-      alert('Хатолик: фойдаланувчи корхонасини аниқлашда хатолик юз берди. Системага киришга такрорланг.');
+      alert('Ошибка: не удалось определить организацию пользователя. Войдите в систему снова.');
       return;
     }
 
@@ -125,7 +125,7 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
     );
 
     if (validCalculations.length === 0) {
-      alert('Бир нечта танланмаган маълумотлар мавжуд. Маълумотларни текширинг.');
+      alert('Есть незаполненные данные. Проверьте введённые значения.');
       return;
     }
 
@@ -177,22 +177,22 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
       onSave(calculations);
       onClose();
     } catch (error) {
-      console.error('Саклашда хатолик юз берди:', error);
+      console.error('Ошибка сохранения:', error);
       
       // Показываем более детальную информацию об ошибке
-      let errorMessage = 'Сакланишда хатолик юз берди';
+      let errorMessage = 'Ошибка сохранения';
       
       if (error instanceof Error) {
         if (error.message.includes('HTTP error! status: 400')) {
-          errorMessage = 'Танланмаган маълумотлар. Маълумотларни текширинг.';
+          errorMessage = 'Некорректные данные. Проверьте введённые значения.';
         } else if (error.message.includes('HTTP error! status: 404')) {
-          errorMessage = 'Махсулот ёки материал топилмади. Саҳифани ҳисобга олган ҳолда такрорланг.';
+          errorMessage = 'Продукция или материал не найдены. Обновите страницу и попробуйте снова.';
         } else if (error.message.includes('HTTP error! status: 409')) {
-          errorMessage = 'Махсулот калькуляцияси мавжуд эмас.';
+          errorMessage = 'Калькуляция продукции отсутствует.';
         } else if (error.message.includes('fetch failed')) {
-          errorMessage = 'Сервер юкланмокда хатолик юз берди. Интернет манзилини текширинг.';
+          errorMessage = 'Ошибка связи с сервером. Проверьте подключение к интернету.';
         } else {
-          errorMessage = `Сакланишда хатолик юз берди: ${error.message}`;
+          errorMessage = `Ошибка сохранения: ${error.message}`;
         }
       }
       
@@ -208,7 +208,7 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <div className={styles.header}>
-          <h2>Махсулот калькуляцияси: {product.name}</h2>
+          <h2>Калькуляция продукции: {product.name}</h2>
           <button className={styles.closeButton} onClick={onClose}>×</button>
         </div>
 
@@ -218,9 +218,9 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
               className={styles.addButton}
               onClick={addCalculation}
               disabled={loading || !materials || materials.length === 0}
-              title={`Юкланмокда: ${loading}, Материаллар: ${materials?.length || 0}`}
+              title={`Загрузка: ${loading}, Материалы: ${materials?.length || 0}`}
             >
-              {loading ? 'Юкланмокда...' : '+ Материални қўшиш'}
+              {loading ? 'Загрузка...' : '+ Добавить материал'}
             </button>
           </div>
 
@@ -243,7 +243,7 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
                 </div>
 
                 <div className={styles.field}>
-                  <label>Харажат нормаси:</label>
+                  <label>Норма расхода:</label>
                   <input
                     type="number"
                     step="0.001"
@@ -258,7 +258,7 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
                   className={styles.removeButton}
                   onClick={() => removeCalculation(index)}
                 >
-                  Учириш
+                  Удалить
                 </button>
               </div>
             ))}
@@ -267,9 +267,9 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
           {(!calculations || calculations.length === 0) && (
             <div className={styles.emptyState}>
               <p>
-                {loading ? 'Маълумотлар юкланмокда...' : 
-                 (!materials || materials.length === 0) ? 'Материаллар топилмади. Дастурда материаллар борлигини текширинг (TMZ тури MATERIAL бўлганлар).' :
-                 'Махсулот калькуляцияси мавжуд эмас. Материални қўшиш учун "Материални қўшиш" тугмасини босинг.'}
+                {loading ? 'Загрузка данных...' : 
+                 (!materials || materials.length === 0) ? 'Материалы не найдены. Проверьте, что в справочнике есть материалы (тип ТМЦ MATERIAL).' :
+                 'Калькуляция продукции отсутствует. Нажмите «Добавить материал», чтобы добавить позицию.'}
               </p>
             </div>
           )}
@@ -281,14 +281,14 @@ export const ProductCalculationsModal: React.FC<ProductCalculationsModalProps> =
             onClick={onClose}
             disabled={saving}
           >
-            Бекор қилиш
+            Отмена
           </button>
           <button 
             className={styles.saveButton}
             onClick={handleSave}
             disabled={saving || !calculations || calculations.length === 0}
           >
-            {saving ? 'Сакланмокда...' : 'Саклаш'}
+            {saving ? 'Сохранение...' : 'Сохранить'}
           </button>
         </div>
       </div>

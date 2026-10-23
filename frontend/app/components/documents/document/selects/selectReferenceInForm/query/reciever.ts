@@ -152,7 +152,7 @@ export const reciever = (item: ReferenceModel, type: string, contentName: string
             return item.refValues?.typePartners == TypePartners.CLIENTS;
         }
 
-        if (contentName == DocumentType.SaleProd || contentName == DocumentType.SaleMaterial || contentName == DocumentType.SaleTovar || contentName == DocumentType.TransferToolsToClient || contentName == DocumentType.OrderToolsToClient || contentName == DocumentType.TransferSubleaseToolsToClient) {
+        if (contentName == DocumentType.SaleProd || contentName == DocumentType.SaleMaterial || contentName == DocumentType.SaleTovar || contentName == DocumentType.TransferToolsToClient || contentName == DocumentType.OrderToolsToClient || contentName == DocumentType.SaleEquipment || contentName == DocumentType.TransferSubleaseToolsToClient) {
             // Если typeReference === STORAGES и isDepartment = true, фильтруем по TypeSECTION.COMMON
             // но исключаем справочники с enterpriseId === user.enterpriseId
             if (typeReference === TypeReference.STORAGES && currentDocument?.docValues?.isDepartment) {
@@ -167,7 +167,16 @@ export const reciever = (item: ReferenceModel, type: string, contentName: string
             if (contentName == DocumentType.SaleMaterial && currentDocument?.docValues?.isPartner) {
                 return item.refValues?.typePartners == TypePartners.SUPPLIERS;
             }
-            return item.refValues?.typePartners == TypePartners.CLIENTS;
+            const isClient = item.refValues?.typePartners == TypePartners.CLIENTS;
+            if (
+                contentName == DocumentType.TransferToolsToClient ||
+                contentName == DocumentType.OrderToolsToClient ||
+                contentName == DocumentType.SaleEquipment ||
+                contentName == DocumentType.TransferSubleaseToolsToClient
+            ) {
+                return isClient && !item.isFolder;
+            }
+            return isClient;
         }
         
         // Общая логика для STORAGES при isDepartment = true

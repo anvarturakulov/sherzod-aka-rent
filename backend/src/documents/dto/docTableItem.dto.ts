@@ -6,8 +6,27 @@ import {
   IsInt,
   IsOptional,
   IsEnum,
+  IsIn,
   ValidateIf,
 } from "class-validator";
+
+const transformOptionalInt = ({ value }: { value: unknown }) => {
+  if (value === undefined) return undefined;
+  if (value === null || value === "" || value === 0 || value === "0") {
+    return null;
+  }
+  if (typeof value === "bigint") {
+    return Number(value);
+  }
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? Math.trunc(value) : value;
+  }
+  if (typeof value === "string") {
+    const n = Number(value);
+    return Number.isFinite(n) ? Math.trunc(n) : value;
+  }
+  return value;
+};
 
 export class DocTableItemDto {
   @ApiProperty({
@@ -169,7 +188,7 @@ export class DocTableItemDto {
 
   @ApiProperty({
     example: 5000,
-    description: "Часовой тариф аренды",
+    description: "Дневной тариф аренды за 1 штуку",
     required: false,
   })
   @IsOptional()
@@ -205,7 +224,7 @@ export class DocTableItemDto {
 
   @ApiProperty({
     example: 4000,
-    description: "Часовой тариф партнёра (субаренда)",
+    description: "Дневной тариф партнёра за 1 штуку (субаренда)",
     required: false,
   })
   @IsOptional()
@@ -222,8 +241,8 @@ export class DocTableItemDto {
   partnerRentSum?: number;
 
   @ApiProperty({
-    example: 48,
-    description: "Часы аренды по строке",
+    example: 3,
+    description: "Дни аренды по строке (календарные, без дня отправки)",
     required: false,
   })
   @IsOptional()
@@ -238,4 +257,28 @@ export class DocTableItemDto {
   @IsOptional()
   @IsNumber({}, { message: "settlementDate - должен быть числом" })
   settlementDate?: number;
+
+  @ApiProperty({ required: false, example: "COLUMN_COMPONENT" })
+  @IsOptional()
+  @IsIn(["PLAIN", "COLUMN", "COLUMN_COMPONENT"], {
+    message: "billingRole - недопустимое значение",
+  })
+  billingRole?: "PLAIN" | "COLUMN" | "COLUMN_COMPONENT" | null;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  assemblyRowKey?: string | null;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber({}, { message: "normQty - должен быть числом" })
+  normQty?: number | null;
+
+  @ApiProperty({ required: false })
+  @Transform(transformOptionalInt)
+  @IsOptional()
+  @ValidateIf((_, v) => v !== undefined && v !== null)
+  @IsInt({ message: "sourceBatchId - должен быть целым числом" })
+  sourceBatchId?: number | null;
 }

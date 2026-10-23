@@ -54,7 +54,7 @@ export const TmzMainWarehouseBalance = ({
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
   const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
   const [folderPath, setFolderPath] = useState<{ id: number | null; name: string }[]>([
-    { id: null, name: 'Бош ойна' },
+    { id: null, name: 'Корень' },
   ]);
   const [openFolders, setOpenFolders] = useState<Set<number>>(new Set());
   const [articleSearchQuery, setArticleSearchQuery] = useState('');
@@ -128,7 +128,7 @@ export const TmzMainWarehouseBalance = ({
     (folderId: number | null) => {
       setCurrentFolderId(folderId);
       if (folderId === null) {
-        setFolderPath([{ id: null, name: 'Бош ойна' }]);
+        setFolderPath([{ id: null, name: 'Корень' }]);
       } else {
         const folder = products.find((p: Product) => p.id === folderId);
         if (folder) {
@@ -346,8 +346,8 @@ export const TmzMainWarehouseBalance = ({
   if (!values) {
     return (
       <div className={styles.container} {...props}>
-        <div className={styles.title}>Асосий омбор — ТМЗ қолдиқлари</div>
-        <div className={styles.emptyMessage}>Маълумотлар юкланмоқда</div>
+        <div className={styles.title}>Основной склад — остатки ТМЦ</div>
+        <div className={styles.emptyMessage}>Загрузка данных</div>
       </div>
     );
   }
@@ -355,7 +355,7 @@ export const TmzMainWarehouseBalance = ({
   if (values.warehouseId == null) {
     return (
       <div className={styles.container} {...props}>
-        <div className={styles.title}>Асосий омбор — ТМЗ қолдиқлари</div>
+        <div className={styles.title}>Основной склад — остатки ТМЦ</div>
         <div className={styles.emptyMessage}>{values.warehouseName}</div>
       </div>
     );
@@ -367,9 +367,9 @@ export const TmzMainWarehouseBalance = ({
     <div className={styles.container} {...props}>
       <div className={styles.header}>
         <div className={styles.titleBlock}>
-          <div className={styles.title}>Асосий омбор — ТМЗ қолдиқлари</div>
+          <div className={styles.title}>Основной склад — остатки ТМЦ</div>
           <div className={styles.subtitle}>
-            {values.warehouseName} · Колдик санаси: {balanceDateLabel}
+            {values.warehouseName} · Дата остатка: {balanceDateLabel}
           </div>
         </div>
         <div className={styles.viewModeToggle}>
@@ -385,7 +385,7 @@ export const TmzMainWarehouseBalance = ({
             className={cn(styles.viewModeButton, { [styles.active]: viewMode === 'list' })}
             onClick={() => setViewMode('list')}
           >
-            Рўйхат
+            Список
           </button>
         </div>
       </div>
@@ -438,13 +438,13 @@ export const TmzMainWarehouseBalance = ({
           {loading ? (
             <div className={styles.loadingMessage}>
               <LoadingIco className={styles.loadingIco} />
-              <span>Товарлар юкланмоқда...</span>
+              <span>Загрузка товаров...</span>
             </div>
           ) : error ? (
             <div className={styles.errorMessage}>
-              <span>Товарлар юкланишида хатолик</span>
+              <span>Ошибка загрузки товаров</span>
               <button type="button" onClick={() => mutate()} className={styles.retryButton}>
-                Кайта уриниш
+                Повторить
               </button>
             </div>
           ) : (
@@ -471,7 +471,7 @@ export const TmzMainWarehouseBalance = ({
                 ? displayItems.length === 0
                 : treeData.length === 0) && (
               <div className={styles.emptyMessage}>
-                {isFilterActive ? 'Товарлар топилмади' : viewMode === 'grid' ? 'Папка пуста' : 'Нет товаров'}
+                {isFilterActive ? 'Товары не найдены' : viewMode === 'grid' ? 'Папка пуста' : 'Нет товаров'}
               </div>
             )}
 

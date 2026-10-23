@@ -89,7 +89,7 @@ const TableRow = memo<TableRowProps>(({
           <div
             className={catalogStyles.icoCatalog}
             onClick={() => onOpenCatalogForRow!(effectiveIndex)}
-            title="Номенклатурани алмаштириш"
+            title="Заменить номенклатуру"
             role="button"
           >
             <CartIco />

@@ -16,7 +16,7 @@ const formatNormValue = (value: number | undefined): string => {
 
 export const TmcMaterialNorms = ({className, data, currentSection, ...props }: TmcMaterialNormsProps) :JSX.Element => {
     const enterpriseName = useEnterpriseName();
-    let title = 'МАХСУЛОТЛАР МАТЕРИАЛЛАР НОРМАСИ' 
+    let title = 'НОРМЫ МАТЕРИАЛОВ ПРОДУКЦИИ' 
     
     useEffect(()=> {
     }, [data])
@@ -86,7 +86,7 @@ export const TmcMaterialNorms = ({className, data, currentSection, ...props }: T
                     <table className={styles.table}>
                         <thead>
                             <tr>
-                                <th className={styles.productColumn}>Махсулотлар</th>
+                                <th className={styles.productColumn}>Продукциялар</th>
                                 {materialsMap.map((material) => (
                                     <th key={material.id} className={styles.materialColumn} title={material.unit ? `Ед. изм.: ${material.unit}` : ''}>
                                         <div className={styles.materialHeader}>
@@ -128,7 +128,7 @@ export const TmcMaterialNorms = ({className, data, currentSection, ...props }: T
                 </div>
             ) : (
                 <div className={styles.emptyMessage}>
-                    Материаллар нормаси топилмади
+                    Нормы материалов не найдены
                 </div>
             )}
        </>

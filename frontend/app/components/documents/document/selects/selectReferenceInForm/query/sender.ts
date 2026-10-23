@@ -197,7 +197,7 @@ export const sender = (item: ReferenceModel, type: string, contentName: string, 
             return isStorageOrCommon && item.enterpriseId === userEnterpriseId;
         }
 
-        if ((contentName == DocumentType.TransferToolsToClient || contentName == DocumentType.OrderToolsToClient) && typeReference === TypeReference.STORAGES) {
+        if ((contentName == DocumentType.TransferToolsToClient || contentName == DocumentType.OrderToolsToClient || contentName == DocumentType.SaleEquipment) && typeReference === TypeReference.STORAGES) {
             return item.refValues?.typeSection == TypeSECTION.COMMON;
         }
 
@@ -281,6 +281,14 @@ export const sender = (item: ReferenceModel, type: string, contentName: string, 
         // Общая логика для STORAGES при isDepartment = true
         if (typeReference === TypeReference.STORAGES && currentDocument?.docValues?.isDepartment) {
             return item.refValues?.typeSection === TypeSECTION.COMMON;
+        }
+
+        if (
+            (contentName == DocumentType.ReceiveToolsFromClient ||
+                contentName == DocumentType.ReceiveSubleaseToolsFromClient) &&
+            typeReference === TypeReference.PARTNERS
+        ) {
+            return item.refValues?.typePartners == TypePartners.CLIENTS && !item.isFolder;
         }
 
         return true    

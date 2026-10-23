@@ -10,7 +10,7 @@ export enum DocSTATUS {
     DELETED = 'DELETED'
 }
 
-/** Тип часового тарифа аренды инструментов: наличка / физ.лицо или перечисление. */
+/** Тип тарифа аренды инструментов: наличка / физ.лицо или перечисление. */
 export enum RentTariffType {
     CASH = 'CASH',
     TRANSFER = 'TRANSFER',
@@ -45,6 +45,7 @@ export enum DocumentType {
 
     TransferToolsToClient = 'TransferToolsToClient',
     OrderToolsToClient = 'OrderToolsToClient',
+    SaleEquipment = 'SaleEquipment',
     ReceiveToolsFromClient = 'ReceiveToolsFromClient',
     TransferSubleaseToolsToClient = 'TransferSubleaseToolsToClient',
     ReceiveSubleaseToolsFromClient = 'ReceiveSubleaseToolsFromClient',
@@ -91,6 +92,10 @@ export interface DocTableItem {
     partnerRentSum?: number,
     rentHours?: number,
     settlementDate?: number,
+    billingRole?: 'PLAIN' | 'COLUMN' | 'COLUMN_COMPONENT' | null,
+    assemblyRowKey?: string | null,
+    normQty?: number | null,
+    sourceBatchId?: number | null,
 }
 
 export interface ReceiveToolsPreviewRow {
@@ -108,7 +113,25 @@ export interface ReceiveToolsPreviewRow {
     sourceTransferDocId: number;
     settlementDate: number;
     transferDocNumber: string;
+    transferDocComment?: string;
     tableType: 'return';
+    batchId?: number;
+    billingRole?: 'PLAIN' | 'COLUMN' | 'COLUMN_COMPONENT';
+    assemblyBatchId?: number | null;
+    normQty?: number | null;
+}
+
+export interface TransferColumnPartPreview {
+    analiticId: number;
+    normQty: number;
+    remain: number;
+    costPrice: number;
+}
+
+export interface TransferColumnPreview {
+    analiticId: number;
+    hourlyTariff: number;
+    parts: TransferColumnPartPreview[];
 }
 
 export interface TransferToolsPreviewRow {
@@ -119,7 +142,7 @@ export interface TransferToolsPreviewRow {
     costTotal: number;
     price: number;
     total: number;
-    /** Часовой тариф аренды (периодика firstPrice или thirdPrice по типу тарифа). */
+    /** Дневной тариф аренды за 1 штуку (периодика firstPrice или thirdPrice по типу тарифа). */
     hourlyTariff: number;
 }
 
@@ -302,6 +325,7 @@ export const getSchetForDocumentType = (documentType: DocumentType): string => {
     case DocumentType.MoveTools:
     case DocumentType.TransferToolsToClient:
     case DocumentType.OrderToolsToClient:
+    case DocumentType.SaleEquipment:
       return 'S11'; // Инструменты на складе
 
     case DocumentType.TransferSubleaseToolsToClient:
@@ -449,6 +473,7 @@ export const documentsWithTableItems = [
   `${DocumentType.SaleTovar}`,
   `${DocumentType.TransferToolsToClient}`,
   `${DocumentType.OrderToolsToClient}`,
+  `${DocumentType.SaleEquipment}`,
   `${DocumentType.ReceiveToolsFromClient}`,
   `${DocumentType.TransferSubleaseToolsToClient}`,
   `${DocumentType.ReceiveSubleaseToolsFromClient}`,
@@ -472,6 +497,7 @@ export const documentsWithOwnPrice = [
   `${DocumentType.SaleMaterial}`,
   `${DocumentType.ComeOS}`,
   `${DocumentType.SaleOS}`,
+  `${DocumentType.SaleEquipment}`,
 ]
 
 // Функция для проверки, должен ли документ ComeProduct иметь редактируемую цену на основе даты

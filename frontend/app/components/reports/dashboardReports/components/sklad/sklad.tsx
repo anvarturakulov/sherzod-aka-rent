@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useEnterpriseName } from '../../hooks/useEnterpriseName';
 
 export const Sklad = ({className, data, currentSection, ...props }: SkladProps) :JSX.Element => {
-    let title = 'ХОМ АШЁ КОЛДИГИ' 
+    let title = 'ОСТАТОК СЫРЬЯ' 
     const enterpriseName = useEnterpriseName();
     
     useEffect(()=> {

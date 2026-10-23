@@ -10,6 +10,7 @@ import {
 import { buildReceiveToolsReturnRow } from '@/app/service/documents/receiveToolsRent';
 import {
   getBatchKey,
+  getItemBatchKey,
   getPickerRemainQty,
 } from '@/app/service/documents/receiveToolsBatchRemain';
 
@@ -61,12 +62,13 @@ export const mergePickerSelectionsIntoDocument = (
 
   for (const selection of toApply) {
     const returnQty = Number(selection.returnQty) || 0;
-    const key = getBatchKey(selection.sourceTransferDocId, selection.analiticId);
+    const key = getBatchKey(
+      selection.sourceTransferDocId,
+      selection.analiticId,
+      selection.batchId,
+    );
     const existingIndex = returnItems.findIndex(
-      (item) =>
-        item.sourceTransferDocId &&
-        item.analiticId &&
-        getBatchKey(item.sourceTransferDocId, item.analiticId) === key,
+      (item) => getItemBatchKey(item) === key,
     );
 
     if (existingIndex >= 0) {

@@ -17,22 +17,22 @@ export function validateUzLegalEntityFields(
 
   const bankName = (refValues.bankName ?? "").trim();
   if (bankName.length < 2 || bankName.length > 255) {
-    return "Банк номини киритинг";
+    return "Введите название банка";
   }
 
   const bankAccount = (refValues.bankAccount ?? "").trim();
   if (!UZ_BANK_ACCOUNT_RE.test(bankAccount)) {
-    return "Ҳисоб рақами: 20 та рақам";
+    return "Расчётный счёт: 20 цифр";
   }
 
   const bankMfo = (refValues.bankMfo ?? "").trim();
   if (!UZ_BANK_MFO_RE.test(bankMfo)) {
-    return "МФО: 5 та рақам";
+    return "МФО: 5 цифр";
   }
 
   const inn = (refValues.inn ?? "").trim();
   if (!UZ_INN_RE.test(inn)) {
-    return "ИНН: 9 та рақам";
+    return "ИНН: 9 цифр";
   }
 
   return null;

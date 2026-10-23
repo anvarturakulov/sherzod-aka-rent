@@ -14,6 +14,7 @@ import {
 import { TypeReference } from '@/app/interfaces/reference.interface';
 import { Schet } from '@/app/interfaces/report.interface';
 import { useAppContext } from '@/app/context/app.context';
+import { useAllReferences } from '@/app/components/lists/referencesList/hooks/useReferencesData';
 import { useDocTableData } from '../hooks/useDocTableData';
 import { useProductCatalog } from '@/app/hooks/useProductCatalog';
 import ProductCatalog from '@/app/components/productCatalog/productCatalog';
@@ -24,7 +25,12 @@ import TableRow from './TableRow';
 import TableFooter from './TableFooter';
 import TableEmptyBox from './TableEmptyBox';
 import styles from '../docTableCatalog.module.css';
-import { fillReceiveToolsTable, getTotalRentFromReturnRows } from '@/app/service/documents/fillReceiveToolsTable';
+import { getTotalRentFromReturnRows } from '@/app/service/documents/fillReceiveToolsTable';
+import {
+  formatPanelAreaM2,
+  formatReturnQty,
+  getFormworkPanelTotals,
+} from '@/app/service/documents/formworkPanelArea';
 import { getReceiveToolsPreviewParams } from '@/app/service/documents/fetchReceiveToolsPreview';
 import {
   copyReturnRowToSection,
@@ -35,14 +41,17 @@ import { numberValue } from '@/app/service/common/converters';
 import { showMessage } from '@/app/service/common/showMessage';
 import { getDocumentTypeByComeOut } from '../../docValues/components/helpers/getDocumentTypeByComeOut';
 import ReceiveToolsPickerModal from './receiveToolsPickerModal/receiveToolsPickerModal';
+import ReceiveToolsPartyModal from './receiveToolsPartyModal/receiveToolsPartyModal';
+import { useToolsDocumentBlockSettings } from '@/app/service/settings/useToolsDocumentBlockSettings';
+import { sortToolRowsByArticle } from '@/app/service/documents/sortToolsByArticle';
 
 type SectionType = 'return' | 'brak' | 'sale' | 'tovar';
 
 const SECTION_TITLES: Record<SectionType, string> = {
-  return: 'Кабул килиш',
+  return: 'Приём',
   brak: 'Брак',
-  sale: 'Мижозга сотиш',
-  tovar: 'Мижозга товар сотиш',
+  sale: 'Продажа клиенту',
+  tovar: 'Продажа товара клиенту',
 };
 
 const COLLAPSIBLE_SECTIONS: SectionType[] = ['brak', 'sale', 'tovar'];
@@ -58,12 +67,14 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
   const { currentDocument } = mainData.document;
   const { user } = mainData.users;
   const token = user?.token;
+  const { data: references } = useAllReferences(token);
   const enterpriseId =
     currentDocument?.enterpriseId ??
     mainData.report?.selectedEnterpriseId ??
     user?.enterpriseId;
 
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [partyOpen, setPartyOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<SectionType, boolean>>({
     return: true,
     brak: false,
@@ -88,6 +99,7 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
   const tovarItems = getTovarItems(items || []);
   const isKaytarish =
     currentDocument?.documentType === DocumentType.ReceiveToolsFromClient;
+  const { showClientGoodsSale } = useToolsDocumentBlockSettings(isKaytarish);
   const tovarWarehouseId = currentDocument?.docValues?.receiverId;
 
   const sectionItemsMap: Record<SectionType, DocTableItem[]> = {
@@ -101,6 +113,16 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
     (currentDocument?.documentType as DocumentType) ||
       DocumentType.ReceiveToolsFromClient,
   );
+
+  const toolMetaById = useMemo(() => {
+    const map = new Map<number, { article: string; name: string }>();
+    for (const ref of references || []) {
+      if (ref.id) {
+        map.set(ref.id, { article: ref.article || '', name: ref.name || '' });
+      }
+    }
+    return map;
+  }, [references]);
 
   const indicesInFullDoc = useMemo(() => {
     const map: Record<SectionType, number[]> = {
@@ -134,8 +156,13 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
   );
 
   const handleFill = useCallback(() => {
-    fillReceiveToolsTable(currentDocument, setMainData, token, enterpriseId ?? null);
-  }, [currentDocument, setMainData, token, enterpriseId]);
+    const { error } = getReceiveToolsPreviewParams(currentDocument, enterpriseId ?? null);
+    if (error) {
+      showMessage(error, 'error', setMainData);
+      return;
+    }
+    setPartyOpen(true);
+  }, [currentDocument, enterpriseId, setMainData]);
 
   const handleOpenPicker = useCallback(() => {
     const { error } = getReceiveToolsPreviewParams(currentDocument, enterpriseId ?? null);
@@ -153,7 +180,7 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
 
       const warehouse = doc.docValues?.receiverId;
       if (!warehouse) {
-        alert('Аввал қабул қилувчи складни танланг.');
+        alert('Сначала выберите принимающий склад.');
         return;
       }
 
@@ -171,7 +198,7 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
 
         const totalQuantity = Number(stockData?.totalQuantity) || 0;
         if (totalQuantity <= 0) {
-          alert(`Складда (S29) товар "${product.name}" қолдиғи йўқ.`);
+          alert(`На складе (S29) нет остатка товара "${product.name}".`);
           return;
         }
 
@@ -193,7 +220,7 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
         }
 
         if (price <= 0) {
-          alert(`Товар "${product.name}" учун сотиш нархи (firstPrice) топилмади.`);
+          alert(`Для товара "${product.name}" не найдена цена продажи (firstPrice).`);
           return;
         }
 
@@ -248,7 +275,7 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
 
   const handleOpenTovarCatalog = useCallback(() => {
     if (!tovarWarehouseId) {
-      alert('Аввал қабул қилувчи складни танланг.');
+      alert('Сначала выберите принимающий склад.');
       return;
     }
     openCatalog();
@@ -265,16 +292,16 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
         return;
       }
 
-      const sectionLabel = target === 'brak' ? 'Брак' : 'Мижозга сотиш';
+      const sectionLabel = target === 'brak' ? 'Брак' : 'Продажа клиенту';
       const rawQty = window.prompt(
-        `«${sectionLabel}» учун миқдор (макс. ${remain}):`,
+        `Количество для «${sectionLabel}» (макс. ${remain}):`,
         String(remain),
       );
       if (rawQty === null) return;
 
       const parsedQty = Number(rawQty.replace(',', '.'));
       if (!Number.isFinite(parsedQty) || parsedQty <= 0) {
-        showMessage('Миқдор нотўғри', 'error', setMainData);
+        showMessage('Некорректное количество', 'error', setMainData);
         return;
       }
 
@@ -304,8 +331,23 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
 
   const isDocumentOpen = currentDocument?.docStatus === DocSTATUS.OPEN;
 
-  const renderSection = (section: SectionType, sectionItems: DocTableItem[]) => {
-    const indices = indicesInFullDoc[section];
+  const renderSection = (section: SectionType, sourceItems: DocTableItem[]) => {
+    const sourceIndices = indicesInFullDoc[section];
+    const paired = sourceItems.map((item, index) => ({
+      item,
+      docIndex: sourceIndices[index] ?? index,
+    }));
+    const ordered =
+      section === 'tovar'
+        ? paired
+        : sortToolRowsByArticle(
+            paired,
+            (row) => row.item,
+            (id) => toolMetaById.get(id) || { article: '', name: '' },
+            { tieBreakBySettlementDate: section === 'return' },
+          );
+    const sectionItems = ordered.map((row) => row.item);
+    const indices = ordered.map((row) => row.docIndex);
     const isCollapsible = COLLAPSIBLE_SECTIONS.includes(section);
     const isExpanded = expandedSections[section];
     const rowCount = sectionItems.length;
@@ -317,7 +359,7 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
           onClick={handleOpenPicker}
           disabled={!isDocumentOpen}
         >
-          + Танлаб олиш
+          + Выбрать
         </button>
       ) : section === 'tovar' ? (
         <button
@@ -326,7 +368,7 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
           onClick={handleOpenTovarCatalog}
           disabled={!isDocumentOpen}
         >
-          + Товар қўшиш
+          + Добавить товар
         </button>
       ) : null;
 
@@ -360,16 +402,15 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
           <>
             {section === 'return' && (
               <div
-                className={`${styles.box} ${styles.boxReceiveTools} ${styles.receiveToolsColumnHeader}`}
+                className={`${styles.box} ${styles.boxReceiveToolsReturn} ${styles.receiveToolsColumnHeader}`}
               >
-                <div>Номи</div>
+                <div>Наименование</div>
                 <div>Олинган сана</div>
-                <div>Миқдор</div>
-                <div>Соат</div>
+                <div>Количество</div>
+                <div>Сутки</div>
                 <div>Тариф</div>
-                <div>Ижара</div>
                 <div>Скидка</div>
-                <div>Суммаси</div>
+                <div>Сумма</div>
                 <div />
               </div>
             )}
@@ -377,14 +418,14 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
               <div
                 className={`${styles.box} ${styles.boxReceiveTools} ${styles.receiveToolsColumnHeader}`}
               >
-                <div>Номи</div>
-                <div>Колдик</div>
-                <div>Миқдор</div>
+                <div>Наименование</div>
+                <div>Остаток</div>
+                <div>Количество</div>
                 <div>—</div>
                 <div>—</div>
                 <div>—</div>
-                <div>Нарх</div>
-                <div>Суммаси</div>
+                <div>Цена</div>
+                <div>Сумма</div>
                 <div />
               </div>
             )}
@@ -434,18 +475,39 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
   };
 
   const totalRent = getTotalRentFromReturnRows(items);
+  const panelTotals = useMemo(
+    () => getFormworkPanelTotals(items, references),
+    [items, references],
+  );
 
   return (
     <div className={`${styles.mainBox} ${styles.mainBoxTools}`}>
       <div className={styles.receiveToolsToolbar}>
         {isDocumentOpen && (
           <button type="button" className={styles.actionBtn} onClick={handleFill}>
-            Тулдириш
+            Заполнить
           </button>
         )}
         {totalRent > 0 && (
           <span className={styles.rentTotal}>
-            Ижарадан даромад: {numberValue(totalRent)} сўм
+            Доход от аренды: {numberValue(totalRent)} сум
+          </span>
+        )}
+        {panelTotals.areaM2 > 0 && (
+          <span className={styles.rentTotal}>
+            Опалубка: {formatPanelAreaM2(panelTotals.areaM2)} м², сумма:{' '}
+            {numberValue(panelTotals.rentTotal)} сум
+          </span>
+        )}
+        {(panelTotals.columnCount > 0 || panelTotals.columnRentTotal !== 0) && (
+          <span className={styles.rentTotal}>
+            Колонна: {formatReturnQty(panelTotals.columnCount)} шт., сумма:{' '}
+            {numberValue(panelTotals.columnRentTotal)} сум
+          </span>
+        )}
+        {panelTotals.restRentTotal !== 0 && (
+          <span className={styles.rentTotal}>
+            Остальные: {numberValue(panelTotals.restRentTotal)} сум
           </span>
         )}
       </div>
@@ -453,7 +515,18 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
       {renderSection('return', returnItems)}
       {renderSection('brak', brakItems)}
       {renderSection('sale', saleItems)}
-      {isKaytarish && renderSection('tovar', tovarItems)}
+      {isKaytarish && showClientGoodsSale && renderSection('tovar', tovarItems)}
+
+      {currentDocument && (
+        <ReceiveToolsPartyModal
+          open={partyOpen}
+          currentDocument={currentDocument}
+          token={token}
+          enterpriseId={enterpriseId ?? null}
+          setMainData={setMainData}
+          onClose={() => setPartyOpen(false)}
+        />
+      )}
 
       <ReceiveToolsPickerModal
         open={pickerOpen}
@@ -465,7 +538,7 @@ const ReceiveToolsTables = memo<ReceiveToolsTablesProps>(({ items }) => {
         onClose={() => setPickerOpen(false)}
       />
 
-      {isKaytarish && (
+      {isKaytarish && showClientGoodsSale && (
         <ProductCatalog
           isOpen={isOpen}
           onClose={closeCatalog}

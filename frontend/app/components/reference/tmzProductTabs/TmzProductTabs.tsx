@@ -130,14 +130,14 @@ const WORK_STATUS_COLORS: Record<WorkStatus, string> = {
 type ProductTab = TmzProductTabKey;
 
 const TAB_LABELS: Record<ProductTab, string> = {
-    works: 'Ишлар',
-    commonWorks: 'Умумий ишлар',
-    materials: 'Материаллар',
-    halfstuffs: 'Ярим тайёр махсулот',
+    works: 'Работы',
+    commonWorks: 'Общие работы',
+    materials: 'Материалы',
+    halfstuffs: 'Полуфабрикат',
     components: 'Составные части',
     techMap: 'Техкарт',
-    files: 'Файллар',
-    pricing: 'Нархлаш',
+    files: 'Файлы',
+    pricing: 'Ценообразование',
 };
 
 type Props = {
@@ -972,7 +972,7 @@ export default function TmzProductTabs({
 
     const removeTmzWorkRow = useCallback(
         (row: DraftWorkRow) => {
-            if (apiMode && row.serverId != null && !confirm('Қаторни ўчириш? (сақлашда сервердан ҳам ўчирилади)')) return;
+            if (apiMode && row.serverId != null && !confirm('Удалить строку? (при сохранении будет удалена и с сервера)')) return;
             if (apiMode) {
                 setNormDraft((prev) => {
                     if (!prev) return prev;
@@ -996,7 +996,7 @@ export default function TmzProductTabs({
 
     const removeTmzMaterialRow = useCallback(
         (row: DraftMaterialRow) => {
-            if (apiMode && row.serverId != null && !confirm('Қаторни ўчириш? (сақлашда сервердан ҳам ўчирилади)')) return;
+            if (apiMode && row.serverId != null && !confirm('Удалить строку? (при сохранении будет удалена и с сервера)')) return;
             if (apiMode) {
                 setNormDraft((prev) => {
                     if (!prev) return prev;
@@ -1072,7 +1072,7 @@ export default function TmzProductTabs({
     );
 
     const removeTmzHalfstuffRow = useCallback((row: DraftHalfstuffRow) => {
-        if (row.serverId != null && !confirm('Қаторни ўчириш? (сақлашда сервердан ҳам ўчирилади)')) return;
+        if (row.serverId != null && !confirm('Удалить строку? (при сохранении будет удалена и с сервера)')) return;
         setNormDraft((prev) => {
             if (!prev) return prev;
             setNormsDirty(true);
@@ -1282,10 +1282,10 @@ export default function TmzProductTabs({
                 scaling: fileListSignature(sentScaling),
                 drawing: fileListSignature(sentDrawing),
             });
-            alert('Файллар карточкага сақланди.');
+            alert('Файлы сохранены в карточке.');
         } catch (e) {
             console.error(e);
-            alert(e instanceof Error ? e.message : 'Файлларни сақлашда хатолик');
+            alert(e instanceof Error ? e.message : 'Ошибка сохранения файлов');
         } finally {
             setFilesListSaving(false);
         }
@@ -1333,7 +1333,7 @@ export default function TmzProductTabs({
             for (const file of Array.from(files)) {
                 if (!isAllowedTmzAttachmentFile(file)) {
                     alert(
-                        `Файл рухсат этилмайди (фақат расм, PDF, Excel): ${file.name}`,
+                        `Файл не допускается (только изображение, PDF, Excel): ${file.name}`,
                     );
                     continue;
                 }
@@ -1382,7 +1382,7 @@ export default function TmzProductTabs({
                     alert(
                         persistErr instanceof Error
                             ? persistErr.message
-                            : 'Файллар юкланди, лекин рўйхатни карточкага сақлашда хатолик. «Файлларни сақлаш»ни босинг.',
+                            : 'Файлы загружены, но не удалось сохранить список в карточке. Нажмите «Сохранить файлы».',
                     );
                 } finally {
                     setFilesListSaving(false);
@@ -1410,7 +1410,7 @@ export default function TmzProductTabs({
             }));
         } catch (e) {
             console.error(e);
-            alert(e instanceof Error ? e.message : 'Ўчиришни сақлашда хатолик');
+            alert(e instanceof Error ? e.message : 'Ошибка сохранения удаления');
         } finally {
             setFilesListSaving(false);
         }
@@ -1430,7 +1430,7 @@ export default function TmzProductTabs({
             }));
         } catch (e) {
             console.error(e);
-            alert(e instanceof Error ? e.message : 'Ўчиришни сақлашда хатолик');
+            alert(e instanceof Error ? e.message : 'Ошибка сохранения удаления');
         } finally {
             setFilesListSaving(false);
         }
@@ -1446,7 +1446,7 @@ export default function TmzProductTabs({
         try {
             const parsed = await parseWorksShortXlsx(file);
             if (parsed.length === 0) {
-                alert('Импортдан ишлар топилмади');
+                alert('В импорте не найдены работы');
                 return;
             }
 
@@ -1522,7 +1522,7 @@ export default function TmzProductTabs({
             }
 
             const currentCount = apiMode ? (normDraft?.works.length ?? 0) : legacyWorksDraft.length;
-            if (currentCount > 0 && !confirm('Жорий ишлар қаторларини Excel билан алмаштирасизми?')) {
+            if (currentCount > 0 && !confirm('Заменить текущие строки работ данными из Excel?')) {
                 return;
             }
 
@@ -1542,7 +1542,7 @@ export default function TmzProductTabs({
                 );
             }
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Импорт хатоси');
+            alert(err instanceof Error ? err.message : 'Ошибка импорта');
         } finally {
             setImportingWorks(false);
         }
@@ -1587,7 +1587,7 @@ export default function TmzProductTabs({
                 });
             }
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Пересчет норм хатоси');
+            alert(err instanceof Error ? err.message : 'Ошибка пересчёта норм');
         } finally {
             setRecalcingWorkNorms(false);
         }
@@ -1603,7 +1603,7 @@ export default function TmzProductTabs({
         try {
             const parsed = await parseMaterialsXlsx(file);
             if (parsed.length === 0) {
-                alert('Импортдан материаллар топилмади');
+                alert('В импорте не найдены материалы');
                 return;
             }
 
@@ -1650,15 +1650,15 @@ export default function TmzProductTabs({
             const missedList = notFoundArticles.join(', ');
             const missedWarning =
                 missedByArticle > 0
-                    ? `Огоҳлантириш: ${missedByArticle} қатор киритилмади (артикул справочникда топилмади): ${missedList}.`
+                    ? `Внимание: ${missedByArticle} строк не добавлено (артикул не найден в справочнике): ${missedList}.`
                     : '';
 
             if (importedRows.length === 0) {
                 if (missedWarning) {
                     setMaterialsImportWarning(missedWarning);
-                    alert(`Импортга мос материаллар топилмади (артикуллар ТМЗ да йўқ): ${missedList}`);
+                    alert(`Подходящие материалы не найдены (артикулов нет в ТМЦ): ${missedList}`);
                 } else {
-                    alert('Импортга мос материаллар топилмади (артикуллар ТМЗ да йўқ)');
+                    alert('Подходящие материалы не найдены (артикулов нет в ТМЦ)');
                 }
                 return;
             }
@@ -1680,7 +1680,7 @@ export default function TmzProductTabs({
             }
 
             const currentCount = apiMode ? (normDraft?.materials.length ?? 0) : legacyMaterialsDraft.length;
-            if (currentCount > 0 && !confirm('Жорий материал қаторларини Excel билан алмаштирасизми?')) {
+            if (currentCount > 0 && !confirm('Заменить текущие строки материалов данными из Excel?')) {
                 return;
             }
 
@@ -1698,7 +1698,7 @@ export default function TmzProductTabs({
                 setMaterialsImportWarning(missedWarning);
             }
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Импорт хатоси');
+            alert(err instanceof Error ? err.message : 'Ошибка импорта');
         } finally {
             setImportingMaterials(false);
         }
@@ -1809,9 +1809,9 @@ export default function TmzProductTabs({
             {apiMode && !isReadOnly ? (
                 <div className={styles.tabsNormsTrail}>
                     <button type="button" disabled={normsSaving || !normsDirty || normsLoading} onClick={() => void saveNormsToApi()}>
-                        {normsSaving ? 'Сақланмоқда…' : 'Нормаларни сақлаш (сервер)'}
+                        {normsSaving ? 'Сохранение…' : 'Сохранить нормы (сервер)'}
                     </button>
-                    {normsDirty ? <span className={styles.normsDirtyInline}>Сақланмаган норма ўзгаришлари бор</span> : null}
+                    {normsDirty ? <span className={styles.normsDirtyInline}>Есть несохранённые изменения норм</span> : null}
                 </div>
             ) : null}
         </div>
@@ -1831,7 +1831,7 @@ export default function TmzProductTabs({
                     {normsError}
                 </div>
             )}
-            {apiMode && normsLoading && <div className={styles.banner}>Нормалар юкланмоқда…</div>}
+            {apiMode && normsLoading && <div className={styles.banner}>Нормы загружаются…</div>}
 
             {hasComponents && (tab === 'works' || tab === 'materials') && (
                 <div className={styles.banner}>Есть составные части: прямые работы и материалы текущей карточки игнорируются при расчёте.</div>
@@ -1847,12 +1847,12 @@ export default function TmzProductTabs({
                                 disabled={isReadOnly || (apiMode && normsLoading)}
                                 onClick={addWorksRow}
                             >
-                                + Қатор
+                                + Строка
                             </button>
                             <label
                                 className={`${foStyles.btnImport} ${!canImportNorms ? styles.btnImportDisabled : ''}`}
                             >
-                                {importingWorks ? 'Ўқилмоқда...' : '↑ Excel импорт'}
+                                {importingWorks ? 'Чтение...' : '↑ Excel импорт'}
                                 <input
                                     type="file"
                                     className={foStyles.uploadInput}
@@ -1867,13 +1867,13 @@ export default function TmzProductTabs({
                                 disabled={isReadOnly || recalcingWorkNorms || worksDraft.length === 0 || !token}
                                 onClick={() => void handleRecalcWorkNorms()}
                             >
-                                {recalcingWorkNorms ? 'Ҳисобланмоқда...' : 'Пересчет норм'}
+                                {recalcingWorkNorms ? 'Расчёт...' : 'Пересчет норм'}
                             </button>
                         </div>
                         {worksDraft.length > 0 && (
                             <div className={foStyles.worksToolbarTotals}>
                                 <div className={foStyles.worksToolbarTotalLine}>
-                                    <span className={foStyles.worksToolbarTotalLabel}>Жами</span>
+                                    <span className={foStyles.worksToolbarTotalLabel}>Итого</span>
                                     <span className={foStyles.worksToolbarTotalValue}>
                                         {formatWorksNumberDisplay(String(worksDraftTableSumSalaryUnit), 2)}
                                     </span>
@@ -1907,7 +1907,7 @@ export default function TmzProductTabs({
                                 {worksDraft.length === 0 && (
                                     <tr>
                                         <td colSpan={13} style={{ textAlign: 'center', color: '#999', padding: 20 }}>
-                                            Ишлар йўқ — «+ Қатор» босинг
+                                            Работ нет — нажмите «+ Строка»
                                         </td>
                                     </tr>
                                 )}
@@ -1925,7 +1925,7 @@ export default function TmzProductTabs({
                                                 options={worksReferences.filter((r) => r.id != null).map((r) => ({ id: r.id!, name: r.name }))}
                                                 value={row.workRefId}
                                                 onChange={(val) => updateTmzWorkDraft(row.draftId, 'workRefId', val)}
-                                                placeholder="— Ишни танланг —"
+                                                placeholder="— Выберите работу —"
                                                 disabled={isReadOnly || (apiMode && normsLoading)}
                                                 autoFocus={shouldFocus(row.draftId)}
                                                 onAutoFocusApplied={clearFocus}
@@ -1980,7 +1980,7 @@ export default function TmzProductTabs({
                                                 className={foStyles.fileItemDel}
                                                 onClick={() => removeTmzWorkRow(row)}
                                                 disabled={isReadOnly || (apiMode && normsLoading)}
-                                                title="Ўчириш"
+                                                title="Удалить"
                                             >
                                                 ✕
                                             </button>
@@ -1992,7 +1992,7 @@ export default function TmzProductTabs({
                     </div>
                     {productionDepts.length === 0 && (
                         <div className={foStyles.hint}>
-                            Ишлаб чиқариш цехлари рўйхати бўш — справочникда PRODUCTION омборларни текширинг.
+                            Список производственных цехов пуст — проверьте склады PRODUCTION в справочнике.
                         </div>
                     )}
                 </div>
@@ -2008,7 +2008,7 @@ export default function TmzProductTabs({
                                 disabled={isReadOnly || !apiMode || normsLoading}
                                 onClick={() => {
                                     if (!apiMode) {
-                                        alert('Аввал карточкани сақланг (сервер ID керак).');
+                                        alert('Сначала сохраните карточку (нужен ID на сервере).');
                                         return;
                                     }
                                     const row = emptyCommonWorkDraftRow();
@@ -2018,7 +2018,7 @@ export default function TmzProductTabs({
                                     requestFocus(row.draftId);
                                 }}
                             >
-                                + Қатор
+                                + Строка
                             </button>
                             <button
                                 type="button"
@@ -2026,12 +2026,12 @@ export default function TmzProductTabs({
                                 disabled={isReadOnly || !apiMode || normsLoading || !token}
                                 onClick={() => {
                                     if (!apiMode || !token) {
-                                        alert('Аввал карточкани сақланг (сервер ID керак).');
+                                        alert('Сначала сохраните карточку (нужен ID на сервере).');
                                         return;
                                     }
                                     if (
                                         commonWorksDraft.length > 0 &&
-                                        !confirm('Жадвалдаги қаторлар алмаштирилади. Давом этишни хоҳлайсизми?')
+                                        !confirm('Строки в таблице будут заменены. Продолжить?')
                                     ) {
                                         return;
                                     }
@@ -2064,13 +2064,13 @@ export default function TmzProductTabs({
                                     })();
                                 }}
                             >
-                                Умумий ишларни тулдириш
+                                Заполнить общие работы
                             </button>
                         </div>
                         {commonWorksDraft.length > 0 && (
                             <div className={foStyles.worksToolbarTotals}>
                                 <div className={foStyles.worksToolbarTotalLine}>
-                                    <span className={foStyles.worksToolbarTotalLabel}>Жами (танланган)</span>
+                                    <span className={foStyles.worksToolbarTotalLabel}>Итого (выбранные)</span>
                                     <span className={foStyles.worksToolbarTotalValue}>
                                         {formatWorksNumberDisplay(String(commonWorksSelectedSum), 2)}
                                     </span>
@@ -2095,7 +2095,7 @@ export default function TmzProductTabs({
                                 {commonWorksDraft.length === 0 && (
                                     <tr>
                                         <td colSpan={7} className={foStyles.hint}>
-                                            «+ Қатор» ёки «Умумий ишларни тулдириш» орқали тўлдиринг.
+                                            Заполните через «+ Строка» или «Заполнить общие работы».
                                         </td>
                                     </tr>
                                 )}
@@ -2142,7 +2142,7 @@ export default function TmzProductTabs({
                                                 options={selectOptions}
                                                 value={row.commonWorkRefId}
                                                 disabled={isReadOnly || (apiMode && normsLoading)}
-                                                placeholder="— Ишни танланг —"
+                                                placeholder="— Выберите работу —"
                                                 autoFocus={shouldFocus(row.draftId)}
                                                 onAutoFocusApplied={clearFocus}
                                                 onChange={(val) => {
@@ -2238,11 +2238,11 @@ export default function TmzProductTabs({
                                                 type="button"
                                                 className={foStyles.fileItemDel}
                                                 disabled={isReadOnly}
-                                                title="Ўчириш"
+                                                title="Удалить"
                                                 onClick={() => {
                                                     if (
                                                         row.serverId != null &&
-                                                        !confirm('Қаторни ўчириш? (сақлашда сервердан ҳам ўчирилади)')
+                                                        !confirm('Удалить строку? (при сохранении будет удалена и с сервера)')
                                                     ) {
                                                         return;
                                                     }
@@ -2264,7 +2264,7 @@ export default function TmzProductTabs({
                     </div>
                     {commonWorksCatalog.length === 0 && (
                         <div className={foStyles.hint}>
-                            Справочник «Умумий ишлар» бўш — аввал у ерга элементлар қўшинг.
+                            Справочник «Общие работы» пуст — сначала добавьте туда элементы.
                         </div>
                     )}
                 </div>
@@ -2280,7 +2280,7 @@ export default function TmzProductTabs({
                                 disabled={isReadOnly || (apiMode && normsLoading)}
                                 onClick={addMaterialsRow}
                             >
-                                + Қатор
+                                + Строка
                             </button>
                             <button
                                 type="button"
@@ -2295,7 +2295,7 @@ export default function TmzProductTabs({
                                     commonMaterialStorageMissing
                                         ? COMMON_STORAGE_MISSING_MSG
                                         : commonMaterialStorageLoading
-                                          ? 'Склад юкланмоқда...'
+                                          ? 'Склад загружается...'
                                           : undefined
                                 }
                                 onClick={() => {
@@ -2303,12 +2303,12 @@ export default function TmzProductTabs({
                                     setIsMaterialCatalogOpen(true);
                                 }}
                             >
-                                Каталогдан танлаш
+                                Выбрать из каталога
                             </button>
                             <label
                                 className={`${foStyles.btnImport} ${!canImportNorms ? styles.btnImportDisabled : ''}`}
                             >
-                                {importingMaterials ? 'Ўқилмоқда...' : '↑ Excel импорт'}
+                                {importingMaterials ? 'Чтение...' : '↑ Excel импорт'}
                                 <input
                                     type="file"
                                     className={foStyles.uploadInput}
@@ -2322,13 +2322,13 @@ export default function TmzProductTabs({
                         </div>
                         {commonMaterialStorageMissing && (
                             <div className={foStyles.hint} style={{ marginBottom: 8 }}>
-                                {COMMON_STORAGE_MISSING_MSG} — колдик каталогда кўринмайди.
+                                {COMMON_STORAGE_MISSING_MSG} — остаток в каталоге не отображается.
                             </div>
                         )}
                         {materialsDraft.length > 0 && (
                             <div className={foStyles.worksToolbarTotals}>
                                 <div className={foStyles.worksToolbarTotalLine}>
-                                    <span className={foStyles.worksToolbarTotalLabel}>Жами</span>
+                                    <span className={foStyles.worksToolbarTotalLabel}>Итого</span>
                                     <span className={foStyles.worksToolbarTotalValue}>
                                         {formatWorksNumberDisplay(String(materialsDraftTableSum), 2)}
                                     </span>
@@ -2354,7 +2354,7 @@ export default function TmzProductTabs({
                                 {materialsDraft.length === 0 && (
                                     <tr>
                                         <td colSpan={8} style={{ textAlign: 'center', color: '#999', padding: 20 }}>
-                                            Материаллар йўқ — «+ Қатор» босинг
+                                            Материалов нет — нажмите «+ Строка»
                                         </td>
                                     </tr>
                                 )}
@@ -2370,7 +2370,7 @@ export default function TmzProductTabs({
                                                 }))}
                                                 value={row.materialId}
                                                 onChange={(val) => updateTmzMaterialDraft(row.draftId, 'materialId', val)}
-                                                placeholder="— Материални танланг —"
+                                                placeholder="— Выберите материал —"
                                                 disabled={isReadOnly || (apiMode && normsLoading)}
                                                 autoFocus={shouldFocus(row.draftId)}
                                                 onAutoFocusApplied={clearFocus}
@@ -2414,7 +2414,7 @@ export default function TmzProductTabs({
                                                 className={foStyles.fileItemDel}
                                                 onClick={() => removeTmzMaterialRow(row)}
                                                 disabled={isReadOnly || (apiMode && normsLoading)}
-                                                title="Ўчириш"
+                                                title="Удалить"
                                             >
                                                 ✕
                                             </button>
@@ -2426,7 +2426,7 @@ export default function TmzProductTabs({
                     </div>
                     {materials.length === 0 && (
                         <div className={foStyles.hint}>
-                            Материаллар справочниги бўш — аввал «Номлар → ТМЗ» да материалларни киритинг.
+                            Справочник материалов пуст — сначала добавьте материалы в «Справочники → ТМЦ».
                         </div>
                     )}
                     <ProductCatalog
@@ -2514,7 +2514,7 @@ export default function TmzProductTabs({
                 <div>
                     {!apiMode ? (
                         <div className={foStyles.hint}>
-                            Полуфабрикатларни сақлаш учун аввал карточкани сақланг.
+                            Чтобы сохранить полуфабрикаты, сначала сохраните карточку.
                         </div>
                     ) : (
                         <>
@@ -2526,7 +2526,7 @@ export default function TmzProductTabs({
                                         disabled={isReadOnly || normsLoading}
                                         onClick={addHalfstuffsRow}
                                     >
-                                        + Қатор
+                                        + Строка
                                     </button>
                                     <button
                                         type="button"
@@ -2541,7 +2541,7 @@ export default function TmzProductTabs({
                                             halfstuffWarehouseMissing
                                                 ? COMMON_STORAGE_MISSING_MSG
                                                 : halfstuffWarehouseLoading
-                                                  ? 'Склад юкланмоқда...'
+                                                  ? 'Склад загружается...'
                                                   : undefined
                                         }
                                         onClick={() => {
@@ -2549,13 +2549,13 @@ export default function TmzProductTabs({
                                             setIsHalfstuffCatalogOpen(true);
                                         }}
                                     >
-                                        Каталогдан танлаш
+                                        Выбрать из каталога
                                     </button>
                                 </div>
                                 {halfstuffsDraft.length > 0 && (
                                     <div className={foStyles.worksToolbarTotals}>
                                         <div className={foStyles.worksToolbarTotalLine}>
-                                            <span className={foStyles.worksToolbarTotalLabel}>Жами</span>
+                                            <span className={foStyles.worksToolbarTotalLabel}>Итого</span>
                                             <span className={foStyles.worksToolbarTotalValue}>
                                                 {formatWorksNumberDisplay(String(halfstuffsDraftTableSum), 2)}
                                             </span>
@@ -2565,7 +2565,7 @@ export default function TmzProductTabs({
                             </div>
                             {halfstuffWarehouseMissing && (
                                 <div className={foStyles.hint} style={{ marginBottom: 8 }}>
-                                    {COMMON_STORAGE_MISSING_MSG} — колдик ва нарх каталогда кўринмайди.
+                                    {COMMON_STORAGE_MISSING_MSG} — остаток и цена в каталоге не отображаются.
                                 </div>
                             )}
                             <div className={foStyles.worksTableScroll}>
@@ -2573,7 +2573,7 @@ export default function TmzProductTabs({
                                     <thead>
                                         <tr>
                                             <th className={foStyles.cellNumHead}>№</th>
-                                            <th>Ярим тайёр махсулот</th>
+                                            <th>Полуфабрикат</th>
                                             <th>Артикул</th>
                                             <th>Количество</th>
                                             <th>Цена</th>
@@ -2585,7 +2585,7 @@ export default function TmzProductTabs({
                                         {halfstuffsDraft.length === 0 && (
                                             <tr>
                                                 <td colSpan={7} style={{ textAlign: 'center', color: '#999', padding: 20 }}>
-                                                    Я.Т.М йўқ — «+ Қатор» босинг
+                                                    Полуфабрикатов нет — нажмите «+ Строка»
                                                 </td>
                                             </tr>
                                         )}
@@ -2605,7 +2605,7 @@ export default function TmzProductTabs({
                                                         onChange={(val) =>
                                                             updateTmzHalfstuffDraft(row.draftId, 'halfstuffId', val)
                                                         }
-                                                        placeholder="— Я.Т.М танланг —"
+                                                        placeholder="— Выберите полуфабрикат —"
                                                         disabled={isReadOnly || normsLoading}
                                                         autoFocus={shouldFocus(row.draftId)}
                                                         onAutoFocusApplied={clearFocus}
@@ -2652,7 +2652,7 @@ export default function TmzProductTabs({
                                                         className={foStyles.fileItemDel}
                                                         onClick={() => removeTmzHalfstuffRow(row)}
                                                         disabled={isReadOnly || normsLoading}
-                                                        title="Ўчириш"
+                                                        title="Удалить"
                                                     >
                                                         ✕
                                                     </button>
@@ -2664,7 +2664,7 @@ export default function TmzProductTabs({
                             </div>
                             {halfstuffsCatalog.length === 0 && (
                                 <div className={foStyles.hint}>
-                                    Ярим тайёр махсулотлар бўш — аввал «Номлар → ТМЗ»да киритинг.
+                                    Список полуфабрикатов пуст — сначала добавьте их в «Справочники → ТМЦ».
                                 </div>
                             )}
                             <ProductCatalog
@@ -2737,14 +2737,14 @@ export default function TmzProductTabs({
                             disabled={isReadOnly || (apiMode && normsLoading)}
                             onClick={addComponentRow}
                         >
-                            + Қатор
+                            + Строка
                         </button>
                     </div>
                     <table className={styles.table}>
                         <thead>
                             <tr>
-                                <th>Тайёр / Я.Т.М</th>
-                                <th>Сони</th>
+                                <th>Готовая / полуфабрикат</th>
+                                <th>Количество</th>
                                 <th />
                             </tr>
                         </thead>
@@ -2774,7 +2774,7 @@ export default function TmzProductTabs({
                                                 }
                                             }}
                                         >
-                                            <option value={0}>— танланг —</option>
+                                            <option value={0}>— выберите —</option>
                                             {products
                                                 .filter(
                                                     (p) =>
@@ -2892,7 +2892,7 @@ export default function TmzProductTabs({
                             alert(
                                 e instanceof Error
                                     ? e.message
-                                    : 'Наценки флагini сақлашда хато',
+                                    : 'Ошибка сохранения флага наценок',
                             );
                         });
                     }}
@@ -2932,7 +2932,7 @@ export default function TmzProductTabs({
                             alert(
                                 e instanceof Error
                                     ? e.message
-                                    : 'Наценки флагini сақлашда хато',
+                                    : 'Ошибка сохранения флага наценок',
                             );
                         });
                     }}
@@ -2947,13 +2947,13 @@ export default function TmzProductTabs({
                             disabled={isReadOnly || (apiMode && normsLoading)}
                             onClick={addTechMapRow}
                         >
-                            + Қатор
+                            + Строка
                         </button>
                     </div>
                     <table className={styles.table}>
                         <thead>
                             <tr>
-                                <th>Тартиб</th>
+                                <th>Порядок</th>
                                 <th>Цех</th>
                                 <th />
                             </tr>
@@ -3007,7 +3007,7 @@ export default function TmzProductTabs({
                                                 }
                                             }}
                                         >
-                                            <option value={0}>— танланг —</option>
+                                            <option value={0}>— выберите —</option>
                                             {productionDepts.map((item) => (
                                                 <option key={item.id} value={item.id}>
                                                     {item.name}
@@ -3045,11 +3045,11 @@ export default function TmzProductTabs({
                 <div className={styles.filesGrid}>
                     <div className={styles.filesColumn}>
                         <div className={styles.fileTitleRow}>
-                            <div className={styles.fileTitle}>Улчаш</div>
+                            <div className={styles.fileTitle}>Измерение</div>
                             <label
                                 className={`${styles.attachFilesBtn} ${styles.attachFilesBtnIcon} ${filesReadOnly || !token ? styles.attachFilesBtnDisabled : ''}`}
-                                title="Файлларни қўшиш"
-                                aria-label="Файлларни қўшиш"
+                                title="Добавить файлы"
+                                aria-label="Добавить файлы"
                             >
                                 <span aria-hidden="true">+</span>
                                 <input
@@ -3063,8 +3063,8 @@ export default function TmzProductTabs({
                             </label>
                         </div>
                         <p className={styles.filesHint}>
-                            Фақат расм (JPEG, PNG, …), PDF ёки Excel (.xls, .xlsx). Юкланган файллар рўйхати карточкага
-                            автоматик сақланади. Янги карточкада аввал пастда «Сақлаш» билан ID олинг.
+                            Только изображение (JPEG, PNG, …), PDF или Excel (.xls, .xlsx). Список загруженных файлов
+                            автоматически сохраняется в карточке. Для новой карточки сначала получите ID кнопкой «Сохранить» ниже.
                         </p>
                         <div className={styles.fileCards}>
                             {scalingFiles.map((file, idx) => {
@@ -3076,7 +3076,7 @@ export default function TmzProductTabs({
                                         <button
                                             type="button"
                                             className={styles.fileThumbBtn}
-                                            title={img ? 'Катта қилиб кўриш' : ''}
+                                            title={img ? 'Открыть крупно' : ''}
                                             onClick={() => {
                                                 if (img) setPreviewUrl(url);
                                                 else window.open(url, '_blank', 'noopener,noreferrer');
@@ -3100,7 +3100,7 @@ export default function TmzProductTabs({
                                                         else window.open(url, '_blank', 'noopener,noreferrer');
                                                     }}
                                                 >
-                                                    Қараш
+                                                    Просмотр
                                                 </button>
                                                 <button
                                                     type="button"
@@ -3115,7 +3115,7 @@ export default function TmzProductTabs({
                                                     className={styles.fileActionBtnDanger}
                                                     disabled={filesReadOnly || filesListSaving}
                                                     onClick={() => void handleRemoveScalingFile(idx)}
-                                                    title="Ўчириш"
+                                                    title="Удалить"
                                                 >
                                                     ✕
                                                 </button>
@@ -3128,11 +3128,11 @@ export default function TmzProductTabs({
                     </div>
                     <div className={styles.filesColumn}>
                         <div className={styles.fileTitleRow}>
-                            <div className={styles.fileTitle}>Лойихалаш</div>
+                            <div className={styles.fileTitle}>Проектирование</div>
                             <label
                                 className={`${styles.attachFilesBtn} ${styles.attachFilesBtnIcon} ${filesReadOnly || !token ? styles.attachFilesBtnDisabled : ''}`}
-                                title="Файлларни қўшиш"
-                                aria-label="Файлларни қўшиш"
+                                title="Добавить файлы"
+                                aria-label="Добавить файлы"
                             >
                                 <span aria-hidden="true">+</span>
                                 <input
@@ -3146,8 +3146,8 @@ export default function TmzProductTabs({
                             </label>
                         </div>
                         <p className={styles.filesHint}>
-                            Фақат расм (JPEG, PNG, …), PDF ёки Excel (.xls, .xlsx). Юкланган файллар рўйхати карточкага
-                            автоматик сақланади. Янги карточкада аввал пастда «Сақлаш» билан ID олинг.
+                            Только изображение (JPEG, PNG, …), PDF или Excel (.xls, .xlsx). Список загруженных файлов
+                            автоматически сохраняется в карточке. Для новой карточки сначала получите ID кнопкой «Сохранить» ниже.
                         </p>
                         <div className={styles.fileCards}>
                             {drawingFiles.map((file, idx) => {
@@ -3159,7 +3159,7 @@ export default function TmzProductTabs({
                                         <button
                                             type="button"
                                             className={styles.fileThumbBtn}
-                                            title={img ? 'Катта қилиб кўриш' : ''}
+                                            title={img ? 'Открыть крупно' : ''}
                                             onClick={() => {
                                                 if (img) setPreviewUrl(url);
                                                 else window.open(url, '_blank', 'noopener,noreferrer');
@@ -3183,7 +3183,7 @@ export default function TmzProductTabs({
                                                         else window.open(url, '_blank', 'noopener,noreferrer');
                                                     }}
                                                 >
-                                                    Қараш
+                                                    Просмотр
                                                 </button>
                                                 <button
                                                     type="button"
@@ -3198,7 +3198,7 @@ export default function TmzProductTabs({
                                                     className={styles.fileActionBtnDanger}
                                                     disabled={filesReadOnly || filesListSaving}
                                                     onClick={() => void handleRemoveDrawingFile(idx)}
-                                                    title="Ўчириш"
+                                                    title="Удалить"
                                                 >
                                                     ✕
                                                 </button>
@@ -3216,11 +3216,11 @@ export default function TmzProductTabs({
                             disabled={filesReadOnly || !token || !apiMode || filesListSaving}
                             onClick={() => void handleSaveTmzFilesToCard()}
                         >
-                            {filesListSaving ? 'Сақланмоқда…' : 'Файлларни сақлаш'}
+                            {filesListSaving ? 'Сохранение…' : 'Сохранить файлы'}
                         </button>
                         {!apiMode && token ? (
                             <p className={styles.filesSaveHint}>
-                                Файлларни карточкага боглаш учун аввал карточкани сақланг (ID керак).
+                                Чтобы привязать файлы к карточке, сначала сохраните карточку (нужен ID).
                             </p>
                         ) : null}
                     </div>
@@ -3237,7 +3237,7 @@ export default function TmzProductTabs({
                     <button
                         type="button"
                         className={styles.lightboxClose}
-                        aria-label="Ёпиш"
+                        aria-label="Закрыть"
                         onClick={() => setPreviewUrl(null)}
                     >
                         ×

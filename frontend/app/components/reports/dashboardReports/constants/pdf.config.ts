@@ -15,8 +15,8 @@ export const PDF_ERROR_MESSAGES = {
   SIZE_EXCEEDED: (size: number, maxSize: number) => 
     `PDF size (${size.toFixed(2)}MB) exceeds ${maxSize}MB, please reduce report content.`,
   SEND_FAILED: 'Failed to send PDF',
-  SEND_SUCCESS: 'Архивга жунатилди'
+  SEND_SUCCESS: 'Архив отправлен'
 } as const;
 
 export const PDF_FILENAME_TEMPLATE = (dateStart: string, dateEnd: string) => 
-  `Жамланма хисобот - (${dateStart}-${dateEnd}).pdf`; 
+  `Сводный отчёт - (${dateStart}-${dateEnd}).pdf`; 

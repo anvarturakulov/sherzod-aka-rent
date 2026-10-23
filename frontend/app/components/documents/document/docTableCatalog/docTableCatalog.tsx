@@ -37,6 +37,8 @@ import { useAllReferences } from '@/app/components/lists/referencesList/hooks/us
 import { ReplaceRowContext } from './replaceRowContext';
 import { getTransferToolsPreviewParams } from '@/app/service/documents/fetchTransferToolsPreview';
 import { showMessage } from '@/app/service/common/showMessage';
+import { useToolsDocumentBlockSettings } from '@/app/service/settings/useToolsDocumentBlockSettings';
+import { sortToolRowsByArticle } from '@/app/service/documents/sortToolsByArticle';
 
 export const DocTableCatalog = ({ 
   items, 
@@ -67,6 +69,9 @@ export const DocTableCatalog = ({
     documentType === DocumentType.TransferSubleaseToolsToClient;
   const isToolsTransferDoc = isTransferTools || isOrderTools || isTransferSublease;
   const saleItems = isTransferTools ? getSaleItems(items || []) : [];
+  const { showClientGoodsSale, showFormworkPlanner } = useToolsDocumentBlockSettings(
+    isTransferTools || isOrderTools,
+  );
 
   /** Реальные индексы строк в полном `docTableItems` */
   const catalogIndicesInFullDoc = useMemo(() => {
@@ -93,6 +98,29 @@ export const DocTableCatalog = ({
     });
     return indices;
   }, [items, isLeaveMaterial, isToolsTransferDoc]);
+
+  const toolMetaById = useMemo(() => {
+    const map = new Map<number, { article: string; name: string }>();
+    for (const ref of references || []) {
+      if (ref.id) {
+        map.set(ref.id, { article: ref.article || '', name: ref.name || '' });
+      }
+    }
+    return map;
+  }, [references]);
+
+  const displayCatalogRows = useMemo(() => {
+    const paired = catalogItems.map((item, index) => ({
+      item,
+      documentRowIndex: catalogIndicesInFullDoc[index] ?? index,
+    }));
+    if (!isTransferTools) return paired;
+    return sortToolRowsByArticle(
+      paired,
+      (row) => row.item,
+      (id) => toolMetaById.get(id) || { article: '', name: '' },
+    );
+  }, [catalogItems, catalogIndicesInFullDoc, isTransferTools, toolMetaById]);
 
   // Обработчик удаления товара
   const handleItemDeleted = useCallback((analiticId: number) => {
@@ -123,6 +151,7 @@ export const DocTableCatalog = ({
 
 	const handleRowSubscribe = useCallback((analiticId: number, itemTableType?: 'income' | 'expense') => {
 		const documentType = currentDocument?.documentType;
+		if (documentType === DocumentType.SaleEquipment) return;
 		const typeTMZ = references?.find((ref: ReferenceModel) => ref.id === analiticId)?.refValues?.typeTMZ;
 		const schet = getSchetForDocumentRow(documentType as DocumentType, typeTMZ, itemTableType);
 		
@@ -479,7 +508,11 @@ export const DocTableCatalog = ({
             ? handleOpenTransferPicker
             : undefined
         }
-        onOpenFormwork={isTransferTools || isOrderTools ? () => setFormworkOpen(true) : undefined}
+        onOpenFormwork={
+          showFormworkPlanner && (isTransferTools || isOrderTools)
+            ? () => setFormworkOpen(true)
+            : undefined
+        }
         onImportProducts={handleImportProducts}
         onCalculateMaterials={handleCalculateMaterials}
         docStatus={currentDocument?.docStatus} 
@@ -488,8 +521,7 @@ export const DocTableCatalog = ({
         isCalculating={isCalculating}
       />
       
-		{catalogItems && catalogItems.length > 0 && catalogItems.map((item, index) => {
-        const documentRowIndex = catalogIndicesInFullDoc[index] ?? index;
+		{displayCatalogRows.length > 0 && displayCatalogRows.map(({ item, documentRowIndex }, index) => {
         return (
         <TableRow
           key={`income-doc-row-${documentRowIndex}`}
@@ -527,7 +559,9 @@ export const DocTableCatalog = ({
       )}
 
       {/* Продажа товаров (S29) вместе с передачей инструментов */}
-      {isTransferTools && <TransferToolsSaleTable items={saleItems} />}
+      {isTransferTools && showClientGoodsSale && (
+        <TransferToolsSaleTable items={saleItems} />
+      )}
 
       <ProductCatalogIntegration
         warehouseId={warehouseId} 
@@ -549,7 +583,7 @@ export const DocTableCatalog = ({
         />
       )}
 
-      {(isTransferTools || isOrderTools) && formworkOpen && (
+      {showFormworkPlanner && (isTransferTools || isOrderTools) && currentDocument && (
         <FormworkPlannerModal
           open={formworkOpen}
           currentDocument={currentDocument}

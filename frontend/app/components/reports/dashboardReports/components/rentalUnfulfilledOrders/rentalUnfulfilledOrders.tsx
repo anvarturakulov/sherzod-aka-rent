@@ -90,12 +90,12 @@ const emptySummary = (): Summary => ({
 });
 
 const tariffLabel = (value?: string) =>
-  value === 'TRANSFER' ? 'Перечисление' : 'Нақд';
+  value === 'TRANSFER' ? 'Перечисление' : 'Наличные';
 
 const statusLabel = (status: OrderStatus) => {
-  if (status === 'ready') return 'Тайёр';
-  if (status === 'transferDraft') return 'Топшириш яратилган';
-  return 'Қолдиқ етмайди';
+  if (status === 'ready') return 'Готово';
+  if (status === 'transferDraft') return 'Передача создана';
+  return 'Не хватает остатка';
 };
 
 const statusClass = (status: OrderStatus) => {
@@ -212,28 +212,28 @@ export const RentalUnfulfilledOrders = ({
   return (
     <div className={`${styles.container} ${className || ''}`} {...props}>
       <div className={styles.title}>
-        Ижара — бажарилмаган буюртмалар
+        Аренда — невыполненные заказы
         {enterpriseName ? ` — ${enterpriseName}` : ''}
       </div>
 
       {values.asOf ? (
         <div className={styles.subtitle}>
-          Қолдиқ вақти: {formatDisplayDateTime(values.asOf)} · ўтказилган
-          буюртмалар, Топшириш ҳали йўқ
+          Время остатка: {formatDisplayDateTime(values.asOf)} · проведённые
+          заказы, Передача ещё нет
         </div>
       ) : (
         <div className={styles.subtitle}>
-          Ўтказилган буюртмалар, Топшириш ҳали яратилмаган
+          Проведённые заказы, Передача ещё не создана
         </div>
       )}
 
       <div className={styles.summary}>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Мижозлар</div>
+          <div className={styles.summaryLabel}>Клиенты</div>
           <div className={styles.summaryValue}>{values.summary.clientsTotal}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Буюртмалар</div>
+          <div className={styles.summaryLabel}>Заказы</div>
           <div className={styles.summaryValue}>{values.summary.ordersTotal}</div>
         </div>
         <div
@@ -243,11 +243,11 @@ export const RentalUnfulfilledOrders = ({
               : ''
           }`}
         >
-          <div className={styles.summaryLabel}>Тайёр</div>
+          <div className={styles.summaryLabel}>Готово</div>
           <div className={styles.summaryValue}>{values.summary.readyCount}</div>
           {!values.summary.enoughForAll && values.summary.readyCount > 0 ? (
             <div className={styles.summaryHint}>
-              Биргаликда қолдиқ етмайди
+              Вместе остатка не хватает
             </div>
           ) : null}
         </div>
@@ -256,27 +256,27 @@ export const RentalUnfulfilledOrders = ({
             values.summary.waitingCount > 0 ? styles.summaryWarn : ''
           }`}
         >
-          <div className={styles.summaryLabel}>Қолдиқ етмайди</div>
+          <div className={styles.summaryLabel}>Не хватает остатка</div>
           <div className={styles.summaryValue}>{values.summary.waitingCount}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Топшириш яратилган</div>
+          <div className={styles.summaryLabel}>Передача создана</div>
           <div className={styles.summaryValue}>
             {values.summary.transferDraftCount}
           </div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Жами ускуна</div>
+          <div className={styles.summaryLabel}>Всего инструментов</div>
           <div className={styles.summaryValue}>
             {numberValue(values.summary.qtyTotal)}
           </div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Энг эски кутиш</div>
+          <div className={styles.summaryLabel}>Самое долгое ожидание</div>
           <div className={styles.summaryValue}>
             {values.summary.oldestWaitDays}
           </div>
-          <div className={styles.summaryHint}>кун</div>
+          <div className={styles.summaryHint}>дней</div>
         </div>
       </div>
 
@@ -285,28 +285,28 @@ export const RentalUnfulfilledOrders = ({
           className={styles.search}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Мижоз, буюртма ёки ускуна бўйича қидириш"
+          placeholder="Поиск по клиенту, заказу или инструменту"
         />
         <button type="button" className={styles.filterBtn} onClick={expandAll}>
-          Очиш ҳаммаси
+          Раскрыть все
         </button>
         <button type="button" className={styles.filterBtn} onClick={collapseAll}>
-          Ёпиш ҳаммаси
+          Свернуть все
         </button>
       </div>
 
       <div className={styles.filters}>
-        {filterBtn('all', 'Барчаси')}
-        {filterBtn('ready', 'Тайёр')}
-        {filterBtn('missingStock', 'Қолдиқ етмайди')}
-        {filterBtn('transferDraft', 'Топшириш яратилган')}
+        {filterBtn('all', 'Все')}
+        {filterBtn('ready', 'Готово')}
+        {filterBtn('missingStock', 'Не хватает остатка')}
+        {filterBtn('transferDraft', 'Передача создана')}
       </div>
 
       {!hasLoaded ? null : filteredClients.length === 0 ? (
         <div className={styles.empty}>
           {values.clients.length === 0
-            ? 'Бажарилмаган буюртмалар йўқ'
-            : 'Танланган фильтр бўйича буюртмалар йўқ'}
+            ? 'Невыполненных заказов нет'
+            : 'По выбранному фильтру заказов нет'}
         </div>
       ) : (
         <div className={styles.list} data-report-scroll>
@@ -325,19 +325,19 @@ export const RentalUnfulfilledOrders = ({
                     {client.clientName || `#${client.clientId}`}
                   </span>
                   <span className={styles.stat}>
-                    <span className={styles.statLabel}>Буюртма</span>
+                    <span className={styles.statLabel}>Заказ</span>
                     {client.ordersCount}
                   </span>
                   <span className={styles.stat}>
-                    <span className={styles.statLabel}>Тайёр</span>
+                    <span className={styles.statLabel}>Готово</span>
                     {client.readyCount}
                   </span>
                   <span className={styles.stat}>
-                    <span className={styles.statLabel}>Кутилмоқда</span>
+                    <span className={styles.statLabel}>Ожидание</span>
                     {client.waitingCount}
                   </span>
                   <span className={styles.stat}>
-                    <span className={styles.statLabel}>Ускуна</span>
+                    <span className={styles.statLabel}>Инструмент</span>
                     {numberValue(client.qtyTotal)}
                   </span>
                 </button>
@@ -359,7 +359,7 @@ export const RentalUnfulfilledOrders = ({
                           {formatDisplayDateOrDash(order.date)}
                         </span>
                         <span className={styles.meta}>
-                          {order.daysWaiting} кун
+                          {order.daysWaiting} дн.
                         </span>
                         <span className={styles.meta}>
                           {order.warehouseName || '—'}
@@ -380,7 +380,7 @@ export const RentalUnfulfilledOrders = ({
                               openDocument(Number(order.transferDraftDocId))
                             }
                           >
-                            Топшириш № {order.transferDraftDocId}
+                            Передача № {order.transferDraftDocId}
                           </button>
                         ) : null}
                         {order.comment ? (
@@ -390,9 +390,9 @@ export const RentalUnfulfilledOrders = ({
                       <table className={styles.table}>
                         <thead>
                           <tr>
-                            <th>Ускуна</th>
+                            <th>Инструмент</th>
                             <th>Заказ</th>
-                            <th>S11 қолдиқ</th>
+                            <th>S11 остаток</th>
                             <th>Дефицит</th>
                           </tr>
                         </thead>
@@ -432,14 +432,14 @@ export const RentalUnfulfilledOrders = ({
 
       {hasLoaded && values.shortages.length > 0 ? (
         <>
-          <div className={styles.sectionTitle}>Дефицит — омбор ва ускуна</div>
+          <div className={styles.sectionTitle}>Дефицит — склад и инструмент</div>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Омбор</th>
-                <th>Ускуна</th>
-                <th>Сўров</th>
-                <th>Қолдиқ</th>
+                <th>Склад</th>
+                <th>Инструмент</th>
+                <th>Запрос</th>
+                <th>Остаток</th>
                 <th>Дефицит</th>
               </tr>
             </thead>

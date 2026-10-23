@@ -23,6 +23,9 @@ export interface ClientToolOpenBatchCreationAttrs {
   settlementDate: number;
   hourlyTariff?: number;
   costPrice?: number;
+  billingRole?: "PLAIN" | "COLUMN" | "COLUMN_COMPONENT";
+  assemblyBatchId?: number | null;
+  normQty?: number | null;
 }
 
 @Table({ tableName: "client_tool_open_batches" })
@@ -75,6 +78,15 @@ export class ClientToolOpenBatch extends Model<
 
   @Column({ type: DataType.DOUBLE, allowNull: false, defaultValue: 0 })
   costPrice: number;
+
+  @Column({ type: DataType.STRING, allowNull: false, defaultValue: "PLAIN" })
+  billingRole: "PLAIN" | "COLUMN" | "COLUMN_COMPONENT";
+
+  @Column({ type: DataType.BIGINT, allowNull: true })
+  assemblyBatchId?: number | null;
+
+  @Column({ type: DataType.DOUBLE, allowNull: true })
+  normQty?: number | null;
 
   @HasMany(() => ClientToolBatchConsumption)
   consumptions: ClientToolBatchConsumption[];

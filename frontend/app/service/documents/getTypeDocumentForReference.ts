@@ -36,6 +36,7 @@ export const getTypeDocumentForReference = (contentName: string) : DocumentTypeF
     `${DocumentType.LeaveTools}`,
     `${DocumentType.TransferToolsToClient}`,
     `${DocumentType.OrderToolsToClient}`,
+    `${DocumentType.SaleEquipment}`,
     `${DocumentType.ReceiveToolsFromClient}`,
     `${DocumentType.TransferSubleaseToolsToClient}`,
     `${DocumentType.ReceiveSubleaseToolsFromClient}`,

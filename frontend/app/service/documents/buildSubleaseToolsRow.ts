@@ -57,7 +57,7 @@ export const enrichSubleaseToolsRow = async (
     balance: count,
     hourlyTariff,
     partnerHourlyTariff,
-    dailyRent: round2(hourlyTariff * count * 24),
+    dailyRent: round2(hourlyTariff * count),
   };
 };
 
@@ -79,6 +79,6 @@ export const recalcSubleaseToolsRowTotals = (
     total: 0,
     hourlyTariff,
     partnerHourlyTariff,
-    dailyRent: round2(hourlyTariff * count * 24),
+    dailyRent: round2(hourlyTariff * count),
   };
 };

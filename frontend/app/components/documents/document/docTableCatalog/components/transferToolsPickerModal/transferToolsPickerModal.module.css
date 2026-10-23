@@ -34,6 +34,17 @@
     color: #666;
 }
 
+.sectionTitle {
+    margin: 12px 0 6px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hint {
+    color: #8a5a00;
+    font-size: 12px;
+}
+
 .body {
     padding: 12px 16px;
     overflow: auto;
@@ -65,6 +76,14 @@
 
 .table tbody tr:hover {
     background: #eef2ff;
+}
+
+.table tbody tr:focus-within td {
+    background: #e3f2fd;
+}
+
+.table tbody tr:focus-within td:first-child {
+    box-shadow: inset 3px 0 0 #1976d2;
 }
 
 .table td {

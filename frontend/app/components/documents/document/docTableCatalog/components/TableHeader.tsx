@@ -42,6 +42,7 @@ const TableHeader = memo<TableHeaderProps>(({
   const isLeaveTools = docType === DocumentType.LeaveTools;
   const isTransferToolsToClient = docType === DocumentType.TransferToolsToClient;
   const isOrderToolsToClient = docType === DocumentType.OrderToolsToClient;
+  const isSaleEquipment = docType === DocumentType.SaleEquipment;
   const isTransferSublease =
     docType === DocumentType.TransferSubleaseToolsToClient;
   const isToolsDoc =
@@ -50,32 +51,37 @@ const TableHeader = memo<TableHeaderProps>(({
     isLeaveTools ||
     isTransferToolsToClient ||
     isOrderToolsToClient ||
+    isSaleEquipment ||
     isTransferSublease;
   const isSaleMaterial = docType === DocumentType.SaleMaterial;
   const title = isComeTools
-    ? 'Ускуналар кирими руйхати'
+    ? 'Список поступления инструментов'
     : isMoveTools
-      ? 'Ускуналар силжиши руйхати'
+      ? 'Список перемещения инструментов'
       : isLeaveTools
-        ? 'Ускуна чикими руйхати'
+        ? 'Список списания инструментов'
+        : isSaleEquipment
+          ? 'Реализация оборудования'
         : isTransferToolsToClient || isOrderToolsToClient || isTransferSublease
-          ? 'Ускуналар руйхати'
+          ? 'Список инструментов'
         : isSaleMaterial
-          ? 'Хом ашё сотуви учун'
+          ? 'Для продажи сырья'
         : typeDocumentByComeOut === 'come'
-          ? 'ТМБ киримдаги товарлар'
+          ? 'ТМЦ — поступление товаров'
           : isOsOutDoc
-            ? 'Асосий воситалар'
-            : 'ТМБ чикимдаги товарлар';
-  const addButtonLabel = isTransferSublease
-    ? '+ Ускуна кушиш'
+            ? 'Основные средства'
+            : 'ТМЦ — расход товаров';
+  const addButtonLabel = isSaleEquipment
+    ? '+ Добавить оборудование'
+    : isTransferSublease
+    ? '+ Добавить инструмент'
     : isToolsDoc
-    ? '+ Ускуналарни кушиш'
+    ? '+ Добавить инструменты'
     : isOsOutDoc || docType === DocumentType.ComeOS
-      ? '+ Асосий восита'
+      ? '+ Основное средство'
       : isSaleMaterial
-        ? '+ Хом ашёларни кушиш'
-      : '+ Товарларни кушиш';
+        ? '+ Добавить сырьё'
+      : '+ Добавить товары';
   const isComeProduct = docType === DocumentType.ComeProduct;
   const isDocumentReady = docStatus && docType; // Проверяем, что документ полностью загружен
 
@@ -120,7 +126,7 @@ const TableHeader = memo<TableHeaderProps>(({
                 className={styles.actionBtn}
                 onClick={onOpenPicker}
               >
-                + Танлаб олиш
+                + Выбрать
               </button>
             )}
             {(isTransferToolsToClient || isOrderToolsToClient) && onOpenFormwork && (
@@ -128,7 +134,6 @@ const TableHeader = memo<TableHeaderProps>(({
                 type="button"
                 className={styles.actionBtn}
                 onClick={onOpenFormwork}
-                title="Фундамент чизмаси бўйича опалубка тўпламини ҳисоблаш"
               >
                 ▦ Опалубка
               </button>

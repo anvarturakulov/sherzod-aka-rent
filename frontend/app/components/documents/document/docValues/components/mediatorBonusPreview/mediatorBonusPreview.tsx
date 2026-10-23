@@ -120,7 +120,7 @@ export const MediatorBonusPreview = () => {
     <div className={styles.wrap}>
       {showHint && (
         <p className={styles.hint}>
-          Хамкорда Хайдовчи/Уста белгиси йук - бонус хисобланмайди
+          У партнёра нет признака Водитель/Мастер — бонус не начисляется
         </p>
       )}
       {incomeBase > 0 && hasMediatorRole && (

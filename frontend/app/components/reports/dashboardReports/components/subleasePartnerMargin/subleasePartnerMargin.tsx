@@ -40,16 +40,16 @@ export const SubleasePartnerMargin = ({
 
   return (
     <div className={className}>
-      <div className={styles.title}>Субаренда — ҳамкор бўйича</div>
+      <div className={styles.title}>Субаренда — по партнёру</div>
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Ҳамкор</th>
-            <th>Мижоз даромади</th>
-            <th>Ҳамкор харажати</th>
+            <th>Партнёр</th>
+            <th>Доход клиента</th>
+            <th>Расход партнёра</th>
             <th>Маржа</th>
             <th>Маржа %</th>
-            <th>Очиқ қолдиқ (дона)</th>
+            <th>Открытый остаток (шт.)</th>
           </tr>
         </thead>
         <tbody>
@@ -65,7 +65,7 @@ export const SubleasePartnerMargin = ({
           ))}
           <tr className={styles.totalsRow}>
             <td>
-              <strong>Жами</strong>
+              <strong>Итого</strong>
             </td>
             <td className={styles.numeric}>
               <strong>{fmt(totals.clientRent)}</strong>

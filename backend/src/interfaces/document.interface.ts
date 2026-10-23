@@ -26,6 +26,7 @@ export enum DocumentType {
 
   TransferToolsToClient = "TransferToolsToClient",
   OrderToolsToClient = "OrderToolsToClient",
+  SaleEquipment = "SaleEquipment",
   ReceiveToolsFromClient = "ReceiveToolsFromClient",
   TransferSubleaseToolsToClient = "TransferSubleaseToolsToClient",
   ReceiveSubleaseToolsFromClient = "ReceiveSubleaseToolsFromClient",
@@ -61,7 +62,7 @@ export enum DocSTATUS {
   DELETED = "DELETED",
 }
 
-/** Тип часового тарифа аренды инструментов: наличка / физ.лицо или перечисление. */
+/** Тип тарифа аренды инструментов: наличка / физ.лицо или перечисление. */
 export enum RentTariffType {
   CASH = "CASH",
   TRANSFER = "TRANSFER",
@@ -83,6 +84,7 @@ export const documentsWithTableItems = [
   `${DocumentType.SaleTovar}`,
   `${DocumentType.TransferToolsToClient}`,
   `${DocumentType.OrderToolsToClient}`,
+  `${DocumentType.SaleEquipment}`,
   `${DocumentType.ReceiveToolsFromClient}`,
   `${DocumentType.TransferSubleaseToolsToClient}`,
   `${DocumentType.ReceiveSubleaseToolsFromClient}`,

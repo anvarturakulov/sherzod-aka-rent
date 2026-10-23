@@ -11,6 +11,7 @@ import {
 import { ClientToolOpenBatch } from "./clientToolOpenBatch.model";
 import { ReceiveToolsPreviewRow } from "./receiveToolsPreview.types";
 import { planFifoConsumptions } from "./clientToolBatches.fifo";
+import { isZonedCalendarDayAfter, rentCalendarDays } from "src/common/appTime";
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
@@ -52,12 +53,19 @@ export class ClientToolBatchesService {
       return;
     }
 
-    for (const row of doc.docTableItems || []) {
-      if (!row?.analiticId || Number(row.count) <= 0) continue;
-      // Строки продажи товаров (S29) не открывают арендные партии
-      if (row.tableType === "sale" || row.tableType === "tovar") continue;
+    const createdByKey = new Map<string, ClientToolOpenBatch>();
+    const rows = (doc.docTableItems || []).filter(
+      (row) =>
+        row?.analiticId &&
+        Number(row.count) > 0 &&
+        row.tableType !== "sale" &&
+        row.tableType !== "tovar",
+    );
+    const columnRows = rows.filter((row) => row.billingRole === "COLUMN");
+    const otherRows = rows.filter((row) => row.billingRole !== "COLUMN");
 
-      await this.batchModel.create(
+    for (const row of columnRows) {
+      const batch = await this.batchModel.create(
         {
           enterpriseId,
           clientId,
@@ -69,6 +77,33 @@ export class ClientToolBatchesService {
           settlementDate,
           hourlyTariff: Number(row.hourlyTariff) || 0,
           costPrice: Number(row.costPrice) || 0,
+          billingRole: "COLUMN",
+        },
+        { transaction },
+      );
+      if (row.assemblyRowKey) createdByKey.set(row.assemblyRowKey, batch);
+    }
+
+    for (const row of otherRows) {
+      const isComponent = row.billingRole === "COLUMN_COMPONENT";
+      const columnBatch = row.assemblyRowKey
+        ? createdByKey.get(row.assemblyRowKey)
+        : undefined;
+      await this.batchModel.create(
+        {
+          enterpriseId,
+          clientId,
+          transferDocId: Number(doc.id),
+          transferTableItemId: row.id ? Number(row.id) : null,
+          toolId: row.analiticId,
+          initialQty: Number(row.count),
+          openQty: Number(row.count),
+          settlementDate,
+          hourlyTariff: isComponent ? 0 : Number(row.hourlyTariff) || 0,
+          costPrice: Number(row.costPrice) || 0,
+          billingRole: isComponent ? "COLUMN_COMPONENT" : "PLAIN",
+          assemblyBatchId: isComponent ? columnBatch?.id ?? null : null,
+          normQty: isComponent ? Number(row.normQty) || 0 : null,
         },
         { transaction },
       );
@@ -119,9 +154,11 @@ export class ClientToolBatchesService {
         : null;
 
       const working = batches.map((batch) => ({
+        id: Number(batch.id),
         transferDocId: Number(batch.transferDocId),
         toolId: batch.toolId,
         openQty: batch.openQty,
+        billingRole: batch.billingRole,
       }));
 
       const plans = planFifoConsumptions(
@@ -129,6 +166,9 @@ export class ClientToolBatchesService {
         row.analiticId,
         Number(row.count),
         pinnedId,
+        row.billingRole === "COLUMN" || row.billingRole === "COLUMN_COMPONENT"
+          ? Number(row.sourceBatchId) || null
+          : null,
       );
 
       for (const plan of plans) {
@@ -146,6 +186,27 @@ export class ClientToolBatchesService {
           },
           { transaction },
         );
+      }
+    }
+
+    this.assertColumnCompositionStillMatches(batches);
+  }
+
+  private assertColumnCompositionStillMatches(
+    batches: ClientToolOpenBatch[],
+  ): void {
+    const columns = batches.filter((batch) => batch.billingRole === "COLUMN");
+    for (const column of columns) {
+      const parts = batches.filter(
+        (batch) => Number(batch.assemblyBatchId) === Number(column.id),
+      );
+      for (const part of parts) {
+        const expected = round2(Number(column.openQty) * (Number(part.normQty) || 0));
+        if (Math.abs(Number(part.openQty) - expected) > 0.001) {
+          throw new Error(
+            "Состав колонны не сходится с числом колонн. Верните колонну целиком по снимку выдачи",
+          );
+        }
       }
     }
   }
@@ -263,12 +324,12 @@ export class ClientToolBatchesService {
     for (const batch of batches) {
       const openQty = Number(batch.openQty);
       if (openQty <= 0) continue;
+      if (isZonedCalendarDayAfter(Number(batch.settlementDate), returnDateTime)) {
+        continue;
+      }
 
-      const hours = Math.max(
-        24,
-        (returnDateTime - Number(batch.settlementDate)) / 3_600_000,
-      );
-      const rentSum = round2(hours * batch.hourlyTariff * openQty);
+      const days = rentCalendarDays(Number(batch.settlementDate), returnDateTime);
+      const rentSum = round2(days * batch.hourlyTariff * openQty);
 
       let costPrice = batch.costPrice;
       if (costPriceCache.has(batch.toolId)) {
@@ -308,6 +369,13 @@ export class ClientToolBatchesService {
         settlementDate: Number(batch.settlementDate),
         transferDocNumber: String(batch.transferDocId),
         tableType: "return",
+        batchId: Number(batch.id),
+        billingRole:
+          batch.billingRole === "COLUMN" || batch.billingRole === "COLUMN_COMPONENT"
+            ? batch.billingRole
+            : "PLAIN",
+        assemblyBatchId: batch.assemblyBatchId ? Number(batch.assemblyBatchId) : null,
+        normQty: batch.normQty != null ? Number(batch.normQty) : null,
       });
     }
 

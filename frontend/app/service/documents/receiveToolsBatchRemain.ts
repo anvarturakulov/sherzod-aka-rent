@@ -4,10 +4,19 @@ const round2 = (n: number) => Math.round(n * 100) / 100;
 
 export type ReceiveToolsBatchSection = 'return' | 'brak' | 'sale';
 
-export const getBatchKey = (sourceTransferDocId: number, analiticId: number) =>
-  `${sourceTransferDocId}:${analiticId}`;
+export const getBatchKey = (
+  sourceTransferDocId: number,
+  analiticId: number,
+  sourceBatchId?: number | null,
+) =>
+  sourceBatchId && sourceBatchId > 0
+    ? `b:${sourceBatchId}`
+    : `${sourceTransferDocId}:${analiticId}`;
 
 export const getItemBatchKey = (item: DocTableItem): string | null => {
+  if (item.sourceBatchId && item.sourceBatchId > 0) {
+    return getBatchKey(0, item.analiticId, item.sourceBatchId);
+  }
   if (!item.sourceTransferDocId || !item.analiticId) return null;
   return getBatchKey(item.sourceTransferDocId, item.analiticId);
 };
@@ -40,10 +49,14 @@ export const getBatchAllocatedQty = (
 };
 
 export const getPickerRemainQty = (
-  previewRow: Pick<ReceiveToolsPreviewRow, 'sourceTransferDocId' | 'analiticId' | 'count'>,
+  previewRow: Pick<ReceiveToolsPreviewRow, 'sourceTransferDocId' | 'analiticId' | 'count' | 'batchId'>,
   allItems: DocTableItem[],
 ): number => {
-  const key = getBatchKey(previewRow.sourceTransferDocId, previewRow.analiticId);
+  const key = getBatchKey(
+    previewRow.sourceTransferDocId,
+    previewRow.analiticId,
+    previewRow.batchId,
+  );
   const allocated = getBatchAllocatedQty(allItems, key);
   return Math.max(0, round2((Number(previewRow.count) || 0) - allocated.total));
 };

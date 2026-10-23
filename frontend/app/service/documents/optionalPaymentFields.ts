@@ -12,6 +12,7 @@ import {
   getDocumentBalanceValues,
   getTransferAdvanceSum,
 } from '@/app/components/documents/document/docValues/components/clientBalanceInfo/clientBalanceCalculations';
+import { getSettingByKeyFromDB } from '@/app/service/settings/getSettingByKeyFromDB';
 
 export const OPTIONAL_PAYMENT_DOC_VALUE_KEYS = [
   'initialPayment',
@@ -233,6 +234,19 @@ export const isReceiveToolsPaymentFilled = (
   }
 
   return false;
+};
+
+export const CHECK_RECEIVE_TOOLS_PAYMENT_KEY = 'checkReceiveToolsPayment';
+
+/** true только при явном включении настройки. Нет записи или false — проверка оплаты не выполняется. */
+export const isReceiveToolsPaymentCheckEnabled = async (
+  token: string | undefined,
+): Promise<boolean> => {
+  if (!token) {
+    return false;
+  }
+  const value = await getSettingByKeyFromDB(CHECK_RECEIVE_TOOLS_PAYMENT_KEY, token);
+  return value === true;
 };
 
 /** Допуск остатка долга S40 (сум): до этой суммы оплату/Насияга не требуем. */

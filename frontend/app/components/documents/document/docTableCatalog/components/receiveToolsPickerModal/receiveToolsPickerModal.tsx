@@ -11,6 +11,7 @@ import {
   PickerSelectionRow,
 } from '@/app/service/documents/applyReceiveToolsPicker';
 import { showMessage } from '@/app/service/common/showMessage';
+import { getReceiveToolsReturnDateTime } from '@/app/service/documents/receiveToolsRent';
 import styles from './receiveToolsPickerModal.module.css';
 
 interface ReceiveToolsPickerModalProps {
@@ -29,9 +30,9 @@ const formatDate = (ms?: number) => {
 };
 
 const rowKey = (row: PickerSelectionRow) =>
-  `${row.sourceTransferDocId}:${row.analiticId}`;
+  row.batchId ? `b:${row.batchId}` : `${row.sourceTransferDocId}:${row.analiticId}`;
 
-const round2 = (n: number) => Math.round(n * 100) / 100;
+const roundCount = (n: number) => Math.round(n * 10000) / 10000;
 
 export default function ReceiveToolsPickerModal({
   open,
@@ -66,7 +67,7 @@ export default function ReceiveToolsPickerModal({
       setRows(pickerRows);
     } catch (error: any) {
       const message =
-        error?.response?.data?.message || error?.message || 'Yuklashda xatolik';
+        error?.response?.data?.message || error?.message || 'Ошибка загрузки';
       setLoadError(message);
       setRows([]);
     } finally {
@@ -92,26 +93,54 @@ export default function ReceiveToolsPickerModal({
     });
   }, [rows, referenceMap]);
 
+  const applyColumnQty = (prev: PickerSelectionRow[], columnKey: string, qty: number) =>
+    prev.map((row) => {
+      if (rowKey(row) === columnKey) {
+        return { ...row, returnQty: qty };
+      }
+      const column = prev.find((item) => rowKey(item) === columnKey);
+      if (
+        column?.billingRole === 'COLUMN' &&
+        row.billingRole === 'COLUMN_COMPONENT' &&
+        Number(row.assemblyBatchId) === Number(column.batchId)
+      ) {
+        return {
+          ...row,
+          returnQty: roundCount(qty * (Number(row.normQty) || 0)),
+        };
+      }
+      return row;
+    });
+
   const handleReturnQtyChange = (key: string, value: string) => {
     const parsed = value === '' ? 0 : Number(value);
-    setRows((prev) =>
-      prev.map((row) =>
-        rowKey(row) === key
-          ? { ...row, returnQty: Number.isFinite(parsed) ? parsed : 0 }
-          : row,
-      ),
-    );
+    const qty = Number.isFinite(parsed) ? parsed : 0;
+    setRows((prev) => {
+      const target = prev.find((row) => rowKey(row) === key);
+      if (target?.billingRole === 'COLUMN') {
+        return applyColumnQty(prev, key, qty);
+      }
+      if (target?.billingRole === 'COLUMN_COMPONENT') return prev;
+      return prev.map((row) => (rowKey(row) === key ? { ...row, returnQty: qty } : row));
+    });
   };
 
   const handleFillAll = () => {
-    setRows((prev) => prev.map((row) => ({ ...row, returnQty: row.remainQty })));
+    setRows((prev) => {
+      let next = prev.map((row) =>
+        row.billingRole === 'COLUMN_COMPONENT' ? row : { ...row, returnQty: row.remainQty },
+      );
+      for (const row of next) {
+        if (row.billingRole === 'COLUMN') {
+          next = applyColumnQty(next, rowKey(row), row.remainQty);
+        }
+      }
+      return next;
+    });
   };
 
   const handleApply = () => {
-    const returnDateTime =
-      Number(currentDocument?.docValues?.returnDateTime) ||
-      Number(currentDocument?.date) ||
-      0;
+    const returnDateTime = getReceiveToolsReturnDateTime(currentDocument);
 
     const result = mergePickerSelectionsIntoDocument(currentDocument, rows, returnDateTime);
     if ('error' in result) {
@@ -140,40 +169,46 @@ export default function ReceiveToolsPickerModal({
   return (
     <div className={styles.overlay}>
       <div className={styles.dialog}>
-        <h3 className={styles.title}>Мижоздаги ускуналарни танлаб олиш</h3>
+        <h3 className={styles.title}>Выбор инструментов у клиента</h3>
         <p className={styles.subtitle}>
-          Мижозга топширилган сана бўйича партиялар. Кайтариш миқдорини киритинг.
+          Партии по дате выдачи клиенту. Укажите количество возврата.
         </p>
 
         <div className={styles.body}>
-          {loading && <div className={styles.empty}>Yuklanmoqda…</div>}
+          {loading && <div className={styles.empty}>Загрузка…</div>}
           {!loading && loadError && <div className={styles.error}>{loadError}</div>}
           {!loading && !loadError && sortedRows.length === 0 && (
-            <div className={styles.empty}>Мижозда ochiq ускунalar yo&apos;q</div>
+            <div className={styles.empty}>У клиента нет открытых инструментов</div>
           )}
           {!loading && !loadError && sortedRows.length > 0 && (
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th className={styles.colName}>Номи</th>
+                  <th className={styles.colName}>Наименование</th>
                   <th className={styles.colNum}>Тариф</th>
-                  <th className={styles.colNum}>Олинган сана</th>
-                  <th className={styles.colNum}>Қолдиқ</th>
-                  <th className={styles.colQty}>Кайтарилди</th>
+                  <th className={styles.colNum}>Дата получения</th>
+                  <th className={styles.colNum}>Остаток</th>
+                  <th className={styles.colQty}>Возвращено</th>
                 </tr>
               </thead>
               <tbody>
                 {sortedRows.map((row) => {
                   const key = rowKey(row);
                   const name = referenceMap.get(row.analiticId) || `ID ${row.analiticId}`;
-                  const dailyTariff = round2((Number(row.hourlyTariff) || 0) * 24);
+                  const roleLabel =
+                    row.billingRole === 'COLUMN'
+                      ? 'колонна'
+                      : row.billingRole === 'COLUMN_COMPONENT'
+                        ? 'состав колонны'
+                        : '';
                   return (
                     <tr key={key}>
                       <td className={styles.colName}>
                         {name}
+                        {roleLabel ? ` (${roleLabel})` : ''}
                         <span className={styles.docRef}>№{row.transferDocNumber}</span>
                       </td>
-                      <td className={styles.colNum}>{numberValue(dailyTariff)} сўм</td>
+                      <td className={styles.colNum}>{numberValue(Number(row.hourlyTariff) || 0)} сум</td>
                       <td className={styles.colNum}>{formatDate(row.settlementDate)}</td>
                       <td className={styles.colNum}>{row.remainQty}</td>
                       <td className={styles.colQty}>
@@ -182,6 +217,7 @@ export default function ReceiveToolsPickerModal({
                           inputMode="decimal"
                           className={styles.qtyInput}
                           value={row.returnQty || ''}
+                          disabled={row.billingRole === 'COLUMN_COMPONENT'}
                           onChange={(e) => handleReturnQtyChange(key, e.target.value)}
                         />
                       </td>
@@ -201,11 +237,11 @@ export default function ReceiveToolsPickerModal({
             onClick={handleFillAll}
             disabled={loading || rows.length === 0}
           >
-            Ҳаммасини тулдириш
+            Заполнить всё
           </button>
           <div className={styles.footerEnd}>
             <button type="button" className={styles.btn} onClick={onClose}>
-              Бекор қилиш
+              Отмена
             </button>
             <button
               type="button"
@@ -213,7 +249,7 @@ export default function ReceiveToolsPickerModal({
               onClick={handleApply}
               disabled={loading || !hasSelection}
             >
-              Ҳужжатга кучириш
+              Перенести в документ
             </button>
           </div>
         </div>

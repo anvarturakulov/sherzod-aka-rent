@@ -32,6 +32,7 @@ import { furnitureOrders } from "./furnitureOrders/furnitureOrders";
 import { contractFulfillment } from "./contractFulfillment/contractFulfillment";
 import { clientsContractsWork } from "./clientsContractsWork/clientsContractsWork";
 import { rentalUnfulfilledOrders } from "./rentalUnfulfilledOrders/rentalUnfulfilledOrders";
+import { rentalOpenTransfers } from "./rentalOpenTransfers/rentalOpenTransfers";
 import { toolsCurrentBalance } from "./toolsCurrentBalance/toolsCurrentBalance";
 import { rentalNetProfit } from "../rentalNetProfit/rentalNetProfit";
 import { subleasePartnerMargin } from "../subleasePartnerMargin/subleasePartnerMargin";
@@ -421,6 +422,14 @@ export const information = async (
       enterpriseId,
     );
     result.push(rentalUnfulfilledOrdersResult);
+  }
+
+  if (reportType == "RentalOpenTransfers") {
+    const rentalOpenTransfersResult = await rentalOpenTransfers(
+      data,
+      enterpriseId,
+    );
+    result.push(rentalOpenTransfersResult);
   }
 
   if (reportType == "RentalNetProfit") {

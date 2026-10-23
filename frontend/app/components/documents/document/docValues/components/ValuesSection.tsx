@@ -31,6 +31,7 @@ import { ClientBalanceInfo } from './clientBalanceInfo/clientBalanceInfo';
 import { ClientOperationsSummary } from './clientBalanceInfo/clientOperationsSummary';
 import { SelectDeliverer } from '../../selects/selectDeliverer/selectDeliverer';
 import CartIco from '../../docTableCatalog/ico/cart.svg';
+import { useToolsDocumentBlockSettings } from '@/app/service/settings/useToolsDocumentBlockSettings';
 
 interface ValuesSectionProps {
   options: any;
@@ -106,6 +107,10 @@ const ValuesSection = memo<ValuesSectionProps>(({
     : DOC_VALUES_LABELS.TOTAL;
 
   const documentType = currentDocument?.documentType;
+  const needsToolsBlockSettings =
+    contentName === DocumentType.TransferToolsToClient ||
+    contentName === DocumentType.ReceiveToolsFromClient;
+  const { showExtraCharge } = useToolsDocumentBlockSettings(needsToolsBlockSettings);
   const isLeaveOnlyOneMaterial = documentType === DocumentType.LeaveOnlyOneMaterial;
   // Документы, в которых можно привязать orderId (списание S20 / приход / продажа).
   // Заказ обязателен только для LeaveOnlyOneMaterial; для остальных пусто = без заказа.
@@ -588,7 +593,7 @@ const ValuesSection = memo<ValuesSectionProps>(({
             )
           }
         >
-          Тўлдириш (амортизация)
+          Заполнить (амортизация)
         </button>
       )}
 
@@ -603,7 +608,7 @@ const ValuesSection = memo<ValuesSectionProps>(({
             <div className={styles.toolsPaymentTitleBox}>
               <div className={styles.toolsPaymentTitle}>
                 <CartIco className={styles.toolsPaymentIcoCart} />
-                <div className={styles.toolsPaymentTitleText}>Мижоз туловлари</div>
+                <div className={styles.toolsPaymentTitleText}>Оплаты клиента</div>
               </div>
             </div>
             {contentName === DocumentType.ReceiveToolsFromClient && <MediatorBonusPreview />}
@@ -611,14 +616,14 @@ const ValuesSection = memo<ValuesSectionProps>(({
               <InputInForm
                 nameControl="initialPayment"
                 type="number"
-                label="Накд"
+                label="Наличные"
                 labelPosition="top"
                 visible={true}
               />
               <InputInForm
                 nameControl="cashFromPartner"
                 type="number"
-                label="Пластик"
+                label="Карта"
                 labelPosition="top"
                 visible={true}
               />
@@ -639,28 +644,28 @@ const ValuesSection = memo<ValuesSectionProps>(({
               <InputInForm
                 nameControl="changeToClient"
                 type="number"
-                label="Кайтим"
+                label="Сдача"
                 labelPosition="top"
                 visible={true}
               />
             </div>
             <div className={styles.debtBox}>
-              <InputInForm nameControl="debtSum" type="number" label="Насияга" labelPosition="top" visible={true} />
-              <InputInForm nameControl="debtComment" type="text" label="Насия учун изох" labelPosition="top" visible={true} />
+              <InputInForm nameControl="debtSum" type="number" label="В долг" labelPosition="top" visible={true} />
+              <InputInForm nameControl="debtComment" type="text" label="Комментарий к долгу" labelPosition="top" visible={true} />
             </div>
           </div>
-          {contentName === DocumentType.ReceiveToolsFromClient && (
+          {contentName === DocumentType.ReceiveToolsFromClient && showExtraCharge && (
           <div className={styles.toolsPaymentSection}>
             <div className={styles.toolsPaymentTitleBox}>
               <div className={styles.toolsPaymentTitle}>
-                <div className={styles.toolsPaymentTitleText}>Кушимча хисобланиш</div>
+                <div className={styles.toolsPaymentTitleText}>Доп. начисления</div>
               </div>
             </div>
             <div className={styles.deliveryBox}>
               <InputInForm
                 nameControl="deliverySum"
                 type="number"
-                label="Доставка суммаси"
+                label="Сумма доставки"
                 labelPosition="top"
                 visible={true}
               />
@@ -670,7 +675,7 @@ const ValuesSection = memo<ValuesSectionProps>(({
               <InputInForm
                 nameControl="defectCost"
                 type="number"
-                label="Брак буйича харажатлар"
+                label="Расходы по браку"
                 labelPosition="top"
                 visible={true}
               />
@@ -680,7 +685,7 @@ const ValuesSection = memo<ValuesSectionProps>(({
           <div className={styles.toolsPaymentSection}>
             <div className={styles.toolsPaymentTitleBox}>
               <div className={styles.toolsPaymentTitle}>
-                <div className={styles.toolsPaymentTitleText}>Мижоз хисоб-китоби</div>
+                <div className={styles.toolsPaymentTitleText}>Расчёт с клиентом</div>
               </div>
             </div>
             <ClientOperationsSummary />
@@ -690,7 +695,7 @@ const ValuesSection = memo<ValuesSectionProps>(({
               <div className={styles.toolsPaymentTitleBox}>
                 <div className={styles.toolsPaymentTitle}>
                   <div className={styles.toolsPaymentTitleText}>
-                    Ҳамкор хисоб-китоби:{' '}
+                    Расчёт с партнёром:{' '}
                     {(currentDocument?.docTableItems || [])
                       .filter((i: any) => (i.tableType || 'return') === 'return')
                       .reduce(
@@ -714,21 +719,21 @@ const ValuesSection = memo<ValuesSectionProps>(({
             <div className={styles.toolsPaymentTitleBox}>
               <div className={styles.toolsPaymentTitle}>
                 <CartIco className={styles.toolsPaymentIcoCart} />
-                <div className={styles.toolsPaymentTitleText}>Мижоз туловлари</div>
+                <div className={styles.toolsPaymentTitleText}>Оплаты клиента</div>
               </div>
             </div>
             <div className={styles.cashBox}>
               <InputInForm
                 nameControl="initialPayment"
                 type="number"
-                label="Накд"
+                label="Наличные"
                 labelPosition="top"
                 visible={true}
               />
               <InputInForm
                 nameControl="cashFromPartner"
                 type="number"
-                label="Пластик"
+                label="Карта"
                 labelPosition="top"
                 visible={true}
               />
@@ -749,25 +754,25 @@ const ValuesSection = memo<ValuesSectionProps>(({
               <InputInForm
                 nameControl="changeToClient"
                 type="number"
-                label="Кайтим"
+                label="Сдача"
                 labelPosition="top"
                 visible={true}
               />
             </div>
           </div>
-          {(contentName === DocumentType.TransferToolsToClient ||
+          {((contentName === DocumentType.TransferToolsToClient && showExtraCharge) ||
             contentName === DocumentType.TransferSubleaseToolsToClient) && (
           <div className={styles.toolsPaymentSection}>
             <div className={styles.toolsPaymentTitleBox}>
               <div className={styles.toolsPaymentTitle}>
-                <div className={styles.toolsPaymentTitleText}>Кушимча хисобланиш</div>
+                <div className={styles.toolsPaymentTitleText}>Доп. начисления</div>
               </div>
             </div>
             <div className={styles.deliveryBoxTwo}>
               <InputInForm
                 nameControl="deliverySum"
                 type="number"
-                label="Доставка суммаси"
+                label="Сумма доставки"
                 labelPosition="top"
                 visible={true}
               />
@@ -780,7 +785,7 @@ const ValuesSection = memo<ValuesSectionProps>(({
           <div className={styles.toolsPaymentSection}>
             <div className={styles.toolsPaymentTitleBox}>
               <div className={styles.toolsPaymentTitle}>
-                <div className={styles.toolsPaymentTitleText}>Мижоз қолдиғи</div>
+                <div className={styles.toolsPaymentTitleText}>Остаток клиента</div>
               </div>
             </div>
             <ClientBalanceInfo />

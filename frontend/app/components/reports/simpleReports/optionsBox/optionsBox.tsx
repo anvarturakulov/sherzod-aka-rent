@@ -51,9 +51,9 @@ export default function OptionsBox({ className, ...props }: OptionsBoxProps): JS
 
     return (
         <div className={styles.box}>
-            <h2 className={styles.title}>Хисобот параметрлари</h2>
+            <h2 className={styles.title}>Параметры отчёта</h2>
             <p className={styles.subtitle}>
-                {contentTitle ? `${contentTitle} — ` : ''}давр ва фильтрларни танланг
+                {contentTitle ? `${contentTitle} — ` : ''}выберите период и фильтры
             </p>
 
             <div className={styles.formFields}>
@@ -65,14 +65,14 @@ export default function OptionsBox({ className, ...props }: OptionsBoxProps): JS
 
                 <div className={styles.dataBox}>
                     <Input
-                        label='Бошлангич сана'
+                        label='Дата начала'
                         type='date'
                         id='startDate'
                         value={reportOption.startDate ? formatDateForInput(reportOption.startDate) : ''}
                         onChange={(e)=> onChangeInputOptionsBox(e, setMainData, mainData)}
                     />
                     <Input
-                        label='Охирги сана'
+                        label='Дата окончания'
                         type='date'
                         id='endDate'
                         value={
@@ -86,14 +86,14 @@ export default function OptionsBox({ className, ...props }: OptionsBoxProps): JS
 
                 <div className={styles.dataBoxBottom}>
                     <SelectMatOborotType
-                        label='ТМБ тури'
+                        label='Тип ТМЦ'
                         visible={contentName == ReportType.MatOborot}
                     />
                 </div>
 
                 <div className={styles.dataBoxBottom}>
                     <SelectOborot 
-                        label='Айланма тури' 
+                        label='Тип оборота' 
                         visible={contentName == ReportType.Oborotka}
                     />
                 </div>
@@ -125,7 +125,7 @@ export default function OptionsBox({ className, ...props }: OptionsBoxProps): JS
                 onClick={() => generateSimpleReport(setMainData, mainData)}
                 disabled={!isButtonEnabled}
             >
-                {isButtonEnabled ? 'Хисоботни шакллантириш' : 'Санани тулдиринг'}
+                {isButtonEnabled ? 'Сформировать отчёт' : 'Укажите даты'}
             </button>
         </div>
     )

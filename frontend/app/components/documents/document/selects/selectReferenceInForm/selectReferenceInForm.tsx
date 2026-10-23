@@ -73,7 +73,7 @@ export const SelectReferenceInForm = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selected, setSelected] = useState('');
   const [selectedItem, setSelectedItem] = useState<ReferenceModel | null>(null);
-  /** -1 = «Танланмаган», 0..n-1 = строки filteredData */
+  /** -1 = «Не выбрано», 0..n-1 = строки filteredData */
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -109,7 +109,7 @@ export const SelectReferenceInForm = ({
 
   // Обработчик выбора опции по умолчанию
   const handleDefaultOptionSelect = useCallback(() => {
-    setSelected('Танланмаган');
+    setSelected('Не выбрано');
     setSelectedItem(null);
     setSearchTerm('');
     setIsOpen(false);
@@ -118,7 +118,7 @@ export const SelectReferenceInForm = ({
     // Создаем синтетическое событие для опции по умолчанию
     const syntheticEvent = {
       target: {
-        value: 'Танланмаган',
+        value: 'Не выбрано',
         dataset: {
           type: null,
           id: null
@@ -159,7 +159,7 @@ export const SelectReferenceInForm = ({
     let displayValue = initialValue;
     if (selectedRef) {
       displayValue = formatReferenceDisplayName(selectedRef, type, typeReference);
-    } else if (selectedRef?.isFolder && initialValue !== 'Танланмаган') {
+    } else if (selectedRef?.isFolder && initialValue !== 'Не выбрано') {
       displayValue = `📁 ${initialValue}`;
     }
     
@@ -227,7 +227,7 @@ export const SelectReferenceInForm = ({
 
     if (!wasOpenRef.current) {
       wasOpenRef.current = true;
-      if (selectedItem === null || selected === 'Танланмаган') {
+      if (selectedItem === null || selected === 'Не выбрано') {
         setHighlightIndex(-1);
       } else {
         const idx = filteredData.findIndex((item: ReferenceModel) => item.id === selectedItem.id);
@@ -530,7 +530,7 @@ export const SelectReferenceInForm = ({
                 ref={inputRef}
                 type="text"
                 className={cn(styles.searchInput, {
-                  [styles.defaultSelected]: selected === 'Танланмаган',
+                  [styles.defaultSelected]: selected === 'Не выбрано',
                 })}
                 placeholder={selected || 'Выберите элемент...'}
                 value={isOpen ? searchTerm : selected}
@@ -551,12 +551,12 @@ export const SelectReferenceInForm = ({
                   <div
                     data-highlight-active={highlightIndex === -1 ? true : undefined}
                     className={cn(styles.option, styles.defaultOption, {
-                      [styles.selected]: selected === 'Танланмаган',
+                      [styles.selected]: selected === 'Не выбрано',
                       [styles.highlighted]: highlightIndex === -1,
                     })}
                     onClick={handleDefaultOptionSelect}
                   >
-                    {'Танланмаган'}
+                    {'Не выбрано'}
                   </div>
 
                   {/* Опции данных */}
@@ -593,7 +593,7 @@ export const SelectReferenceInForm = ({
               className={styles.editButton}
               onClick={handleOpenInlineEdit}
               onMouseDown={(e) => e.preventDefault()}
-              title="Танланганни таҳрирлаш"
+              title="Редактировать выбранное"
               tabIndex={-1}
             >
               ✎
@@ -605,7 +605,7 @@ export const SelectReferenceInForm = ({
               className={styles.plusButton}
               onClick={handleOpenInlineCreate}
               onMouseDown={(e) => e.preventDefault()}
-              title="Янги элемент кушиш"
+              title="Добавить элемент"
               tabIndex={-1}
             >
               +
@@ -621,8 +621,8 @@ export const SelectReferenceInForm = ({
                 openCatalog();
               }}
               onMouseDown={(e) => e.preventDefault()}
-              title="Каталогни очиш"
-              aria-label="Каталогни очиш"
+              title="Открыть каталог"
+              aria-label="Открыть каталог"
               tabIndex={-1}
             >
               <Squares2X2Icon className={styles.catalogButtonIcon} aria-hidden />

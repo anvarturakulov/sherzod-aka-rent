@@ -15,12 +15,12 @@ export const MAT_OBOROT_TYPE_OPTIONS: ReadonlyArray<{
   title: string;
   schet: MatOborotSchet;
 }> = [
-  { title: 'Хом ашё', schet: Schet.S10 },
-  { title: 'Ярим тайёр махсулот', schet: Schet.S21 },
-  { title: 'Тайёр махсулот', schet: Schet.S28 },
-  { title: 'Ускуналар', schet: Schet.S11 },
-  { title: 'Товарлар', schet: Schet.S29 },
-  { title: 'Мижоздаги ускуналар', schet: Schet.S12 },
+  { title: 'Сырьё', schet: Schet.S10 },
+  { title: 'Полуфабрикат', schet: Schet.S21 },
+  { title: 'Готовая продукция', schet: Schet.S28 },
+  { title: 'Инструменты', schet: Schet.S11 },
+  { title: 'Товары', schet: Schet.S29 },
+  { title: 'Инструменты у клиента', schet: Schet.S12 },
 ];
 
 export function isMatOborotSchet(
@@ -34,6 +34,6 @@ export function isMatOborotSchet(
 
 export function getMatOborotTypeTitle(schet: Schet | undefined | null): string {
   return (
-    MAT_OBOROT_TYPE_OPTIONS.find((item) => item.schet === schet)?.title ?? 'ТМБ'
+    MAT_OBOROT_TYPE_OPTIONS.find((item) => item.schet === schet)?.title ?? 'ТМЦ'
   );
 }

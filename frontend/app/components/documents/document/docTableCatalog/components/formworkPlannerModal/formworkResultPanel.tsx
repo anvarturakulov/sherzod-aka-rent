@@ -15,11 +15,11 @@ const GROUPS: { kinds: FormworkKind[]; title: string }[] = [
   { kinds: [FormworkKind.PANEL], title: FORMWORK_KIND_LABELS[FormworkKind.PANEL] },
   {
     kinds: [FormworkKind.CORNER_OUTER, FormworkKind.CORNER_INNER],
-    title: 'Бурчак элементлари',
+    title: 'Угловые элементы',
   },
   {
     kinds: [FormworkKind.LOCK, FormworkKind.BRACE, FormworkKind.TIE],
-    title: 'Бутловчилар',
+    title: 'Комплектующие',
   },
 ];
 
@@ -29,11 +29,11 @@ export const SpecTable = ({ spec, stockKnown }: { spec: FwSpecRow[]; stockKnown:
   <table className={styles.table}>
     <thead>
       <tr>
-        <th>Номи</th>
-        <th className={styles.num}>Керак</th>
-        {stockKnown && <th className={styles.num}>Складда</th>}
-        {stockKnown && <th className={styles.num}>Берилади</th>}
-        {stockKnown && <th className={styles.num}>Етишмайди</th>}
+        <th>Наименование</th>
+        <th className={styles.num}>Нужно</th>
+        {stockKnown && <th className={styles.num}>На складе</th>}
+        {stockKnown && <th className={styles.num}>Выдать</th>}
+        {stockKnown && <th className={styles.num}>Не хватает</th>}
       </tr>
     </thead>
     <tbody>
@@ -51,7 +51,7 @@ export const SpecTable = ({ spec, stockKnown }: { spec: FwSpecRow[]; stockKnown:
                   {r.name}
                   {r.size ? <span style={{ color: '#64748b' }}> · {r.size}</span> : null}
                   {r.idealNeed !== r.need && (
-                    <span style={{ color: '#64748b' }} title="Оптимал вариантда">
+                    <span style={{ color: '#64748b' }} title="В оптимальном варианте">
                       {' '}
                       (опт. {fmt(r.idealNeed)})
                     </span>
@@ -84,29 +84,29 @@ export default function FormworkResultPanel({ result, compact }: FormworkResultP
     <>
       <div className={styles.card}>
         <h4 className={styles.cardTitle}>
-          Натижа
+          Результат
           <span className={cn(styles.stockBadge, { [styles.stockBadgeUnknown]: !result.stockKnown })}>
-            {result.stockKnown ? 'Склад қолдиғи ҳисобга олинган' : 'Склад қолдиғи номаълум'}
+            {result.stockKnown ? 'Остаток склада учтён' : 'Остаток склада неизвестен'}
           </span>
         </h4>
         <div className={styles.totals}>
           <div>
-            Яруслар: <b>{result.tiers.map((h) => `${h}`).join(' + ')} мм</b>
+            Ярусы: <b>{result.tiers.map((h) => `${h}`).join(' + ')} мм</b>
           </div>
           <div>
-            Щитлар: <b>{t.panels}</b>
+            Щиты: <b>{t.panels}</b>
           </div>
           <div>
-            Ташқи контур: <b>{(t.outerLength / 1000).toFixed(2)} м</b>
+            Внешний контур: <b>{(t.outerLength / 1000).toFixed(2)} м</b>
           </div>
           <div>
-            Ички контур: <b>{(t.holeLength / 1000).toFixed(2)} м</b>
+            Внутренний контур: <b>{(t.holeLength / 1000).toFixed(2)} м</b>
           </div>
           <div>
-            Бурчаклар: <b>{t.cornersOuter}</b> ташқи, <b>{t.cornersInner}</b> ички
+            Углы: <b>{t.cornersOuter}</b> внешних, <b>{t.cornersInner}</b> внутренних
           </div>
           <div>
-            Стыклар: <b>{t.joints}</b>
+            Стыки: <b>{t.joints}</b>
           </div>
         </div>
       </div>
@@ -124,13 +124,13 @@ export default function FormworkResultPanel({ result, compact }: FormworkResultP
       {!compact && shortageRows.length > 0 && (
         <div className={styles.card} style={{ borderColor: '#fecaca', background: '#fff5f5' }}>
           <h4 className={styles.cardTitle} style={{ color: '#b91c1c' }}>
-            Складда етишмайди
+            Не хватает на складе
           </h4>
           <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12 }}>
             {shortageRows.map((r) => (
               <li key={r.analiticId}>
                 {r.name}
-                {r.size ? ` (${r.size})` : ''}: <b>{fmt(r.shortage)}</b> дона
+                {r.size ? ` (${r.size})` : ''}: <b>{fmt(r.shortage)}</b> шт.
               </li>
             ))}
           </ul>
@@ -142,7 +142,7 @@ export default function FormworkResultPanel({ result, compact }: FormworkResultP
         {result.spec.length ? (
           <SpecTable spec={result.spec} stockKnown={result.stockKnown} />
         ) : (
-          <div className={styles.empty}>Ҳисоблаш учун элементлар йўқ</div>
+          <div className={styles.empty}>Нет элементов для расчёта</div>
         )}
       </div>
     </>

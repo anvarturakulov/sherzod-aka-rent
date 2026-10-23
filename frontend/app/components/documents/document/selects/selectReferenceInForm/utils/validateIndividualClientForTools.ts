@@ -7,6 +7,7 @@ export async function validateIndividualClientForTools(
   partner: ReferenceModel | null | undefined,
   token: string | undefined,
   asOf: number,
+  checkContract = false,
 ): Promise<string[]> {
   const rv = partner?.refValues;
   if (!rv || rv.isLegalEntity) return [];
@@ -15,39 +16,41 @@ export async function validateIndividualClientForTools(
   const individualLike = { ...rv, isIndividualPerson: true };
 
   if (validateUzPassportFields(individualLike) !== null) {
-    errors.push('Паспорт маълумотлари тўлиқ киритилмаган');
+    errors.push('Паспортные данные заполнены неполностью');
   }
 
   if (validateUzJshshirFields(individualLike) !== null) {
-    errors.push('ЖШШИР кўрсатилмаган');
+    errors.push('ПИНФЛ не указан');
   }
 
   if (!(rv.address ?? '').trim()) {
-    errors.push('Манзил кўрсатилмаган');
+    errors.push('Адрес не указан');
   }
 
   const hasPhone =
     Boolean((rv.phone ?? '').trim()) || Boolean((rv.phone2 ?? '').trim());
   if (!hasPhone) {
-    errors.push('Телефон рақами кўрсатилмаган');
+    errors.push('Номер телефона не указан');
   }
 
-  const clientId = Number(partner?.id) || 0;
-  if (token && clientId > 0) {
-    try {
-      const activeContract = await rentalContractsApi.getActiveByClient(
-        token,
-        clientId,
-        asOf,
-      );
-      if (!activeContract) {
-        errors.push('Мижоз билан шартнома топилмади');
+  if (checkContract) {
+    const clientId = Number(partner?.id) || 0;
+    if (token && clientId > 0) {
+      try {
+        const activeContract = await rentalContractsApi.getActiveByClient(
+          token,
+          clientId,
+          asOf,
+        );
+        if (!activeContract) {
+          errors.push('Договор с клиентом не найден');
+        }
+      } catch {
+        errors.push('Договор с клиентом не найден');
       }
-    } catch {
-      errors.push('Мижоз билан шартнома топилмади');
+    } else {
+      errors.push('Договор с клиентом не найден');
     }
-  } else {
-    errors.push('Мижоз билан шартнома топилмади');
   }
 
   return errors;

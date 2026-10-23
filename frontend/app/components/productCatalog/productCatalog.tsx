@@ -609,6 +609,7 @@ const ProductCatalog = memo<ProductCatalogProps>(({
       documentType === DocumentType.LeaveTools ||
       documentType === DocumentType.TransferToolsToClient ||
       documentType === DocumentType.OrderToolsToClient ||
+      documentType === DocumentType.SaleEquipment ||
       documentType === DocumentType.ReceiveToolsFromClient
     ) {
       return productsToFilter.filter((product: any) => {

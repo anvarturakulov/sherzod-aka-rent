@@ -18,14 +18,14 @@ export const Taking = ({className, data, currentSection, ...props }: TakingProps
     return (
        <>
             <div className={styles.title}>
-                {'ЦЕХ ВА ЮК ЕТКАЗИБ БЕРУВЧИЛАР ТОПШИРГАН ПУЛЛАРИ'}
+                {'ДЕНЬГИ, СДАННЫЕ ЦЕХАМИ И ДОСТАВЩИКАМИ'}
                 {enterpriseName && <span> - {enterpriseName}</span>}
             </div>
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <td>Булим</td>
-                        <td>Топширган пули</td>
+                        <td>Отдел</td>
+                        <td>Сданная сумма</td>
                     </tr>
                 </thead>
                 
@@ -42,7 +42,7 @@ export const Taking = ({className, data, currentSection, ...props }: TakingProps
             
                 <thead>
                     <tr>
-                        <td >Жами</td>
+                        <td >Итого</td>
                         <td className={styles.totalTd}>{numberValue(totalByKey('taking', datas))}</td>
                     </tr>
                 </thead>

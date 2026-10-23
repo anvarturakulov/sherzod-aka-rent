@@ -399,10 +399,10 @@ export default function FoundationSketchEditor({
             ⬚ Танлаш
           </button>
           <button type="button" className={styles.toolBtn} onClick={undo} disabled={readOnly || !historyRef.current.length}>
-            ↶ Бекор
+            ↶ Отмена
           </button>
           <button type="button" className={styles.toolBtn} onClick={fit}>
-            ⤢ Сиғдириш
+            ⤢ Вписать
           </button>
           <button type="button" className={styles.toolBtn} onClick={clearAll} disabled={readOnly || !segments.length}>
             ✕ Тозалаш
@@ -414,10 +414,10 @@ export default function FoundationSketchEditor({
           <span className={styles.toolLabel}>B</span>
           <input className={styles.smallInput} value={presetB} onChange={(e) => setPresetB(e.target.value)} disabled={readOnly} />
           <button type="button" className={styles.toolBtn} onClick={() => applyPreset('rect')} disabled={readOnly}>
-            ▭ Тўртбурчак
+            ▭ Прямоугольник
           </button>
           <button type="button" className={styles.toolBtn} onClick={() => applyPreset('part')} disabled={readOnly}>
-            ▯▯ Тўсиқли
+            ▯▯ С перемычкой
           </button>
           <button type="button" className={styles.toolBtn} onClick={() => applyPreset('l')} disabled={readOnly}>
             ┗ Г-шакл
@@ -520,9 +520,9 @@ export default function FoundationSketchEditor({
         <div className={styles.hint}>
           {mode === 'draw'
             ? drawStart
-              ? 'Иккинчи нуқтани босинг. Esc / ўнг тугма — тугатиш.'
-              : 'Бошланғич нуқтани босинг. Ғилдирак — масштаб, Shift+сичқонча — суриш.'
-            : 'Отрезкани ёки ўлчамни босиб танланг. Delete — ўчириш. Сичқонча — суриш.'}
+              ? 'Нажмите вторую точку. Esc / ПКМ — завершить.'
+              : 'Нажмите начальную точку. Колесо — масштаб, Shift+мышь — сдвиг.'
+            : 'Выберите отрезок или размер кликом. Delete — удалить. Мышь — сдвиг.'}
         </div>
         {selected && (
           <div className={styles.lengthEditor}>
@@ -537,7 +537,7 @@ export default function FoundationSketchEditor({
               disabled={readOnly}
             />
             <button type="button" className={styles.toolBtn} onClick={applyLength} disabled={readOnly}>
-              Қўллаш
+              Применить
             </button>
             <button
               type="button"
@@ -548,12 +548,12 @@ export default function FoundationSketchEditor({
               }}
               disabled={readOnly}
             >
-              Ўчириш
+              Удалить
             </button>
           </div>
         )}
         <div className={styles.hint}>
-          Лента: {stripWidth} мм · Отрезклар: {segments.length}
+          Лента: {stripWidth} мм · Отрезки: {segments.length}
         </div>
       </div>
     </div>

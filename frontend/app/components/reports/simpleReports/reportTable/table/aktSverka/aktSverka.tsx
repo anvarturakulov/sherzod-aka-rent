@@ -43,7 +43,7 @@ export const AktSverka = ({className, ...props }: AktSverkaProps) :JSX.Element =
        <div className={styles.sectionContainer}>
             {
                 !isPartnerSelected ? (
-                    <div className={styles.noData}>Хамкорни танланг</div>
+                    <div className={styles.noData}>Выберите контрагента</div>
                 ) : !aktSverka ? (
                     <div className={styles.noData}>Загрузка данных...</div>
                 ) : sortedDatas && sortedDatas.length > 0 ? (

@@ -11,6 +11,7 @@ export interface SubleaseReceivePreviewRow {
   sourceTransferDocId: number;
   settlementDate: number;
   transferDocNumber: string;
+  transferDocComment?: string;
   partnerId: number;
   partnerStorageId: number;
   tableType: "return";

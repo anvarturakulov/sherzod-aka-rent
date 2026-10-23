@@ -12,7 +12,7 @@ export function validateUzJshshirFields(
 
   const jshshir = (refValues.jshshir ?? "").trim();
   if (!UZ_JSHSHIR_RE.test(jshshir)) {
-    return "ЖШШИР: 14 та рақам";
+    return "ПИНФЛ: 14 цифр";
   }
 
   return null;

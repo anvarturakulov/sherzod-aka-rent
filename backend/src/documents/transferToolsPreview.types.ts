@@ -6,6 +6,19 @@ export interface TransferToolsPreviewRow {
   costTotal: number;
   price: number;
   total: number;
-  /** Часовой тариф аренды (периодика firstPrice или thirdPrice по типу тарифа). */
+  /** Дневной тариф аренды за 1 штуку (периодика firstPrice или thirdPrice по типу тарифа). */
   hourlyTariff: number;
+}
+
+export interface TransferColumnPartPreview {
+  analiticId: number;
+  normQty: number;
+  remain: number;
+  costPrice: number;
+}
+
+export interface TransferColumnPreview {
+  analiticId: number;
+  hourlyTariff: number;
+  parts: TransferColumnPartPreview[];
 }

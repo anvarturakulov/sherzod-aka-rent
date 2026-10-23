@@ -18,7 +18,7 @@ export const InputForDate = ({ label, id, className, ...props }: InputForDatePro
   const onCommit = useCallback(
     (parsed: number) => {
       if (id === 'orderTakingDate' && parsed < nowMs()) {
-        alert('Сана хато киритилди');
+        alert('Дата введена неверно');
         return;
       }
 

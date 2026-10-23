@@ -2,7 +2,7 @@ import { MenuData } from '../../data/menu';
 import { DocumentType } from '../../interfaces/document.interface';
 
 export const getDescriptionDocument = (name: string | DocumentType): string => {
-  const documentsSection = MenuData.find(item => item.title === 'Хужжатлар');
+  const documentsSection = MenuData.find(item => item.title === 'Документы');
   
   if (!documentsSection?.subGroups) {
     return '';

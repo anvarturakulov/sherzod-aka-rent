@@ -32,6 +32,7 @@ import { RentalNetProfit } from "./components/rentalNetProfit/rentalNetProfit"
 import { SubleasePartnerMargin } from "./components/subleasePartnerMargin/subleasePartnerMargin"
 import { SubleaseExpectedIncome } from "./components/subleaseExpectedIncome/subleaseExpectedIncome"
 import { RentalUnfulfilledOrders } from "./components/rentalUnfulfilledOrders/rentalUnfulfilledOrders"
+import { RentalOpenTransfers } from "./components/rentalOpenTransfers/rentalOpenTransfers"
 
 export const getReportByType = (dashboardCurrentReportType: string, informData: any) : JSX.Element => {
     const normalizedType = dashboardCurrentReportType?.trim();
@@ -98,6 +99,8 @@ export const getReportByType = (dashboardCurrentReportType: string, informData: 
             return <ClientsContractsWork data={informData}/>
         case 'RentalUnfulfilledOrders':
             return <RentalUnfulfilledOrders data={informData}/>
+        case 'RentalOpenTransfers':
+            return <RentalOpenTransfers data={informData}/>
         case 'RentalExpectedIncome':
             return <RentalExpectedIncome />
         case 'ToolsCurrentBalance':

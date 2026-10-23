@@ -16,6 +16,10 @@
     grid-template-columns: 2fr 1.1fr 0.5fr 0.55fr 0.65fr 0.75fr 0.85fr 0.85fr auto;
 }
 
+.boxReceiveToolsReturn {
+    grid-template-columns: 2fr 1.25fr 0.5fr 0.55fr 0.65fr 0.85fr 0.85fr auto;
+}
+
 .receiveToolsColumnHeader {
     padding: 8px 12px;
     font-weight: 600;

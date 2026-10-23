@@ -121,7 +121,7 @@ export const ClientBalanceInfo = (): JSX.Element | null => {
     <div className={styles.box}>
       <div className={styles.header}>
         <button type="button" className={styles.refreshBtn} onClick={handleRefresh} disabled={loading}>
-          {loading ? '...' : 'Янгилаш'}
+          {loading ? '...' : 'Обновить'}
         </button>
       </div>
 
@@ -130,15 +130,15 @@ export const ClientBalanceInfo = (): JSX.Element | null => {
           <thead>
             <tr>
               <th className={styles.rowLabel} />
-              <th>Хужжатгача</th>
-              <th>"Плюс"</th>
-              <th>"Минус"</th>
-              <th>Хужжатдан кейин</th>
+              <th>До документа</th>
+              <th>«Плюс»</th>
+              <th>«Минус»</th>
+              <th>После документа</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td className={styles.rowLabel}>Қарз (S40)</td>
+              <td className={styles.rowLabel}>Долг (S40)</td>
               <td>{beforeS40 != null ? formatSum(beforeS40) : '—'}</td>
               <td>{formatCell(documentValues.s40.income)}</td>
               <td>{formatCell(documentValues.s40.expense)}</td>
@@ -146,7 +146,7 @@ export const ClientBalanceInfo = (): JSX.Element | null => {
             </tr>
             {showToolsBalance && (
             <tr>
-              <td className={styles.rowLabel}>Ускуналар (S12)</td>
+              <td className={styles.rowLabel}>Инструменты (S12)</td>
               <td>{beforeS12 != null ? formatSum(beforeS12) : '—'}</td>
               <td>{formatCell(documentValues.s12.income)}</td>
               <td>{formatCell(documentValues.s12.expense)}</td>

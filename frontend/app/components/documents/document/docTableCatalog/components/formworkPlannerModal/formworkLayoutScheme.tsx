@@ -251,7 +251,7 @@ export default function FormworkLayoutScheme({
                   display: 'inline-block',
                 }}
               />
-              Складда етишмайди
+              Не хватает на складе
             </span>
           )}
           {hasGap && (
@@ -266,7 +266,7 @@ export default function FormworkLayoutScheme({
                   display: 'inline-block',
                 }}
               />
-              Қўшимча вставка (зазор)
+              Дополнительная вставка (зазор)
             </span>
           )}
         </div>

@@ -27,7 +27,7 @@ export const SkladItem = ({className, item, ...props }: SkladItemProps) :JSX.Ele
             {/* Секция материалов */}
             {item?.materials && item.materials.length > 0 && (
               <div className={`${styles.section} ${styles.sectionMaterials}`}>
-                <Htag tag='h2' className={styles.h2}>Хом ашёлар</Htag>
+                <Htag tag='h2' className={styles.h2}>Сырьё</Htag>
                 {item.materials.map((element:any, key:number) => {
                     const value = element?.value
                     const price = element?.price
@@ -47,7 +47,7 @@ export const SkladItem = ({className, item, ...props }: SkladItemProps) :JSX.Ele
                 
                 {/* Итого по материалам */}
                 <div className={`${styles.row} ${styles.totalRow} ${styles.totalRowMaterials}`} key="materials-total">
-                    <div className={styles.totalTitle}>Материаллар жами</div>
+                    <div className={styles.totalTitle}>Итого материалов</div>
                     <div className={styles.value}></div>
                     <div className={styles.value}></div>
                     <div className={styles.value}></div>
@@ -63,7 +63,7 @@ export const SkladItem = ({className, item, ...props }: SkladItemProps) :JSX.Ele
             {/* Секция готовой продукции */}
             {item?.products && item.products.length > 0 && (
               <div className={`${styles.section} ${styles.sectionProducts}`}>
-                <Htag tag='h2' className={styles.h2}>Тайёр махсулотлар</Htag>
+                <Htag tag='h2' className={styles.h2}>Готовая продукция</Htag>
                 {item.products.map((element:any, key:number) => {
                     const value = element?.value
                     const price = element?.price
@@ -83,7 +83,7 @@ export const SkladItem = ({className, item, ...props }: SkladItemProps) :JSX.Ele
                 
                 {/* Итого по готовой продукции */}
                 <div className={`${styles.row} ${styles.totalRow} ${styles.totalRowProducts}`} key="products-total">
-                    <div className={styles.totalTitle}>Тайёр махсулот жами</div>
+                    <div className={styles.totalTitle}>Итого готовой продукции</div>
                     <div className={styles.value}></div>
                     <div className={styles.value}></div>
                     <div className={styles.value}></div>
@@ -99,7 +99,7 @@ export const SkladItem = ({className, item, ...props }: SkladItemProps) :JSX.Ele
             {/* Общий итог */}
             {(item?.materials?.length > 0 || item?.products?.length > 0) && (
                 <div className={`${styles.row} ${styles.totalRow} ${styles.grandTotal}`} key="grand-total">
-                    <div className={styles.totalTitle}>УМУМИЙ ЖАМИ</div>
+                    <div className={styles.totalTitle}>ОБЩИЙ ИТОГО</div>
                     <div className={styles.value}></div>
                     <div className={styles.value}></div>
                     <div className={styles.value}></div>
@@ -114,7 +114,7 @@ export const SkladItem = ({className, item, ...props }: SkladItemProps) :JSX.Ele
             {/* Показываем сообщение, если нет данных */}
             {(!item?.materials?.length && !item?.products?.length) && (
                 <div className={styles.emptyState}>
-                    <div className={styles.title}>Маълумот йўқ</div>
+                    <div className={styles.title}>Нет данных</div>
                 </div>
             )}
             

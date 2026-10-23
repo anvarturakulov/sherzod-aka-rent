@@ -411,34 +411,34 @@ const Journal = memo<JournalProps>(({ className, ...props }): JSX.Element => {
                             <thead className={styles.thead}>
                                 {contentName === DocumentType.GateIncome ? (
                                     <tr key='-1'>
-                                        <th key='1' className={styles.rowId}>Раками</th>
-                                        <th key='2' className={styles.rowDate}>Сана</th>
+                                        <th key='1' className={styles.rowId}>Номер</th>
+                                        <th key='2' className={styles.rowDate}>Дата</th>
                                         <th key='3' className={styles.longRow}>Номер машины</th>
                                         <th key='4' className={styles.longRow}>Модель авто</th>
-                                        <th key='5' className={styles.longRow}>Изох</th>
-                                        <th key='6' className={styles.rowDate}>Холат</th>
-                                        <th key='7' className={styles.longRow}>Фойдаланувчи</th>
-                                        <th key='8' className={styles.rowAction}>Амал</th>
+                                        <th key='5' className={styles.longRow}>Комментарий</th>
+                                        <th key='6' className={styles.rowDate}>Статус</th>
+                                        <th key='7' className={styles.longRow}>Пользователь</th>
+                                        <th key='8' className={styles.rowAction}>Действие</th>
                                     </tr>
                                 ) : (
                                     <tr key='-1' className={styles.headerRow}>
-                                        <th key='1' className={styles.rowId}>Раками</th>
-                                        <th key='2' className={styles.rowDate}>Сана</th>
-                                        <th key='3' className={styles.longRow}>Корхона</th>
+                                        <th key='1' className={styles.rowId}>Номер</th>
+                                        <th key='2' className={styles.rowDate}>Дата</th>
+                                        <th key='3' className={styles.longRow}>Организация</th>
                                         {contentName === 'ALL_DOCUMENTS' && (
-                                            <th key='4' className={styles.longRow}>Хужжат тури</th>
+                                            <th key='4' className={styles.longRow}>Вид документа</th>
                                         )}
                                         <th key='5' className={styles.rowSumma}>Сумма</th>
                                         {showToolsRentalColumns && (
-                                            <th key='5.1' className={styles.toolsRentalCompact}>Ижара</th>
+                                            <th key='5.1' className={styles.toolsRentalCompact}>Аренда</th>
                                         )}
                                         {(contentName === 'ALL_DOCUMENTS' ||
                                             contentName === DocumentType.LeaveCash ||
                                             contentName === DocumentType.MoveCash) && (
                                             <th key='5.5' className={styles.rowSumma}>USD</th>
                                         )}
-                                        <th key='6' className={styles.longRow}>Олувчи</th>
-                                        <th key='7' className={styles.longRow}>Берувчи</th>
+                                        <th key='6' className={styles.longRow}>Получатель</th>
+                                        <th key='7' className={styles.longRow}>Отправитель</th>
                                         {(contentName === 'ALL_DOCUMENTS' ||
                                             isDocumentWithAnalitic(contentName)) && (
                                             <th key='8' className={styles.longRow}>Аналитика</th>
@@ -446,12 +446,12 @@ const Journal = memo<JournalProps>(({ className, ...props }): JSX.Element => {
                                         {showOrderColumn && (
                                             <th key='8.5' className={styles.longRow}>Заказ</th>
                                         )}
-                                        <th key='9' className={styles.longRow}>Изох</th>
-                                        <th key='10' className={styles.longRow}>Фойдаланувчи</th>
-                                        <th key='11' className={styles.rowAction}>Учир.</th>
-                                        <th key='12' className={styles.rowAction}>Чоп.</th>
-                                        <th key='13' className={styles.rowAction}>Тасдик.</th>
-                                        <th key='14' className={styles.rowAction}>Куч.</th>
+                                        <th key='9' className={styles.longRow}>Комментарий</th>
+                                        <th key='10' className={styles.longRow}>Пользователь</th>
+                                        <th key='11' className={styles.rowAction}>Удал.</th>
+                                        <th key='12' className={styles.rowAction}>Печ.</th>
+                                        <th key='13' className={styles.rowAction}>Утв.</th>
+                                        <th key='14' className={styles.rowAction}>Коп.</th>
                                     </tr>
                                 )}
                             </thead>
@@ -522,19 +522,19 @@ const Journal = memo<JournalProps>(({ className, ...props }): JSX.Element => {
             {
                 contentName == DocumentType.LeaveCash && !showDocumentWindow &&
                 <div className={styles.checkboxs}>
-                    <CheckBoxInFooter id='charges' label='Харажат'/>
-                    <CheckBoxInFooter id='workers' label='Иш хаки'/>
-                    <CheckBoxInFooter id='mediators' label='Воситачи'/>
+                    <CheckBoxInFooter id='charges' label='Расход'/>
+                    <CheckBoxInFooter id='workers' label='Зарплата'/>
+                    <CheckBoxInFooter id='mediators' label='Посредник'/>
                     <CheckBoxInFooter id='deliverers' label='Доставщик'/>
-                    <CheckBoxInFooter id='partners' label='Таъминотчи'/>
-                    <CheckBoxInFooter id='departments' label='Ички корхона'/>
+                    <CheckBoxInFooter id='partners' label='Поставщик'/>
+                    <CheckBoxInFooter id='departments' label='Внутреннее подразделение'/>
                 </div>
                 
             }
             {/* {
                 !showDocumentWindow && !mainData.settings?.singleEnterpriseMode &&
                 <div className={styles.checkboxs}>
-                    <CheckBoxInFooter id='pendingApproval' label='Тасдиклаш учун'/>
+                    <CheckBoxInFooter id='pendingApproval' label='На утверждение'/>
                 </div>
             } */}
 

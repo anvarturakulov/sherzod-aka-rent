@@ -12,8 +12,8 @@ import { TypeReference } from "../interfaces/reference.interface";
 
 export const MenuData:Array<MenuItem> = [
     {
-        title: 'Асосий натижалар',
-        titleText: 'Жамланма маълумотлар',
+        title: 'Основные показатели',
+        titleText: 'Сводные данные',
         isOpened: true,
         subMenu: []
     },
@@ -24,19 +24,19 @@ export const MenuData:Array<MenuItem> = [
         subMenu: [
             { 
                 title: GateType.Income,
-                description: 'Кирувчи машиналар',
+                description: 'Въезжающие машины',
                 type: 'gate-income',
                 active: false,
             },
             { 
                 title: GateType.Outcome,
-                description: 'Чикувчи машиналар',
+                description: 'Выезжающие машины',
                 type: 'gate-outcome',
                 active: false,
             },
             { 
                 title: DocumentType.GateIncome, 
-                description:'Кириш учун - накладной',
+                description:'Накладная на въезд',
                 type: 'document', 
                 active: false,
             },
@@ -56,76 +56,83 @@ export const MenuData:Array<MenuItem> = [
         // ]
     },
     {
-        title: 'Хужжатлар',
-        titleText: 'Кунлик амаллар руйхати',
+        title: 'Документы',
+        titleText: 'Список ежедневных операций',
         isOpened: false,
         subMenu: [],
         subGroups: [
             {
-                title: 'Хамма хужжатлар',
+                title: 'Все документы',
                 items: [
                     { 
                         title: 'ALL_DOCUMENTS' as any, 
-                        description: 'Хамма хужжатлар',
+                        description: 'Все документы',
                         type: 'document', 
                         active: false,
                     }
                 ]
             },
             {
-                title: 'Ускуналар (ижара)',
+                title: 'Инструменты (аренда)',
                 items: [
-                    {
-                        title: DocumentType.OrderToolsToClient,
-                        description: 'Буюртма',
-                        type: 'document',
-                        active: false,
-                    },
+                    
                     {
                         title: DocumentType.TransferToolsToClient,
-                        description: 'Топшириш',
+                        description: 'Выдача',
                         type: 'document',
                         active: false,
                     },
                     {
                         title: DocumentType.ReceiveToolsFromClient,
-                        description: 'Кайтариш',
+                        description: 'Возврат',
+                        type: 'document',
+                        active: false,
+                    },
+                    {
+                        title: DocumentType.SaleEquipment,
+                        description: 'Реализация оборудования',
+                        type: 'document',
+                        active: false,
+                    },
+                    {
+                        title: DocumentType.OrderToolsToClient,
+                        description: 'Заказ',
                         type: 'document',
                         active: false,
                     },
                     {
                         title: DocumentType.TransferSubleaseToolsToClient,
-                        description: 'Субаренда топшириш',
+                        description: 'Выдача субаренды',
                         type: 'document',
                         active: false,
                     },
                     {
                         title: DocumentType.ReceiveSubleaseToolsFromClient,
-                        description: 'Субаренда қайтариш',
+                        description: 'Возврат субаренды',
                         type: 'document',
                         active: false,
                     },
                     {
                         title: 'rental-contracts' as any,
-                        description: 'Ижара шартномалари',
+                        description: 'Договоры аренды',
                         type: 'rental-contracts',
                         active: false,
                     },
                     {
                         title: DocumentType.ComeTools,
-                        description: 'Ускуна кирими',
+                        description: 'Приход инструмента',
                         type: 'document',
                         active: false,
                     },
                     {
                         title: DocumentType.MoveTools,
-                        description: 'Ускуна силжиши',
+                        description: 'Перемещение инструмента',
                         type: 'document',
                         active: false,
                     },
                     {
                         title: DocumentType.LeaveTools,
-                        description: 'Ускуна чикими',
+                        description: 'Расход инструмента',
                         type: 'document',
                         active: false,
                     },
@@ -133,17 +140,17 @@ export const MenuData:Array<MenuItem> = [
                 ]
             },
             {
-                title: 'Сотув',
+                title: 'Продажа',
                 items: [
                 { 
                     title: DocumentType.SaleProd, 
-                    description:'Махсулот сотуви',
+                    description:'Продажа продукции',
                     type: 'document', 
                     active: false,
                 },
                 { 
                     title: DocumentType.SaleMaterial, 
-                    description:'Хом ашё сотуви',
+                    description:'Продажа сырья',
                     type: 'document', 
                     active: false,
                 },
@@ -152,69 +159,69 @@ export const MenuData:Array<MenuItem> = [
             ]
             },
             {
-                title: 'Тайёр махсулотлар',
+                title: 'Готовая продукция',
                 items: [
                         { 
                             title: DocumentType.ComeProduct, 
-                            description:'Махсулот кирими',
+                            description:'Приход продукции',
                             type: 'document', 
                             active: false,
                         },
                         { 
                             title: DocumentType.LeaveProd, 
-                            description:'Махсулот чикими',
+                            description:'Расход продукции',
                             type: 'document', 
                             active: false,
                         },
                     ]
             },
             {
-                title: 'Хом ашё',
+                title: 'Сырьё',
                 items: [
                     { 
                         title: DocumentType.ComeMaterial, 
-                        description:'Хом ашё кирими',
+                        description:'Приход сырья',
                         type: 'document', 
                         active: false,
                     },
                     { 
                         title: DocumentType.MoveMaterial, 
-                        description:'Хом ашё силжиши',
+                        description:'Перемещение сырья',
                         type: 'document', 
                         active: false,
                     },
                     { 
                         title: DocumentType.LeaveMaterial, 
-                        description:'Хом ашё чикими',
+                        description:'Расход сырья',
                         type: 'document', 
                         active: false,
                     },
                     { 
                         title: DocumentType.LeaveOnlyOneMaterial, 
-                        description:'Хом ашё чикими (1 та материал)',
+                        description:'Расход сырья (1 материал)',
                         type: 'document', 
                         active: false,
                     },
                 ]
             },
             {
-                title: 'Товарлар',
+                title: 'Товары',
                 items: [
                     {
                         title: DocumentType.ComeTovar,
-                        description: 'Товар кирими',
+                        description: 'Приход товара',
                         type: 'document',
                         active: false,
                     },
                     {
                         title: DocumentType.LeaveTovar,
-                        description: 'Товар чикими',
+                        description: 'Расход товара',
                         type: 'document',
                         active: false,
                     },
                     { 
                         title: DocumentType.SaleTovar, 
-                        description:'Товар сотуви',
+                        description:'Продажа товара',
                         type: 'document', 
                         active: false,
                     },
@@ -222,29 +229,29 @@ export const MenuData:Array<MenuItem> = [
             },
             
             {
-                title: 'Асосий воситалар',
+                title: 'Основные средства',
                 items: [
                     {
                         title: DocumentType.ComeOS,
-                        description: 'Асосий восита кирими',
+                        description: 'Приход основного средства',
                         type: 'document',
                         active: false,
                     },
                     {
                         title: DocumentType.MoveOS,
-                        description: 'Асосий восита силжиши',
+                        description: 'Перемещение основного средства',
                         type: 'document',
                         active: false,
                     },
                     {
                         title: DocumentType.LeaveOS,
-                        description: 'Асосий восита чикими',
+                        description: 'Расход основного средства',
                         type: 'document',
                         active: false,
                     },
                     {
                         title: DocumentType.SaleOS,
-                        description: 'Асосий восита сотуви',
+                        description: 'Продажа основного средства',
                         type: 'document',
                         active: false,
                     },
@@ -257,41 +264,41 @@ export const MenuData:Array<MenuItem> = [
                 ]
             },
             {
-                title: 'Ярим тайёр махсулотлар',
+                title: 'Полуфабрикаты',
                 items: [
                         { 
-                            title: DocumentType.ComeHalfstuff, description:'Я.Т.М кирими',
+                            title: DocumentType.ComeHalfstuff, description:'Приход полуфабриката',
                             type: 'document', active: false,
                         },
                         { 
-                            title: DocumentType.LeaveHalfstuff, description:'Я.Т.М чикими',
+                            title: DocumentType.LeaveHalfstuff, description:'Расход полуфабриката',
                             type: 'document', active: false,
                         },
                         { 
-                            title: DocumentType.MoveHalfstuff, description:'Я.Т.М силжиши',
+                            title: DocumentType.MoveHalfstuff, description:'Перемещение полуфабриката',
                             type: 'document', active: false,
                         }
                     ]
             },
             
             {
-                title: 'Молия',
+                title: 'Финансы',
                 items: [
                     { 
                         title: DocumentType.ComeCashFromClients, 
-                        description:'Пул кирими',
+                        description:'Приход денег',
                         type: 'document', 
                         active: false,
                     },
                     { 
                         title: DocumentType.MoveCash, 
-                        description:'Пул силжиши',
+                        description:'Перемещение денег',
                         type: 'document', 
                         active: false,
                     },
                     { 
                         title: DocumentType.LeaveCash, 
-                        description:'Пул харажати',
+                        description:'Расход денег',
                         type: 'document', 
                         active: false,
                     },
@@ -299,29 +306,29 @@ export const MenuData:Array<MenuItem> = [
                 ]
             },
             {
-                title: 'Бошка',
+                title: 'Прочее',
                 items: [
             { 
                 title: DocumentType.ZpCalculate, 
-                description:'Иш хаки хисоби',
+                description:'Расчёт зарплаты',
                 type: 'document', 
                 active: false,
             },
             {
                 title: DocumentType.ServicesFromPartners, 
-                description:'Олинган хизматлар',
+                description:'Полученные услуги',
                 type: 'document', 
                 active: false,
             },
             {
                 title: DocumentType.ServicesToClients,
-                description:'Кўрсатилган хизматлар',
+                description:'Оказанные услуги',
                 type: 'document',
                 active: false,
             },
             { 
                 title: DocumentType.TakeProfit, 
-                description:'Фойда таксимоти',
+                description:'Распределение прибыли',
                 type: 'document', 
                 active: false,
             },
@@ -330,110 +337,110 @@ export const MenuData:Array<MenuItem> = [
         ]
     },
     {
-        title: 'Номлар',
-        titleText: 'Курсаткичлар номлари',
+        title: 'Справочники',
+        titleText: 'Наименования показателей',
         isOpened: false,
         subMenu: [
             { 
                 title: TypeReference.TMZ, 
-                description:'Товар моддий бойликлар', 
+                description:'Товарно-материальные ценности', 
                 type: 'reference', 
                 active: false,
             },
             {
                 title: TypeReference.TMZ_SHORT_NAME,
-                description: 'Қисқа номлар (ТМЗ)',
+                description: 'Краткие наименования (ТМЦ)',
                 type: 'reference',
                 active: false,
             },
             {
                 title: TypeReference.TMZ_SIZE,
-                description: 'Ўлчамлар (ТМЗ)',
+                description: 'Размеры (ТМЦ)',
                 type: 'reference',
                 active: false,
             },
             {
                 title: TypeReference.TMZ_COLOR,
-                description: 'Ранглар (ТМЗ)',
+                description: 'Цвета (ТМЦ)',
                 type: 'reference',
                 active: false,
             },
             {
                 title: TypeReference.TMZ_TEXTURE,
-                description: 'Текстуралар (ТМЗ)',
+                description: 'Текстуры (ТМЦ)',
                 type: 'reference',
                 active: false,
             },
             {
                 title: TypeReference.TMZ_MANUFACTURE,
-                description: 'Ишлаб чиқарувчилар (ТМЗ)',
+                description: 'Производители (ТМЦ)',
                 type: 'reference',
                 active: false,
             },
             {
                 title: TypeReference.TMZ_UNIT,
-                description: 'Ўлчов бирликлари (ТМЗ)',
+                description: 'Единицы измерения (ТМЦ)',
                 type: 'reference',
                 active: false,
             },
             { 
                 title: TypeReference.STORAGES, 
-                description:'Цех ва омборхоналар',
+                description:'Цехи и склады',
                 type: 'reference', 
                 active: false,
             },
             { 
                 title: TypeReference.PARTNERS, 
-                description:'Хамкорлар', 
+                description:'Контрагенты', 
                 type: 'reference', 
                 active: false,
             },
             { 
                 title: TypeReference.WORKERS, 
-                description:'Ходимлар',
+                description:'Сотрудники',
                 type: 'reference', 
                 active: false,
             },
             {
                 title: TypeReference.DELIVERERS,
-                description: 'Доставщиклар',
+                description: 'Доставщики',
                 type: 'reference',
                 active: false,
             },
             {
                 title: TypeReference.WORKS,
-                description:'Иш турлари',
+                description:'Виды работ',
                 type: 'reference',
                 active: false,
             },
             {
                 title: TypeReference.COMMON_WORKS,
-                description: 'Умумий ишлар',
+                description: 'Общие работы',
                 type: 'reference',
                 active: false,
             },
             { 
                 title: TypeReference.CHARGES, 
-                description:'Харажатлар',
+                description:'Затраты',
                 type: 'reference', 
                 active: false,
             },
             {
                 title: TypeReference.SERVICES,
-                description:'Хизматлар',
+                description:'Услуги',
                 type: 'reference',
                 active: false,
             },
             { 
                 title: TypeReference.CARS, 
-                description:'Автомашиналар',
+                description:'Автомобили',
                 type: 'reference', 
                 active: false,
             },
 
             { 
                 title: TypeReference.APARTMENTS, 
-                description:'Хонадонлар',
+                description:'Квартиры',
                 type: 'reference', 
                 active: false,
             },
@@ -441,49 +448,49 @@ export const MenuData:Array<MenuItem> = [
         ]
     },
     {
-        title: 'Хисоботлар',
-        titleText: 'Фаолият хисоботлари',
+        title: 'Отчёты',
+        titleText: 'Отчёты о деятельности',
         isOpened: false,
         subMenu: [
             { 
                 title: ReportType.MatOborot, 
-                description:'ТМБ харакати',
+                description:'Движение ТМЦ',
                 type: 'report', 
                 active: false,
             },
             { 
                 title: ReportType.OsOborot, 
-                description:'Асосий восита харакати',
+                description:'Движение основных средств',
                 type: 'report', 
                 active: false,
             },
             { 
                 title: ReportType.Oborotka, 
-                description:'Умумий айланма',
+                description:'Общий оборот',
                 type: 'report', 
                 active: false,
             },
             { 
                 title: ReportType.Personal, 
-                description:'Ходимлар иш хакиси',
+                description:'Зарплата сотрудников',
                 type: 'report', 
                 active: false,
             },
             { 
                 title: ReportType.MediatorPersonal, 
-                description:'Воситачилар иш хакиси',
+                description:'Зарплата посредников',
                 type: 'report', 
                 active: false,
             },
             {
                 title: ReportType.DelivererPersonal,
-                description: 'Доставщиклар хисоби',
+                description: 'Расчёт доставщиков',
                 type: 'report',
                 active: false,
             },
             { 
                 title: ReportType.AktSverka, 
-                description:'Солиштирма далолатнома',
+                description:'Акт сверки',
                 type: 'report', 
                 active: false,
             },
@@ -491,86 +498,86 @@ export const MenuData:Array<MenuItem> = [
         ]
     },
     {
-        title: 'Дастур',
-        titleText: 'Дастур хусусиятлари',
+        title: 'Программа',
+        titleText: 'Настройки программы',
         isOpened: false,
         subMenu: [
             { 
                 title: ServiceType.DeleteDocs, 
-                description:'Хужжатларни учириш', 
+                description:'Удаление документов', 
                 type: 'servis', 
                 active: false, 
             },
             { 
                 title: ServiceType.Users, 
-                description:'Фойдаланувчилар', 
+                description:'Пользователи', 
                 type: 'servis', 
                 active: false, 
             },
             { 
                 title: ServiceType.Enterprises, 
-                description:'Корхоналар', 
+                description:'Предприятия', 
                 type: 'servis', 
                 active: false, 
             },
             { 
                 title: ServiceType.Options, 
-                description:'Дастур хусусиятлари', 
+                description:'Настройки программы', 
                 type: 'servis', 
                 active: false, 
             },
             { 
                 title: ServiceType.PricingPolicy, 
-                description:'Нарх сиёсати', 
+                description:'Ценовая политика', 
                 type: 'servis', 
                 active: false, 
             },
         ]
     },
     {
-        title: 'Мебель ишлаб чиқариш',
-        titleText: 'Заявкалар ва ишлар',
+        title: 'Производство мебели',
+        titleText: 'Заявки и работы',
         isOpened: false,
         subMenu: [
             {
                 title: 'furniture-orders' as any,
-                description: 'Барча заявкалар',
+                description: 'Все заявки',
                 type: 'furniture-orders',
                 active: false,
             },
             {
                 title: 'furniture-my-works' as any,
-                description: 'Менинг ишларим (цех)',
+                description: 'Мои работы (цех)',
                 type: 'furniture-my-works',
                 active: false,
             },
             {
                 title: 'furniture-production-board' as any,
-                description: 'Ишлар доскаси (цехлар)',
+                description: 'Доска работ (цеха)',
                 type: 'furniture-production-board',
                 active: false,
             },
             {
                 title: 'furniture-stage-board' as any,
-                description: 'Заявкалар доскаси (этаплар)',
+                description: 'Доска заявок (этапы)',
                 type: 'furniture-stage-board',
                 active: false,
             },
             {
                 title: 'furniture-contracts' as any,
-                description: 'Мижозлар билан шартномалар',
+                description: 'Договоры с клиентами',
                 type: 'furniture-contracts',
                 active: false,
             },
             {
                 title: 'furniture-cutting-balances' as any,
-                description: 'Раскрой қолдиқлари',
+                description: 'Остатки раскроя',
                 type: 'furniture-cutting-balances',
                 active: false,
             },
             {
                 title: 'furniture-work-time-report' as any,
-                description: 'Иш вақти ҳисоботи',
+                description: 'Отчёт по рабочему времени',
                 type: 'furniture-work-time-report',
                 active: false,
             },

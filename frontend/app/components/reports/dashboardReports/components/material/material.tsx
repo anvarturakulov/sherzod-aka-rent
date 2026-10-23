@@ -9,7 +9,7 @@ import { useEnterpriseName } from '../../hooks/useEnterpriseName';
 
 export const Material = ({className, data, ...props }: MaterialProps) :JSX.Element => {
     const enterpriseName = useEnterpriseName();
-    let title = 'УМУМ ХОМ АШЁ ЧИКИМИ' 
+    let title = 'ОБЩЕЕ СПИСАНИЕ СЫРЬЯ' 
     
     useEffect(()=> {
     }, [data])
@@ -19,14 +19,14 @@ export const Material = ({className, data, ...props }: MaterialProps) :JSX.Eleme
     return (
        <>
             <div className={styles.title}>
-            {'УМУМ КОРХОНА БУЙИЧА ХОМ АШЁ ЧИКИМИ'}
+            {'СПИСАНИЕ СЫРЬЯ ПО ВСЕМУ ПРЕДПРИЯТИЮ'}
             {enterpriseName && <span> - {enterpriseName}</span>}
             </div>
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <td>Махсулот</td>
-                        <td>Сон</td>
+                        <td>Продукция</td>
+                        <td>Кол-во</td>
                         <td>Сумма</td>
                     </tr>
                 </thead>
@@ -44,7 +44,7 @@ export const Material = ({className, data, ...props }: MaterialProps) :JSX.Eleme
             
                 <thead>
                     <tr>
-                        <td>Жами</td>
+                        <td>Итого</td>
                         <td></td>
                         <td className={styles.totalTd}>{numberValue(totalByKey('summa', datas))}</td>
                     </tr>

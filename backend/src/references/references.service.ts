@@ -25,7 +25,12 @@ import {
 import { RefValues } from "src/refvalues/refValues.model";
 import { UpdateCreateReferenceDto } from "./dto/updateCreateReference.dto";
 import { convertJsonRef } from "./helpers/convertJsonRef";
-import { ForeignKeyConstraintError, Op } from "sequelize";
+import {
+  ForeignKeyConstraintError,
+  Op,
+  QueryTypes,
+  Transaction,
+} from "sequelize";
 import { UserRoles } from "src/interfaces/user.interface";
 import { Enterprise } from "src/enterprises/enterprise.model";
 import { partnerHasMediatorRole } from "src/documents/helper/mediatorBonus.helper";
@@ -89,6 +94,12 @@ export interface ReferenceUsageSummary {
   };
   canDelete: boolean;
 }
+
+/** Сколько строк одной таблицы отдаём в ответ поиска связей. Остаток учитывается в counts. */
+const REFERENCE_USAGE_SAMPLE_LIMIT = 50;
+
+/** Движение меньше этого порога считаем нулевым следом, а не остатком. */
+const ZERO_TRACE_EPSILON = 1e-6;
 
 @Injectable()
 export class ReferencesService implements OnModuleInit {
@@ -2023,7 +2034,15 @@ export class ReferencesService implements OnModuleInit {
     }
   }
 
-  async getReferenceUsage(referenceId: number): Promise<ReferenceUsageSummary> {
+  async getReferenceUsage(
+    referenceIdInput: number,
+    transaction?: Transaction,
+  ): Promise<ReferenceUsageSummary> {
+    const referenceId = Number(referenceIdInput);
+    if (!Number.isInteger(referenceId) || referenceId <= 0) {
+      throw new HttpException("Справочник не найден", HttpStatus.NOT_FOUND);
+    }
+
     const reference = await this.referenceRepository.findByPk(referenceId);
     if (!reference) {
       throw new HttpException("Справочник не найден", HttpStatus.NOT_FOUND);
@@ -2052,7 +2071,7 @@ export class ReferencesService implements OnModuleInit {
         ],
       });
       for (const row of rows) {
-        if (!row.id || row.id === referenceId) continue;
+        if (!row.id || Number(row.id) === referenceId) continue;
         inReferences.push({
           referenceId: row.id,
           name: row.name,
@@ -2091,7 +2110,10 @@ export class ReferencesService implements OnModuleInit {
     const inDocuments: ReferenceUsageInDocument[] = [];
     for (const row of docValueRows) {
       for (const field of docValueFields) {
-        if ((row as unknown as Record<string, unknown>)[field] !== referenceId) {
+        if (
+          Number((row as unknown as Record<string, unknown>)[field]) !==
+          referenceId
+        ) {
           continue;
         }
         inDocuments.push({
@@ -2203,11 +2225,89 @@ export class ReferencesService implements OnModuleInit {
           : `#${row.id}`,
     );
 
+    const coveredFkColumns = new Set<string>([
+      ...dictFields.map((field) => `refvalues|${field}`),
+      ...docValueFields.map((field) => `docvalues|${field}`),
+      "doctableitems|analiticId",
+      "rental_contracts|clientId",
+      "client_contracts|clientId",
+      "furniture_orders|clientId",
+      "furniture_orders|analiticId",
+      "client_tool_open_batches|clientId",
+      "sublease_tool_open_batches|clientId",
+      "sublease_tool_open_batches|partnerId",
+    ]);
+    const hiddenRelated = { extra: 0 };
+
+    await this.appendChildReferenceUsage(inRelated, referenceId);
+    coveredFkColumns.add("references|parentId");
+
+    await this.appendRefValuePointerUsage(inRelated, referenceId, "partnerId");
+    await this.appendRefValuePointerUsage(
+      inRelated,
+      referenceId,
+      "clientForSectionId",
+    );
+    coveredFkColumns.add("refvalues|partnerId");
+    coveredFkColumns.add("refvalues|clientForSectionId");
+
+    await this.appendTableColumnUsage(
+      inRelated,
+      "entries",
+      [
+        "debetFirstSubcontoId",
+        "debetSecondSubcontoId",
+        "debetThirdSubcontoId",
+        "kreditFirstSubcontoId",
+        "kreditSecondSubcontoId",
+        "kreditThirdSubcontoId",
+      ],
+      referenceId,
+      hiddenRelated,
+      coveredFkColumns,
+      transaction,
+    );
+    await this.appendTableColumnUsage(
+      inRelated,
+      "stocks",
+      ["firstSubcontoId", "secondSubcontoId"],
+      referenceId,
+      hiddenRelated,
+      coveredFkColumns,
+      transaction,
+    );
+    await this.appendTableColumnUsage(
+      inRelated,
+      "oborots",
+      [
+        "debetFirstSubcontoId",
+        "debetSecondSubcontoId",
+        "debetThirdSubcontoId",
+        "kreditFirstSubcontoId",
+        "kreditSecondSubcontoId",
+        "kreditThirdSubcontoId",
+      ],
+      referenceId,
+      hiddenRelated,
+      coveredFkColumns,
+      transaction,
+    );
+
+    await this.appendBlockingForeignKeyUsage(
+      inRelated,
+      referenceId,
+      coveredFkColumns,
+      hiddenRelated,
+      transaction,
+    );
+
+    const inRelatedCount = inRelated.length + hiddenRelated.extra;
     const counts = {
       inReferences: inReferences.length,
       inDocuments: inDocuments.length,
-      inRelated: inRelated.length,
-      total: inReferences.length + inDocuments.length + inRelated.length,
+      inRelated: inRelatedCount,
+      total:
+        inReferences.length + inDocuments.length + inRelatedCount,
     };
 
     return {
@@ -2242,7 +2342,12 @@ export class ReferencesService implements OnModuleInit {
     }
   }
 
-  async deleteReferencePermanentById(id: number, userRole?: string) {
+  async deleteReferencePermanentById(idInput: number, userRole?: string) {
+    const id = Number(idInput);
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new HttpException("Справочник не найден", HttpStatus.NOT_FOUND);
+    }
+
     const reference = await this.referenceRepository.findOne({
       where: { id },
       include: [RefValues],
@@ -2252,17 +2357,6 @@ export class ReferencesService implements OnModuleInit {
     }
 
     this.ensureDeletePermission(reference, userRole);
-
-    const usage = await this.getReferenceUsage(id);
-    if (!usage.canDelete) {
-      throw new HttpException(
-        {
-          message: "Нельзя удалить справочник: обнаружены связи",
-          usage,
-        },
-        HttpStatus.CONFLICT,
-      );
-    }
 
     const sequelize = this.referenceRepository.sequelize;
     if (!sequelize) {
@@ -2274,6 +2368,17 @@ export class ReferencesService implements OnModuleInit {
 
     try {
       await sequelize.transaction(async (transaction) => {
+        await this.purgeZeroSubcontoTraces(id, transaction);
+        const usage = await this.getReferenceUsage(id, transaction);
+        if (!usage.canDelete) {
+          throw new HttpException(
+            {
+              message: "Нельзя удалить справочник: обнаружены связи",
+              usage,
+            },
+            HttpStatus.CONFLICT,
+          );
+        }
         await this.refValuesRepository.destroy({
           where: { referenceId: id },
           transaction,
@@ -2292,7 +2397,7 @@ export class ReferencesService implements OnModuleInit {
         message.includes("foreign key constraint")
       ) {
         throw new HttpException(
-          "ўчириб бўлмайди: боғланишлар мавжуд",
+          this.describeForeignKeyViolation(err),
           HttpStatus.CONFLICT,
         );
       }
@@ -2301,6 +2406,309 @@ export class ReferencesService implements OnModuleInit {
 
     await this.updateRefList();
     return { success: true, id };
+  }
+
+  private async purgeZeroSubcontoTraces(
+    referenceId: number,
+    transaction: Transaction,
+  ): Promise<void> {
+    const sequelize = this.referenceRepository.sequelize;
+    if (!sequelize) return;
+
+    const zeroMovement = `
+      ABS(COALESCE(count, 0)) <= :eps
+      AND ABS(COALESCE(total, 0)) <= :eps
+      AND ABS(COALESCE(usd, 0)) <= :eps
+    `;
+    const replacements = { referenceId, eps: ZERO_TRACE_EPSILON };
+
+    await sequelize.query(
+      `DELETE FROM stocks
+       WHERE ${zeroMovement}
+         AND ("firstSubcontoId" = :referenceId OR "secondSubcontoId" = :referenceId)`,
+      { replacements, transaction },
+    );
+    await sequelize.query(
+      `DELETE FROM oborots
+       WHERE ${zeroMovement}
+         AND (
+           "debetFirstSubcontoId" = :referenceId
+           OR "debetSecondSubcontoId" = :referenceId
+           OR "debetThirdSubcontoId" = :referenceId
+           OR "kreditFirstSubcontoId" = :referenceId
+           OR "kreditSecondSubcontoId" = :referenceId
+           OR "kreditThirdSubcontoId" = :referenceId
+         )`,
+      { replacements, transaction },
+    );
+  }
+
+  private describeForeignKeyViolation(err: unknown): string {
+    const wrapped = err as {
+      message?: string;
+      table?: string;
+      index?: string;
+      constraint?: string;
+      parent?: {
+        message?: string;
+        table?: string;
+        constraint?: string;
+      };
+      original?: {
+        message?: string;
+        table?: string;
+        constraint?: string;
+      };
+    };
+    const pg = wrapped.parent ?? wrapped.original;
+    const pgMessage = String(pg?.message ?? wrapped.message ?? "");
+    const constraint =
+      pg?.constraint ||
+      wrapped.constraint ||
+      wrapped.index ||
+      pgMessage.match(/constraint "([^"]+)"/i)?.[1];
+    const tableFromMessage =
+      pgMessage.match(/constraint "[^"]+" on table "([^"]+)"/i)?.[1] ||
+      [...pgMessage.matchAll(/on table "([^"]+)"/gi)]
+        .map((match) => match[1])
+        .find((name) => name !== "references");
+    const rawTable = tableFromMessage || pg?.table || wrapped.table;
+    const table =
+      rawTable && rawTable !== "references" ? rawTable : tableFromMessage;
+
+    const details: string[] = [];
+    if (table) details.push(`таблица «${table}»`);
+    if (constraint) details.push(`ограничение «${constraint}»`);
+    if (!details.length) {
+      return "Нельзя удалить справочник: обнаружены связи";
+    }
+    return `Нельзя удалить справочник: обнаружены связи (${details.join(", ")})`;
+  }
+
+  private async appendChildReferenceUsage(
+    inRelated: ReferenceUsageInRelated[],
+    referenceId: number,
+  ): Promise<void> {
+    const childRows = await this.referenceRepository.findAll({
+      where: { parentId: referenceId },
+      attributes: ["id", "name", "parentId"],
+    });
+    this.appendRelatedUsage(
+      inRelated,
+      childRows,
+      "references",
+      ["parentId"],
+      referenceId,
+      (row) => String(row.name ?? `#${row.id}`),
+    );
+  }
+
+  private async appendRefValuePointerUsage(
+    inRelated: ReferenceUsageInRelated[],
+    referenceId: number,
+    field: "partnerId" | "clientForSectionId",
+  ): Promise<void> {
+    const rows = await this.referenceRepository.findAll({
+      attributes: ["id", "name"],
+      include: [
+        {
+          model: RefValues,
+          required: true,
+          attributes: [field],
+          where: { [field]: referenceId },
+        },
+      ],
+    });
+    for (const row of rows) {
+      if (!row.id || Number(row.id) === referenceId) continue;
+      inRelated.push({
+        source: "refvalues",
+        id: Number(row.id),
+        label: String(row.name ?? `#${row.id}`),
+        field,
+      });
+    }
+  }
+
+  private async appendTableColumnUsage(
+    inRelated: ReferenceUsageInRelated[],
+    table: string,
+    columns: string[],
+    referenceId: number,
+    hidden: { extra: number },
+    covered: Set<string>,
+    transaction?: Transaction,
+  ): Promise<void> {
+    for (const column of columns) {
+      const key = `${table}|${column}`;
+      covered.add(key);
+      try {
+        await this.appendColumnMatches(
+          inRelated,
+          table,
+          column,
+          referenceId,
+          hidden,
+          false,
+          transaction,
+        );
+      } catch (err: unknown) {
+        covered.delete(key);
+        const message = err instanceof Error ? err.message : String(err);
+        this.logger.warn(
+          `Поиск связей ${table}.${column} не выполнен: ${message}`,
+        );
+      }
+    }
+  }
+
+  private async appendBlockingForeignKeyUsage(
+    inRelated: ReferenceUsageInRelated[],
+    referenceId: number,
+    covered: Set<string>,
+    hidden: { extra: number },
+    transaction?: Transaction,
+  ): Promise<void> {
+    const sequelize = this.referenceRepository.sequelize;
+    if (!sequelize) return;
+
+    let fkRows: { table_name: string; column_name: string }[] = [];
+    try {
+      fkRows = await sequelize.query<{
+        table_name: string;
+        column_name: string;
+      }>(
+        `
+        SELECT
+          src.relname AS table_name,
+          a.attname AS column_name
+        FROM pg_constraint c
+        JOIN pg_class src ON src.oid = c.conrelid
+        JOIN pg_namespace sn ON sn.oid = src.relnamespace
+        JOIN pg_class dst ON dst.oid = c.confrelid
+        JOIN pg_namespace dn ON dn.oid = dst.relnamespace
+        JOIN LATERAL generate_subscripts(c.conkey, 1) AS ord ON true
+        JOIN pg_attribute a
+          ON a.attrelid = c.conrelid
+         AND a.attnum = c.conkey[ord]
+         AND NOT a.attisdropped
+        JOIN pg_attribute da
+          ON da.attrelid = c.confrelid
+         AND da.attnum = c.confkey[ord]
+         AND NOT da.attisdropped
+        WHERE c.contype = 'f'
+          AND dst.relname = 'references'
+          AND dn.nspname = 'public'
+          AND sn.nspname = 'public'
+          AND da.attname = 'id'
+          AND c.confdeltype IN ('a', 'r')
+        `,
+        { type: QueryTypes.SELECT },
+      );
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.warn(`Каталог внешних ключей references не прочитан: ${message}`);
+      return;
+    }
+
+    const seen = new Set<string>();
+    for (const fk of fkRows) {
+      const table = fk.table_name;
+      const column = fk.column_name;
+      const key = `${table}|${column}`;
+      if (seen.has(key) || covered.has(key)) continue;
+      if (table === "refvalues" && column === "referenceId") continue;
+      if (!this.isSafeSqlIdent(table) || !this.isSafeSqlIdent(column)) continue;
+      seen.add(key);
+      try {
+        await this.appendColumnMatches(
+          inRelated,
+          table,
+          column,
+          referenceId,
+          hidden,
+          table === "refvalues",
+          transaction,
+        );
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        this.logger.warn(`Поиск связей ${table}.${column} не выполнен: ${message}`);
+      }
+    }
+  }
+
+  private async appendColumnMatches(
+    inRelated: ReferenceUsageInRelated[],
+    table: string,
+    column: string,
+    referenceId: number,
+    hidden: { extra: number },
+    excludeOwnRefValues = false,
+    transaction?: Transaction,
+  ): Promise<void> {
+    const sequelize = this.referenceRepository.sequelize;
+    if (!sequelize || !this.isSafeSqlIdent(table) || !this.isSafeSqlIdent(column)) {
+      return;
+    }
+
+    const tableSql = `"${table}"`;
+    const columnSql = `"${column}"`;
+    const ownRowFilter = excludeOwnRefValues
+      ? ` AND "referenceId" IS DISTINCT FROM :referenceId`
+      : "";
+    const movementFilter =
+      table === "stocks" || table === "oborots"
+        ? ` AND (
+            ABS(COALESCE(count, 0)) > :eps
+            OR ABS(COALESCE(total, 0)) > :eps
+            OR ABS(COALESCE(usd, 0)) > :eps
+          )`
+        : "";
+    const whereSql = `${columnSql} = :referenceId${ownRowFilter}${movementFilter}`;
+    const replacements = { referenceId, eps: ZERO_TRACE_EPSILON };
+
+    const countRows = await sequelize.query<{ cnt: string | number }>(
+      `SELECT COUNT(*)::int AS cnt FROM ${tableSql} WHERE ${whereSql}`,
+      { replacements, type: QueryTypes.SELECT, transaction },
+    );
+    const cnt = Number(countRows[0]?.cnt ?? 0);
+    if (!cnt) return;
+
+    const rows = await sequelize.query<{ id: number | string }>(
+      `SELECT id FROM ${tableSql} WHERE ${whereSql} LIMIT :limit`,
+      {
+        replacements: {
+          ...replacements,
+          limit: REFERENCE_USAGE_SAMPLE_LIMIT,
+        },
+        type: QueryTypes.SELECT,
+        transaction,
+      },
+    );
+
+    const seen = new Set(
+      inRelated.map((item) => `${item.source}|${item.id}|${item.field}`),
+    );
+    let pushed = 0;
+    for (const row of rows) {
+      const id = Number(row.id);
+      if (!Number.isFinite(id)) continue;
+      const key = `${table}|${id}|${column}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      inRelated.push({
+        source: table,
+        id,
+        label: `#${id}`,
+        field: column,
+      });
+      pushed += 1;
+    }
+    if (cnt > pushed) hidden.extra += cnt - pushed;
+  }
+
+  private isSafeSqlIdent(name: string): boolean {
+    return /^[A-Za-z_][A-Za-z0-9_]*$/.test(name);
   }
 
   async createMany(list: any) {

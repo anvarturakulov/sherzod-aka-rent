@@ -12,12 +12,12 @@ export const TMZ_LIST_SHOW_ENTERPRISE_CODE = true;
 export const TMZ_LIST_SHOW_COMMENT = true;
 
 const TMZ_LIST_COLUMNS_ALL = [
-  { column: 'Қисқа ном', field: 'shortName', show: TMZ_LIST_SHOW_SHORT_NAME },
-  { column: 'Ўлчам', field: 'size', show: TMZ_LIST_SHOW_SIZE },
-  { column: 'Ранг', field: 'color', show: TMZ_LIST_SHOW_COLOR },
-  { column: 'Ишлаб чиқарувчи', field: 'manufacture', show: TMZ_LIST_SHOW_MANUFACTURE },
-  { column: 'ТМБ тури', field: 'typeTMZ', show: true },
-  { column: 'Ул. бир.', field: 'unit', show: true },
+  { column: 'Краткое наименование', field: 'shortName', show: TMZ_LIST_SHOW_SHORT_NAME },
+  { column: 'Размер', field: 'size', show: TMZ_LIST_SHOW_SIZE },
+  { column: 'Цвет', field: 'color', show: TMZ_LIST_SHOW_COLOR },
+  { column: 'Производитель', field: 'manufacture', show: TMZ_LIST_SHOW_MANUFACTURE },
+  { column: 'Тип ТМЦ', field: 'typeTMZ', show: true },
+  { column: 'Ед. изм.', field: 'unit', show: true },
 ] as const;
 
 export const REFERENCE_TYPE_CONFIG = {
@@ -30,11 +30,11 @@ export const REFERENCE_TYPE_CONFIG = {
     fields: ['inn', 'phone', 'telegramId', 'importedFromXlsx'],
   },
   CARS: {
-    columns: ['Модел'],
+    columns: ['Модель'],
     fields: ['carModel']
   },
   MEDIATORS: {
-    columns: ['Тури', 'Telegram ID'],
+    columns: ['Тип', 'Telegram ID'],
     fields: ['mediatorType', 'telegramId']
   },
   DELIVERERS: {
@@ -42,7 +42,7 @@ export const REFERENCE_TYPE_CONFIG = {
     fields: []
   },
   STORAGES: {
-    columns: ['Артикул', 'Булим тури'],
+    columns: ['Артикул', 'Тип раздела'],
     fields: ['article', 'typeSection']
   },
   WORKS: {

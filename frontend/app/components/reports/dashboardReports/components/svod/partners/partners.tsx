@@ -29,7 +29,7 @@ export const Partners = ({className, data, dataType, ...props }: PartnersProps) 
     const totalBoshl = splitSignedAmountDisplay(totalPOSUM)
     const totalOxirgi = splitSignedAmountDisplay(totalKOSUM)
 
-    let title = dataType === 'clients' ? 'Мижозлар' : dataType === 'departments' ? 'Ички корхоналар' : 'Таъминотчилар';
+    let title = dataType === 'clients' ? 'Клиенты' : dataType === 'departments' ? 'Внутренние предприятия' : 'Поставщики';
     const comment = '';
     return (
         <div>
@@ -41,9 +41,9 @@ export const Partners = ({className, data, dataType, ...props }: PartnersProps) 
                 <thead className={styles.thead}>
                     <tr>
                         <td rowSpan={2}>№</td>
-                        <td rowSpan={2}>Номи</td>
-                        <td colSpan={2}>Бошл. кол. сумма</td>
-                        <td colSpan={2}>Охирги кол. сумма</td>
+                        <td rowSpan={2}>Наименование</td>
+                        <td colSpan={2}>Нач. остаток</td>
+                        <td colSpan={2}>Кон. остаток</td>
                     </tr>
                     <tr>
                         <td className={styles.subHead}>Дт</td>
@@ -62,7 +62,7 @@ export const Partners = ({className, data, dataType, ...props }: PartnersProps) 
                     }
                     <tr>
                         <td className={styles.totalTd}></td>
-                        <td className={styles.totalTd}>Жами</td>
+                        <td className={styles.totalTd}>Итого</td>
                         <td className={styles.totalTd}>{totalBoshl.plus}</td>
                         <td className={styles.totalTd}>{totalBoshl.minus}</td>
                         <td className={styles.totalTd}>{totalOxirgi.plus}</td>

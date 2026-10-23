@@ -92,7 +92,7 @@ export default function FormworkPlannerModal({
   const printRef = useRef<HTMLDivElement>(null);
   const printFn = useReactToPrint({
     contentRef: printRef,
-    documentTitle: `Опалубка схемаси ${currentDocument?.id ?? ''}`,
+    documentTitle: `Схема опалубки ${currentDocument?.id ?? ''}`,
   });
 
   useEffect(() => {
@@ -123,7 +123,7 @@ export default function FormworkPlannerModal({
       setPreviewRows(rows);
     } catch (e: any) {
       setPreviewRows(null);
-      setLoadError(e?.response?.data?.message || e?.message || 'Склад қолдиғини юклашда хатолик');
+      setLoadError(e?.response?.data?.message || e?.message || 'Ошибка загрузки остатка склада');
     } finally {
       setLoading(false);
     }
@@ -175,11 +175,11 @@ export default function FormworkPlannerModal({
   const handleSolve = () => {
     setActionError(null);
     if (!geometry.contours.length) {
-      setActionError('Аввал фундамент чизмасини чизинг (ёпиқ контур)');
+      setActionError('Сначала нарисуйте чертёж фундамента (замкнутый контур)');
       return;
     }
     if (!elements.length) {
-      setActionError('Справочникда опалубка элементлари йўқ. ТМБ карточкасида «Опалубка элементи» ни белгиланг.');
+      setActionError('В справочнике нет элементов опалубки. Отметьте «Элемент опалубки» в карточке ТМЦ.');
       return;
     }
     const solved = solveFormwork({
@@ -198,7 +198,7 @@ export default function FormworkPlannerModal({
 
   const handleSaveLayout = () => {
     setMainData?.('currentDocument', withFormworkLayout(currentDocument, currentLayoutWithResult()));
-    showMessage('Чизма ҳужжатга сақланди. Ҳужжатни сақлашни унутманг.', 'success', setMainData);
+    showMessage('Чертёж сохранён в документе. Не забудьте сохранить документ.', 'success', setMainData);
   };
 
   const handleApply = async () => {
@@ -222,13 +222,13 @@ export default function FormworkPlannerModal({
         'currentDocument',
         withFormworkLayout(currentDocument, currentLayoutWithResult(), applied.docTableItems),
       );
-      const parts = [`Қўшилди: ${applied.addedCount} қатор`];
-      if (applied.replacedCount) parts.push(`алмаштирилди: ${applied.replacedCount}`);
-      if (applied.skipped.length) parts.push(`складда йўқ: ${applied.skipped.join(', ')}`);
+      const parts = [`Добавлено: ${applied.addedCount} строк`];
+      if (applied.replacedCount) parts.push(`заменено: ${applied.replacedCount}`);
+      if (applied.skipped.length) parts.push(`нет на складе: ${applied.skipped.join(', ')}`);
       showMessage(parts.join('; '), 'success', setMainData);
       onClose();
     } catch (e: any) {
-      setActionError(e?.message || 'Хатолик юз берди');
+      setActionError(e?.message || 'Произошла ошибка');
     } finally {
       setApplying(false);
     }
@@ -243,16 +243,16 @@ export default function FormworkPlannerModal({
       <div className={styles.dialog}>
         <div className={styles.header}>
           <div>
-            <h3 className={styles.title}>Опалубка ҳисоблагичи</h3>
+            <h3 className={styles.title}>Калькулятор опалубки</h3>
             <p className={styles.subtitle}>
-              Фундамент ўқ чизиқларини чизинг — программа склад қолдиғи бўйича щитлар тўпламини танлайди
+              Нарисуйте осевые линии фундамента — программа подберёт комплект щитов по остатку склада
             </p>
           </div>
           <div className={styles.toolGroup}>
-            {loading && <span className={styles.hint}>Склад юкланмоқда…</span>}
+            {loading && <span className={styles.hint}>Склад загружается…</span>}
             {!loading && (
               <span className={cn(styles.stockBadge, { [styles.stockBadgeUnknown]: !stockKnown })}>
-                {stockKnown ? `Склад: ${previewRows?.length ?? 0} позиция` : 'Склад қолдиғи номаълум'}
+                {stockKnown ? `Склад: ${previewRows?.length ?? 0} позиций` : 'Остаток склада неизвестен'}
               </span>
             )}
             <button type="button" className={styles.toolBtn} onClick={loadPreview} disabled={loading}>
@@ -270,7 +270,7 @@ export default function FormworkPlannerModal({
                   className={cn(styles.tierTab, { [styles.tierTabActive]: view === 'sketch' })}
                   onClick={() => setView('sketch')}
                 >
-                  Чизма
+                  Чертёж
                 </button>
                 <button
                   type="button"
@@ -278,7 +278,7 @@ export default function FormworkPlannerModal({
                   onClick={() => setView('scheme')}
                   disabled={!result}
                 >
-                  Жойлашув схемаси
+                  Схема размещения
                 </button>
               </div>
               {view === 'scheme' && result && result.tiers.length > 1 && (
@@ -320,10 +320,10 @@ export default function FormworkPlannerModal({
 
           <div className={styles.rightCol}>
             <div className={styles.card}>
-              <h4 className={styles.cardTitle}>Параметрлар</h4>
+              <h4 className={styles.cardTitle}>Параметры</h4>
               <div className={styles.params}>
                 <label className={styles.paramField}>
-                  Лента эни, мм
+                  Ширина ленты, мм
                   <input
                     value={stripDraft}
                     onChange={(e) => setStripDraft(e.target.value)}
@@ -333,7 +333,7 @@ export default function FormworkPlannerModal({
                   />
                 </label>
                 <label className={styles.paramField}>
-                  Баландлик, мм
+                  Высота, мм
                   <input
                     value={heightDraft}
                     onChange={(e) => setHeightDraft(e.target.value)}
@@ -343,7 +343,7 @@ export default function FormworkPlannerModal({
                   />
                 </label>
                 <label className={styles.paramField}>
-                  Рухсат этилган зазор, мм
+                  Допустимый зазор, мм
                   <input
                     value={gapDraft}
                     onChange={(e) => setGapDraft(e.target.value)}
@@ -354,7 +354,7 @@ export default function FormworkPlannerModal({
                 </label>
               </div>
               <div className={styles.hint} style={{ marginTop: 8 }}>
-                Контурлар: {geometry.contours.length} · Грани: {geometry.faces.length} · Бурчаклар:{' '}
+                Контуры: {geometry.contours.length} · Грани: {geometry.faces.length} · Углы:{' '}
                 {geometry.corners.length}
                 {loadError ? ` · ${loadError}` : ''}
               </div>
@@ -367,16 +367,16 @@ export default function FormworkPlannerModal({
 
             <div className={styles.card}>
               <h4 className={styles.cardTitle}>
-                Опалубка элементлари
-                <span className={styles.hint}>{elements.length} та</span>
+                Элементы опалубки
+                <span className={styles.hint}>{elements.length} шт.</span>
               </h4>
               {elements.length ? (
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>Номи</th>
-                      <th>Ўлчам</th>
-                      {stockKnown && <th className={styles.num}>Қолдиқ</th>}
+                      <th>Наименование</th>
+                      <th>Размер</th>
+                      {stockKnown && <th className={styles.num}>Остаток</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -401,8 +401,8 @@ export default function FormworkPlannerModal({
                 </table>
               ) : (
                 <div className={styles.empty}>
-                  Справочникда опалубка элементлари топилмади. ТМБ (ускуна) карточкасида «Опалубка элементи» ва
-                  ўлчамларни киритинг.
+                  В справочнике не найдены элементы опалубки. В карточке ТМЦ (инструмент) отметьте «Элемент опалубки» и
+                  введите размеры.
                 </div>
               )}
             </div>
@@ -415,20 +415,20 @@ export default function FormworkPlannerModal({
 
         <div className={styles.footer}>
           <button type="button" className={styles.btnPrimary} onClick={handleSolve} disabled={loading}>
-            Ҳисоблаш
+            Рассчитать
           </button>
           <button type="button" className={styles.btn} onClick={handleSaveLayout}>
-            Чизмани сақлаш
+            Сохранить чертёж
           </button>
           <button type="button" className={styles.btn} onClick={() => printFn()} disabled={!result}>
-            Схемани чоп этиш
+            Печать схемы
           </button>
           <div className={styles.footerEnd}>
             <button type="button" className={styles.btn} onClick={onClose} disabled={applying}>
-              Ёпиш
+              Закрыть
             </button>
             <button type="button" className={styles.btnPrimary} onClick={handleApply} disabled={!canApply || applying}>
-              {applying ? 'Кўчирилмоқда…' : 'Ҳужжатга кўчириш'}
+              {applying ? 'Перенос…' : 'Перенести в документ'}
             </button>
           </div>
         </div>

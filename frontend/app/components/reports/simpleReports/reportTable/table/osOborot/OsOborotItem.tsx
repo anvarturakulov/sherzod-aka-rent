@@ -280,7 +280,7 @@ export const OsOborotItem = ({ items }: OsOborotItemProps): JSX.Element => {
       <tfoot>
         <tr className={styles.footerRow}>
           <td colSpan={3} className={styles.footerLabel}>
-            Жами
+            Итого
           </td>
           <MetricCells m={footerTotals} cellClass={styles.footerAmount} />
         </tr>

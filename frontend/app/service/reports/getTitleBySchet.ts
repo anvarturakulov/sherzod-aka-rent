@@ -3,11 +3,11 @@ import { Schet } from '@/app/interfaces/report.interface';
 export const getTitleBySchet = (schet: Schet): string => {
   switch (schet) {
     case Schet.S10:
-      return 'Хом ашёлар'
+      return 'Сырьё'
     case Schet.S21:
-      return 'Ярим тайёр махсулотлар'
+      return 'Полуфабрикаты'
     case Schet.S28:
-      return 'Тайёр махсулотлар'
+      return 'Готовая продукция'
     default :
       return ''
   }

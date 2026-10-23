@@ -11,8 +11,8 @@ export const getReceiveToolsPreviewParams = (
   const warehouseId = currentDocument?.docValues?.receiverId;
   const partnerId = currentDocument?.docValues?.partnerId;
   const returnDateTime =
-    Number(currentDocument?.docValues?.returnDateTime) ||
     Number(currentDocument?.date) ||
+    Number(currentDocument?.docValues?.returnDateTime) ||
     0;
 
   if (isSublease) {

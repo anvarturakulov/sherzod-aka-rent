@@ -21,9 +21,9 @@ export const DefaultReports = ({className, reportType, ...props }: DefaultReprts
     const getReportTitle = (type: string): string => {
         switch (type) {
             case 'AktSverka':
-                return 'Солиштирма далолатнома';
+                return 'Акт сверки';
             default:
-                return 'Хисобот';
+                return 'Отчёт';
         }
     };
     

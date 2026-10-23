@@ -65,9 +65,9 @@ export const Inform = ({ className, ...props }: InformationProps): JSX.Element =
   return (
     <div ref={reportRef} className={styles.container} {...props}>
       <div className={styles.headerTitleBox}>
-        <div className={styles.headerTitle}>Асосий натижалар</div>
+        <div className={styles.headerTitle}>Основные показатели</div>
         <div className={styles.headerTitleText}>
-            Жамланма маълумотлар
+            Сводные данные
         </div>
       </div>
 
@@ -96,7 +96,7 @@ export const Inform = ({ className, ...props }: InformationProps): JSX.Element =
           onClick={handleSendToTelegram} 
           className={styles.pdfBtn}
         >
-          Архивга олиш
+          Архивировать
         </Button>
       )}
       {!showDocumentWindow && (

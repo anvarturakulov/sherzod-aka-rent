@@ -12,7 +12,7 @@ export const OsOborot = (): JSX.Element => {
   const sections = osOborot?.[0]?.values ?? [];
 
   if (!sections.length) {
-    return <div className={styles.emptyState}>Асосий воситалар бўйича маълумот йўқ</div>;
+    return <div className={styles.emptyState}>Нет данных по основным средствам</div>;
   }
 
   return (

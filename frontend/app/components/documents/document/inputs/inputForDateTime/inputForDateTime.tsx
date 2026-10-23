@@ -5,7 +5,7 @@ import { InputForDateTimeProps } from './inputForDateTime.props';
 import styles from './inputForDateTime.module.css';
 import cn from 'classnames';
 import { useAppContext } from '@/app/context/app.context';
-import { isReceiveToolsDocument } from '@/app/interfaces/document.interface';
+import { DocumentType, isReceiveToolsDocument } from '@/app/interfaces/document.interface';
 import { useControlledDateTimeInput } from '@/app/hooks/useControlledDateTimeInput';
 import { recalcReceiveToolsReturnTable } from '@/app/service/documents/receiveToolsRent';
 import { nowMs } from '@/app/utils/serverNow';
@@ -34,9 +34,41 @@ export const InputForDateTime = ({
       if (!setMainData) return;
 
       if (id === 'date') {
+        const docType = currentDocument.documentType;
+        const isTransferSettlement =
+          docType === DocumentType.TransferToolsToClient ||
+          docType === DocumentType.TransferSubleaseToolsToClient;
+        const isReceive = isReceiveToolsDocument(docType);
+        const previousDate = Number(currentDocument.date) || 0;
+        const docValues = { ...currentDocument.docValues };
+
+        if (isTransferSettlement) {
+          docValues.settlementDate = parsed;
+        }
+        if (isReceive) {
+          docValues.returnDateTime = parsed;
+        }
+
+        const shouldRecalcReturnTable =
+          isReceive &&
+          parsed !== previousDate &&
+          (currentDocument.docTableItems || []).some(
+            (item) =>
+              (!item.tableType || item.tableType === 'return') && Number(item.analiticId) > 0,
+          );
+
         setMainData('currentDocument', {
           ...currentDocument,
           date: parsed,
+          ...(isTransferSettlement || isReceive ? { docValues } : {}),
+          ...(shouldRecalcReturnTable
+            ? {
+                docTableItems: recalcReceiveToolsReturnTable(
+                  currentDocument.docTableItems,
+                  parsed,
+                ),
+              }
+            : {}),
         });
         return;
       }
@@ -120,7 +152,7 @@ export const InputForDateTime = ({
           maxLength={5}
           autoComplete="off"
           defaultValue={timeDefaultValue}
-          aria-label={label ? `${label}, вақт` : 'Вақт'}
+          aria-label={label ? `${label}, время` : 'Время'}
         />
       </div>
     </div>

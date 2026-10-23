@@ -3,6 +3,8 @@
 /backend/backups
 /backend/uploads
 /backend/node_modules
+/backend/license-keys/
+/release/
 /frontend/node_modules
 /frontend/.next
 /frontend/.env

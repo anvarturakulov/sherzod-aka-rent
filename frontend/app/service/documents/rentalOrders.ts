@@ -35,12 +35,12 @@ export const buildReadyRentalOrdersHeaderText = (
   const orders = payload?.orders || [];
   if (!orders.length) return '';
   if (orders.length === 1) {
-    return `Буюртма №${orders[0].id} ни ёпиш мумкин`;
+    return `Заказ №${orders[0].id} можно закрыть`;
   }
   if (payload?.enoughForAll) {
-    return `${orders.length} буюртмани ёпиш мумкин`;
+    return `Можно закрыть заказов: ${orders.length}`;
   }
-  return `${orders.length} буюртмани алохида ёпиш мумкин`;
+  return `Можно закрыть по отдельности: ${orders.length}`;
 };
 
 export const buildReadyRentalOrdersSummary = (
@@ -52,18 +52,18 @@ export const buildReadyRentalOrdersSummary = (
   }
   if (orders.length === 1) {
     return {
-      title: 'Складда ускуна пайдо бўлди',
-      note: `Буюртма №${orders[0].id} ни тўлиқ ёпиш мумкин.`,
+      title: 'На складе появился инструмент',
+      note: `Заказ №${orders[0].id} можно закрыть полностью.`,
     };
   }
   if (payload?.enoughForAll) {
     return {
-      title: 'Складда ускуна пайдо бўлди',
-      note: `Қуйидаги ${orders.length} буюртмани ёпиш мумкин.`,
+      title: 'На складе появился инструмент',
+      note: `Можно закрыть заказов: ${orders.length}.`,
     };
   }
   return {
-    title: 'Складда ускуна пайдо бўлди',
-    note: `Буюртмаларни алохида ёпиш мумкин. Ҳаммасига бир вақтда етмайди.`,
+    title: 'На складе появился инструмент',
+    note: 'Заказы можно закрывать по отдельности. На все сразу инструмента не хватает.',
   };
 };

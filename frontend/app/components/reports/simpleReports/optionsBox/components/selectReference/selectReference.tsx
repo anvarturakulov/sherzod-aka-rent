@@ -90,7 +90,7 @@ export const SelectReference = ({ label, visible, typeReference , className, den
     // Состояния для поиска
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selected, setSelected] = useState('Танланмаган');
+    const [selected, setSelected] = useState('Не выбрано');
     const [selectedItem, setSelectedItem] = useState<ReferenceModel | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -139,7 +139,7 @@ export const SelectReference = ({ label, visible, typeReference , className, den
         if (shouldLoadStoragesForDepartments) {
             return {
                 id: -1,
-                name: 'Барчаси',
+                name: 'Все',
                 typeReference: TypeReference.STORAGES,
                 refValues: {
                     typeSection: TypeSECTION.COMMON
@@ -251,7 +251,7 @@ export const SelectReference = ({ label, visible, typeReference , className, den
 
     // Обработчик выбора опции по умолчанию
     const handleDefaultOptionSelect = useCallback(() => {
-        setSelected('Танланмаган');
+        setSelected('Не выбрано');
         setSelectedItem(null);
         setSearchTerm('');
         setIsOpen(false);
@@ -351,11 +351,11 @@ export const SelectReference = ({ label, visible, typeReference , className, den
                         ref={inputRef}
                         type="text"
                         className={cn(styles.searchInput, {
-                            [styles.defaultSelected]: selected === 'Танланмаган'
+                            [styles.defaultSelected]: selected === 'Не выбрано'
                         })}
                         placeholder={
                             isOpen && typeReference === TypeReference.PARTNERS
-                                ? '+(комбинация), -(ёки), !(йук)...'
+                                ? '+(комбинация), -(или), !(нет)...'
                                 : (selected || 'Выберите элемент...')
                         }
                         value={isOpen ? searchTerm : selected}
@@ -376,11 +376,11 @@ export const SelectReference = ({ label, visible, typeReference , className, den
                             {/* Опция по умолчанию */}
                             <div
                                 className={cn(styles.option, styles.defaultOption, {
-                                    [styles.selected]: selected === 'Танланмаган'
+                                    [styles.selected]: selected === 'Не выбрано'
                                 })}
                                 onClick={handleDefaultOptionSelect}
                             >
-                                {'Танланмаган'}
+                                {'Не выбрано'}
                             </div>
                             
                             {/* Специальная опция "Барчаси" для DEPARTMENTS */}

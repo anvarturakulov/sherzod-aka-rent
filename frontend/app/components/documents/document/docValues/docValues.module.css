@@ -71,21 +71,24 @@
 }
 
 .dataBoxDates {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
 }
 
-.transferInfoCol {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
+.dateTimeField {
+    width: 340px;
+    max-width: 100%;
+    flex: 0 0 auto;
 }
 
 .rentTariffTypeBox {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
     text-align: left;
 }
 

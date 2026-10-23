@@ -20,7 +20,7 @@ export const sendInterEnterpriseDocument = async (
     axios.post(uri, { enterpriseId: user?.enterpriseId }, config)
       .then(function () {
         if (setMainData) {
-          showMessage(`Хужжат жўнатилди`, 'success', setMainData);
+          showMessage(`Документ отправлен`, 'success', setMainData);
           setMainData('updateDataForDocumentJournal', true);
         }
       })
@@ -49,7 +49,7 @@ export const cancelSendingInterEnterpriseDocument = async (
     axios.post(uri, { enterpriseId: user?.enterpriseId }, config)
       .then(function () {
         if (setMainData) {
-          showMessage(`Жўнатиш бекор килинди`, 'success', setMainData);
+          showMessage(`Отправка отменена`, 'success', setMainData);
           setMainData('updateDataForDocumentJournal', true);
         }
       })
@@ -83,7 +83,7 @@ export const acceptInterEnterpriseDocument = async (
     axios.post(uri, { enterpriseId }, config)
       .then(function () {
         if (setMainData) {
-          showMessage(`Хужжат кабул килинди ва проводка берилди`, 'success', setMainData);
+          showMessage(`Документ принят и проведён`, 'success', setMainData);
           setMainData('updateDataForDocumentJournal', true);
         }
       })
@@ -112,7 +112,7 @@ export const approveInternalDocument = async (
     axios.post(uri, {}, config)
       .then(function () {
         if (setMainData) {
-          showMessage(`Хужжат тасдикланди ва проводка берилди`, 'success', setMainData);
+          showMessage(`Документ подтверждён и проведён`, 'success', setMainData);
           setMainData('updateDataForDocumentJournal', true);
         }
       })
@@ -141,7 +141,7 @@ export const sendInternalDocumentToPending = async (
     axios.post(uri, {}, config)
       .then(function () {
         if (setMainData) {
-          showMessage(`Хужжат тасдиқлаш учун жўнатилди`, 'success', setMainData);
+          showMessage(`Документ отправлен на подтверждение`, 'success', setMainData);
           setMainData('updateDataForDocumentJournal', true);
         }
       })
@@ -171,7 +171,7 @@ export const rejectInterEnterpriseDocument = async (
     axios.post(uri, { enterpriseId: user?.enterpriseId, reason }, config)
       .then(function () {
         if (setMainData) {
-          showMessage(`Хужжат рад этилди`, 'success', setMainData);
+          showMessage(`Документ отклонён`, 'success', setMainData);
           setMainData('updateDataForDocumentJournal', true);
         }
       })
@@ -200,7 +200,7 @@ export const returnInterEnterpriseDocumentToWork = async (
     axios.post(uri, { enterpriseId: user?.enterpriseId }, config)
       .then(function () {
         if (setMainData) {
-          showMessage(`Хужжат ишга кайтарилди`, 'success', setMainData);
+          showMessage(`Документ возвращён в работу`, 'success', setMainData);
           setMainData('updateDataForDocumentJournal', true);
         }
       })
@@ -231,7 +231,7 @@ export const cancelInterEnterpriseProvodka = async (
       .then(async function (response) {
         console.log('[FRONTEND] cancelInterEnterpriseProvodka - Успешный ответ:', response.data);
         if (setMainData) {
-          showMessage(`Проводка бекор килинди`, 'success', setMainData);
+          showMessage(`Проведение отменено`, 'success', setMainData);
           setMainData('updateDataForDocumentJournal', true);
 
           const { currentDocument } = mainData?.document || {};

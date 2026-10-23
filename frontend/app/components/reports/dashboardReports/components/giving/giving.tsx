@@ -19,13 +19,13 @@ export const Giving = ({className, data, currentSection, ...props }: GivingProps
     return (
        <>
             <div className={styles.title}>
-                {'НАКД ПУЛ ХАРАЖАТИ'}
+                {'РАСХОД НАЛИЧНЫХ'}
                 {enterpriseName && <span> - {enterpriseName}</span>}
             </div>
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <td>Харажат номи</td>
+                        <td>Наименование расхода</td>
                         <td>Сумма</td>
                     </tr>
                 </thead>
@@ -43,7 +43,7 @@ export const Giving = ({className, data, currentSection, ...props }: GivingProps
             
                 <thead>
                     <tr>
-                        <td >Жами</td>
+                        <td >Итого</td>
                         <td className={styles.totalTd}>{numberValue(totalByKey('giving', datas))}</td>
                     </tr>
                 </thead>

@@ -33,25 +33,25 @@ export function useReportMeta(): ReportMeta | null {
         const titleV =
             firstReferenceId != null && firstReferenceId != 0
                 ? getPropertySubconto(data, firstReferenceId).name
-                : 'умумий корхона';
+                : 'общее предприятие';
 
         let partnerTitle = '';
         if (contentName === ReportType.AktSverka) {
             partnerTitle =
                 partnerType === 'CLIENTS'
-                    ? 'МИЖОЗ'
+                    ? 'КЛИЕНТ'
                     : partnerType === 'SUPPLIERS'
-                      ? 'ТАЪМИНОТЧИ'
-                      : 'ИЧКИ КОРХОНА';
+                      ? 'ПОСТАВЩИК'
+                      : 'ВНУТРЕННЕЕ ПРЕДПРИЯТИЕ';
         }
 
         const scopeSuffix = partnerTitle ? ` (${partnerTitle})` : '';
 
         return {
-            reportTitle: `${contentTitle} хисоботи`,
-            enterpriseLine: enterpriseName ? `Корхона: ${enterpriseName}` : '',
-            periodLine: `Хисобот даври: ${dateToStr(startDate)} дан ${dateToStr(endDate)}`,
-            scopeLine: `${titleV}${scopeSuffix} буйича`,
+            reportTitle: `Отчёт: ${contentTitle}`,
+            enterpriseLine: enterpriseName ? `Предприятие: ${enterpriseName}` : '',
+            periodLine: `Период отчёта: с ${dateToStr(startDate)} по ${dateToStr(endDate)}`,
+            scopeLine: `По: ${titleV}${scopeSuffix}`,
         };
     }, [
         startReport,

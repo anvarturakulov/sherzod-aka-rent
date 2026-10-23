@@ -244,13 +244,13 @@ export default function SettingsJournal({className, ...props}: SettingsJournalPr
                         <thead className={styles.thead}>
                             <tr key = {-1}>
                                 <th className={styles.rowId}>№</th>
-                                <th className={styles.key}>Калит</th>
+                                <th className={styles.key}>Ключ</th>
                                 <th className={styles.type}>Тип</th>
                                 <th className={styles.value}>Значение</th>
                                 <th className={styles.description}>Описание</th>
                                 <th className={styles.enterprise}>Организация</th>
                                 <th className={styles.roles}>Роли</th>
-                                <th className={styles.rowAction}>Амал</th>
+                                <th className={styles.rowAction}>Действие</th>
                             </tr>
                         </thead>
                         <tbody className={styles.tbody}>
@@ -293,7 +293,7 @@ export default function SettingsJournal({className, ...props}: SettingsJournalPr
                                         {item.isPereodic && (
                                             <button
                                                 className={styles.pereodicBtn}
-                                                title="Даврий қийматлар"
+                                                title="Периодические значения"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     openPereodicsList(item);

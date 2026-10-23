@@ -465,7 +465,7 @@ export const Check: React.FC<CheckProps> = ({
               <div className={styles.carDetails}>
                 <span><strong>Автомашина:</strong> {documentData.docValues?.carId ? carDisplayName : 'Не указана'}</span>
                 {documentData.docValues?.driver && (
-                  <span><strong>Хайдовчи:</strong> {documentData.docValues.driver}</span>
+                  <span><strong>Водитель:</strong> {documentData.docValues.driver}</span>
                 )}
               </div>
             </div>

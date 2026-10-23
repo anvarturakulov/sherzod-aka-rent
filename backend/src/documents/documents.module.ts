@@ -22,6 +22,7 @@ import { BackupModule } from "src/backup/backup.module";
 import { ProductCalculationsModule } from "src/productCalculations/productCalculations.module";
 import { SettingsModule } from "src/settings/settings.module";
 import { ClientToolBatchesModule } from "src/clientToolBatches/clientToolBatches.module";
+import { ToolComponentsModule } from "src/toolComponents/tool-components.module";
 import { SubleaseToolBatchesModule } from "src/subleaseToolBatches/subleaseToolBatches.module";
 import { PereodicModule } from "src/pereodic/pereodic.module";
 
@@ -51,6 +52,7 @@ import { PereodicModule } from "src/pereodic/pereodic.module";
     ProductCalculationsModule,
     SettingsModule,
     ClientToolBatchesModule,
+    ToolComponentsModule,
     forwardRef(() => SubleaseToolBatchesModule),
     PereodicModule,
   ],

@@ -36,6 +36,7 @@ export enum ReportType {
     ContractFulfillment = 'ContractFulfillment',
     ClientsContractsWork = 'ClientsContractsWork',
     RentalUnfulfilledOrders = 'RentalUnfulfilledOrders',
+    RentalOpenTransfers = 'RentalOpenTransfers',
     All = 'All'
 }
 

@@ -959,6 +959,7 @@ export class ReportsService {
       clientId != null && Number(clientId) > 0 ? Number(clientId) : null,
       this.clientToolBatchesService,
       this.referencesService,
+      this.documentRepository,
     );
   }
 

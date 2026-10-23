@@ -100,7 +100,7 @@ const InlineReferenceModalLayer = ({ entry, slotKey, isTop, nested }: InlineRefe
                     type="button"
                     className={styles.closeButton}
                     onClick={closeModal}
-                    aria-label="Ёпиш"
+                    aria-label="Закрыть"
                 >
                     ✕
                 </button>
@@ -113,7 +113,7 @@ const InlineReferenceModalLayer = ({ entry, slotKey, isTop, nested }: InlineRefe
                     </div>
                 )}
                 {isEditMode && !isReferenceLoaded ? (
-                    <div className={styles.loading}>Юкланмоқда...</div>
+                    <div className={styles.loading}>Загрузка...</div>
                 ) : (
                     <Reference
                         key={referenceKey}

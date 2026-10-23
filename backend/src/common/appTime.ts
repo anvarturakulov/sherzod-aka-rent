@@ -121,6 +121,27 @@ export function formatZonedYmd(ms: number): string {
   return `${parts.year}-${month}-${day}`;
 }
 
+/** True when `dayMs` is a later Asia/Tashkent calendar day than `limitMs`. Same day is false. */
+export function isZonedCalendarDayAfter(dayMs: number, limitMs: number): boolean {
+  const day = getZonedParts(dayMs);
+  const limit = getZonedParts(limitMs);
+  if (!day || !limit) return false;
+  const dayIndex = Date.UTC(day.year, day.month - 1, day.day);
+  const limitIndex = Date.UTC(limit.year, limit.month - 1, limit.day);
+  return dayIndex > limitIndex;
+}
+
+/** Whole calendar days from send (exclusive) to return (inclusive). Same day is 0. */
+export function rentCalendarDays(sendMs: number, returnMs: number): number {
+  const send = getZonedParts(sendMs);
+  const ret = getZonedParts(returnMs);
+  if (!send || !ret) return 0;
+  const sendIndex = Date.UTC(send.year, send.month - 1, send.day);
+  const returnIndex = Date.UTC(ret.year, ret.month - 1, ret.day);
+  const diff = Math.round((returnIndex - sendIndex) / 86_400_000);
+  return diff > 0 ? diff : 0;
+}
+
 export function combineZonedDateAndTime(
   dateMs: number,
   hours: number,

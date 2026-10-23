@@ -44,7 +44,7 @@ type InnerProps = Omit<JournalReferenceFilterSelectProps, 'options' | 'typeRefer
 const JournalReferenceFilterSelectInner = ({
     value,
     onChange,
-    placeholder = 'Танланмаган',
+    placeholder = 'Не выбрано',
     typeReference,
     autoFocus = false,
     className,
@@ -238,7 +238,7 @@ const JournalReferenceFilterSelectInner = ({
                             })}
                             onClick={handleClear}
                         >
-                            Танланмаган
+                            Не выбрано
                         </div>
 
                         {filteredData.length === 0 ? (

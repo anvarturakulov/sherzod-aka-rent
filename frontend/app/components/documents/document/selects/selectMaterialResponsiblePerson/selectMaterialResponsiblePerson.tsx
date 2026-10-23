@@ -78,7 +78,7 @@ export const SelectMaterialResponsiblePerson = ({
         value={currentDocument?.docValues?.materialResponsiblePersonId || ''}
         onChange={handleChange}
       >
-        <option value="">Танланмаган</option>
+        <option value="">Не выбрано</option>
         {data.map((item: ReferenceModel) => (
           <option key={item.id} value={item.id}>
             {item.name}

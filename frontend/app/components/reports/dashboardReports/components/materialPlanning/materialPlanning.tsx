@@ -35,8 +35,8 @@ export const MaterialPlanning = ({
   if (!values) {
     return (
       <div className={styles.container} {...props}>
-        <div className={styles.title}>Материаллар режалаштириш</div>
-        <div className={styles.emptyMessage}>Маълумотлар юкланмоқда</div>
+        <div className={styles.title}>Планирование материалов</div>
+        <div className={styles.emptyMessage}>Загрузка данных</div>
       </div>
     );
   }
@@ -45,9 +45,9 @@ export const MaterialPlanning = ({
     return (
       <div className={styles.container} {...props}>
         <div className={styles.title}>
-          Материаллар режалаштириш (Омбор қолдиғи санаси: {stockDateLabel})
+          Планирование материалов (дата остатка склада: {stockDateLabel})
         </div>
-        <div className={styles.emptyMessage}>Маълумот топилмади</div>
+        <div className={styles.emptyMessage}>Данные не найдены</div>
       </div>
     );
   }
@@ -67,7 +67,7 @@ export const MaterialPlanning = ({
   return (
     <div className={styles.container} {...props}>
       <div className={styles.title}>
-        Материаллар режалаштириш (Омбор қолдиғи санаси: {stockDateLabel})
+        Планирование материалов (дата остатка склада: {stockDateLabel})
       </div>
 
       <table className={styles.table}>
@@ -77,12 +77,12 @@ export const MaterialPlanning = ({
             <th className={`${styles.center} ${styles.plusCol}`}>+</th>
             <th>Материал</th>
             <th>Артикул</th>
-            <th className={styles.unitCol}>Улч. бир.</th>
-            <th className={styles.numeric}>Колдик</th>
-            <th className={styles.numeric}>Заказдаги сон</th>
-            <th className={styles.numeric}>Сарфланган</th>
-            <th className={styles.numeric}>Заказлар буйича талаб</th>
-            <th className={styles.numeric}>Фарк</th>
+            <th className={styles.unitCol}>Ед. изм.</th>
+            <th className={styles.numeric}>Остаток</th>
+            <th className={styles.numeric}>Кол-во в заказе</th>
+            <th className={styles.numeric}>Израсходовано</th>
+            <th className={styles.numeric}>Потребность по заказам</th>
+            <th className={styles.numeric}>Отклонение</th>
           </tr>
         </thead>
         <tbody>
@@ -135,13 +135,13 @@ export const MaterialPlanning = ({
                             <th className={`${styles.center} ${styles.indexCol}`}>№</th>
                             <th className={styles.plusCol}></th>
                             <th>Заказ</th>
-                            <th>Мижоз</th>
+                            <th>Клиент</th>
                             <th className={styles.unitCol}></th>
-                            <th>Махсулот</th>
-                            <th className={styles.numeric}>Заказдаги сон</th>
-                            <th className={styles.numeric}>Сарфланган</th>
-                            <th className={styles.numeric}>Заказлар буйича талаб</th>
-                            <th>Топшириш санаси</th>
+                            <th>Продукция</th>
+                            <th className={styles.numeric}>Кол-во в заказе</th>
+                            <th className={styles.numeric}>Израсходовано</th>
+                            <th className={styles.numeric}>Потребность по заказам</th>
+                            <th>Дата передачи</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -198,9 +198,9 @@ export const MaterialPlanning = ({
 
       {totals && (
         <div className={styles.overallTotals}>
-          Жами: Омбор {numberValue(totals.stockTotal ?? 0)} | Талаб{' '}
-          {numberValue(totals.requiredTotal ?? 0)} | Сарф{' '}
-          {numberValue(totals.consumedTotal ?? 0)} | Қолдиқ талаб{' '}
+          Итого: Склад {numberValue(totals.stockTotal ?? 0)} | Талаб{' '}
+          {numberValue(totals.requiredTotal ?? 0)} | Расход{' '}
+          {numberValue(totals.consumedTotal ?? 0)} | Требуемый остаток{' '}
           {numberValue(totals.remainingRequiredTotal ?? 0)} | Баланс{' '}
           {numberValue(totals.balanceAfterCoverage ?? 0)}
         </div>

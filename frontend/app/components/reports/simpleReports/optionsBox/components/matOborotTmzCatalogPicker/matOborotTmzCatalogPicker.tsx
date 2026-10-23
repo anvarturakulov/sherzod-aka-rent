@@ -87,7 +87,7 @@ export function MatOborotTmzCatalogPicker(): JSX.Element {
 
     return (
         <div className={styles.box}>
-            <div className={styles.label}>ТМЗ</div>
+            <div className={styles.label}>ТМЦ</div>
             <div className={pickerStyles.row}>
                 <div
                     role="button"
@@ -100,16 +100,16 @@ export function MatOborotTmzCatalogPicker(): JSX.Element {
                             openCatalog();
                         }
                     }}
-                    title="Каталогдан танлаш"
-                >
-                    {hasSelection ? displayName || '…' : '— каталогдан танланг —'}
+                    title="Выбор из каталога"
+                    >
+                    {hasSelection ? displayName || '…' : '— выберите из каталога —'}
                 </div>
                 {hasSelection ? (
                     <button
                         type="button"
                         className={pickerStyles.clearBtn}
                         onClick={handleClear}
-                        title="Танловни тозалаш"
+                        title="Очистить выбор"
                     >
                         <XMarkIcon className={pickerStyles.clearBtnIcon} aria-hidden />
                         <span>Очистить</span>
@@ -119,8 +119,8 @@ export function MatOborotTmzCatalogPicker(): JSX.Element {
                     type="button"
                     className={pickerStyles.catalogBtn}
                     onClick={openCatalog}
-                    title="Каталогни очиш"
-                    aria-label="Каталогни очиш"
+                    title="Открыть каталог"
+                    aria-label="Открыть каталог"
                 >
                     <Squares2X2Icon className={pickerStyles.catalogBtnIcon} aria-hidden />
                 </button>

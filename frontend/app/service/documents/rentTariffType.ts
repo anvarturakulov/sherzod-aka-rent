@@ -27,4 +27,4 @@ export const getRentTariffFallbackFromRefValues = (
 export const getRentTariffTypeLabel = (value?: string | null): string =>
   normalizeRentTariffType(value) === RentTariffType.TRANSFER
     ? 'Перечисление'
-    : 'Нақд / физ.шахс';
+    : 'Наличные / физ.лицо';

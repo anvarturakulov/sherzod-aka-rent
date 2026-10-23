@@ -26,40 +26,40 @@ export const getValidateBodyError = (body: DocumentModel): string | null => {
   } = body.docValues || {};
 
   if (!date || date <= 0) {
-    return 'Хужжат санасини киритинг';
+    return 'Укажите дату документа';
   }
   if (!documentType || documentType === DocumentType.Error) {
-    return 'Хужжат тури аниқ эмас';
+    return 'Тип документа не определён';
   }
 
   if (documentType === DocumentType.GateIncome) {
     const { carId } = body.docValues || {};
     if (!carId || carId === 0) {
-      return 'Автомашинани танланг';
+      return 'Выберите автомобиль';
     }
     return null;
   }
 
   if (documentType === DocumentType.ZpCalculate) {
     if (!receiverId || !analiticId || analiticId <= 0 || !total) {
-      return 'Олувчи, ходим ва суммани тўлдиринг';
+      return 'Заполните получателя, сотрудника и сумму';
     }
     return null;
   }
 
   if (documentType === DocumentType.ServicesToClients) {
     if (!senderId || !receiverId || !analiticId || analiticId <= 0 || !total) {
-      return 'Жўнатувчи бўлим, мижоз, хизмат тури ва суммани тўлдиринг';
+      return 'Заполните отдел-отправитель, клиента, вид услуги и сумму';
     }
     return null;
   }
 
   if (documentType === DocumentType.AmortizasiyaOS) {
     if (!senderId) {
-      return 'Омбор (ОС)ни танланг';
+      return 'Выберите склад (ОС)';
     }
   } else if (!senderId || !receiverId) {
-    return 'Жўнатувчи ва қабул қилувчини танланг';
+    return 'Выберите отправителя и получателя';
   }
 
   if (
@@ -70,30 +70,30 @@ export const getValidateBodyError = (body: DocumentModel): string | null => {
     documentType !== DocumentType.LeaveOnlyOneMaterial &&
     documentType !== DocumentType.AmortizasiyaOS
   ) {
-    return 'Олувчи ва жунатувчи бир хил бўлмайди';
+    return 'Получатель и отправитель не могут совпадать';
   }
 
-  if (documentsWithTableItems.includes(documentType) && documentType !== DocumentType.SaleProd && documentType !== DocumentType.SaleMaterial && documentType !== DocumentType.SaleTovar && documentType !== DocumentType.TransferToolsToClient && documentType !== DocumentType.OrderToolsToClient && documentType !== DocumentType.ReceiveToolsFromClient && documentType !== DocumentType.TransferSubleaseToolsToClient && documentType !== DocumentType.ReceiveSubleaseToolsFromClient) {
+  if (documentsWithTableItems.includes(documentType) && documentType !== DocumentType.SaleProd && documentType !== DocumentType.SaleMaterial && documentType !== DocumentType.SaleTovar && documentType !== DocumentType.TransferToolsToClient && documentType !== DocumentType.OrderToolsToClient && documentType !== DocumentType.SaleEquipment && documentType !== DocumentType.ReceiveToolsFromClient && documentType !== DocumentType.TransferSubleaseToolsToClient && documentType !== DocumentType.ReceiveSubleaseToolsFromClient) {
     const filledItems = getFilledDocTableItems(docTableItems);
     if (!filledItems.length) {
-      return 'Жадвалга камида битта асосий восита қўшинг';
+      return 'Добавьте в таблицу хотя бы одно основное средство';
     }
     for (const item of filledItems) {
       if (Number(item.count) <= 0) {
-        return 'Жадвалда миқдор нотўғри (0 дан катта бўлиши керак)';
+        return 'В таблице некорректное количество (должно быть больше 0)';
       }
       if (Number(item.price) <= 0) {
-        return 'Жадвалда нархни киритинг (асосий восита учун нарх мажбурий)';
+        return 'Укажите цену в таблице (для основного средства цена обязательна)';
       }
       if (Number(item.total) <= 0) {
-        return 'Жадвалда сумма нотўғри';
+        return 'В таблице некорректная сумма';
       }
     }
   }
 
   if (!documentsWithTableItems.includes(documentType)) {
     if (!total) {
-      return 'Суммани киритинг';
+      return 'Укажите сумму';
     }
   }
 
@@ -101,25 +101,41 @@ export const getValidateBodyError = (body: DocumentModel): string | null => {
     const remainCount = Number(body.docValues?.remainCount || 0);
     const countValue = Number(count || 0);
     if (countValue > remainCount) {
-      return `Миқдор қолдиқдан (${remainCount}) ортиқ бўлмаслиги керак`;
+      return `Количество не должно превышать остаток (${remainCount})`;
     }
     if (!body.docValues?.productForChargeId || body.docValues.productForChargeId <= 0) {
-      return 'Харажат учун материални танланг';
+      return 'Выберите материал для расхода';
     }
     if (!orderId || orderId <= 0 || !workId || workId <= 0) {
-      return 'Буюртма ва ишни танланг';
+      return 'Выберите заказ и работу';
     }
+  }
+
+  if (documentType === DocumentType.SaleEquipment) {
+    const filled = getFilledDocTableItems(docTableItems);
+    if (!filled.length) {
+      return 'Добавьте оборудование в таблицу';
+    }
+    for (const item of filled) {
+      if (Number(item.count) <= 0) {
+        return 'В таблице некорректное количество';
+      }
+      if (Number(item.total) <= 0) {
+        return 'Укажите цену и сумму в таблице';
+      }
+    }
+    return null;
   }
 
   if (documentType === DocumentType.OrderToolsToClient) {
     const allFilled = getFilledDocTableItems(docTableItems);
     const toolItems = getIncomeItems(allFilled);
     if (!toolItems.length) {
-      return 'Жадвалга ускуна қўшинг';
+      return 'Добавьте инструмент в таблицу';
     }
     for (const item of toolItems) {
       if (Number(item.count) <= 0) {
-        return 'Ускуналар жадвалида миқдор нотўғри';
+        return 'В таблице инструментов некорректное количество';
       }
     }
     return null;
@@ -131,39 +147,39 @@ export const getValidateBodyError = (body: DocumentModel): string | null => {
     const saleItems = getSaleItems(allFilled);
 
     if (!toolItems.length && !saleItems.length) {
-      return 'Жадвалга ускуна ёки товар қўшинг';
+      return 'Добавьте в таблицу инструмент или товар';
     }
 
     if (toolItems.length > 0) {
       const settlementDate = Number(body.docValues?.settlementDate || 0);
       if (!settlementDate || settlementDate <= 0) {
-        return 'Ҳисоблаш санасини киритинг';
+        return 'Укажите дату расчёта';
       }
       for (const item of toolItems) {
         if (Number(item.count) <= 0) {
-          return 'Ускуналар жадвалида миқдор нотўғри';
+          return 'В таблице инструментов некорректное количество';
         }
         if (Number(item.costTotal) <= 0) {
-          return 'Ускуналар жадвалида себестоимость топилмади';
+          return 'В таблице инструментов не найдена себестоимость';
         }
       }
     }
 
     for (const item of saleItems) {
       if (Number(item.count) <= 0) {
-        return 'Товарлар жадвалида миқдор нотўғри';
+        return 'В таблице товаров некорректное количество';
       }
       if (Number(item.total) <= 0) {
-        return 'Товарлар жадвалида сотиш суммаси топилмади';
+        return 'В таблице товаров не найдена сумма продажи';
       }
       if (Number(item.costTotal) <= 0) {
-        return 'Товарлар жадвалида себестоимость топилмади';
+        return 'В таблице товаров не найдена себестоимость';
       }
     }
 
     const deliverySum = Number(body.docValues?.deliverySum || 0);
     if (deliverySum > 0 && !Number(body.docValues?.delivererId || 0)) {
-      return 'Доставка учун доставщикни танланг';
+      return 'Выберите доставщика для доставки';
     }
     return null;
   }
@@ -172,45 +188,45 @@ export const getValidateBodyError = (body: DocumentModel): string | null => {
     const returnDateTime =
       Number(body.docValues?.returnDateTime) || Number(date);
     if (!returnDateTime || returnDateTime <= 0) {
-      return 'Дату и время возврата укажите';
+      return 'Укажите дату и время возврата';
     }
     const hasRows = getFilledDocTableItems(docTableItems).length > 0;
     if (!hasRows) {
-      return 'Жадвални тўлдиринг ёки «Тулдириш» тугмасини босинг';
+      return 'Заполните таблицу или нажмите «Заполнить»';
     }
     const allItems = docTableItems || [];
     for (const returnItem of getReturnItems(allItems)) {
       const rentSum = Number(returnItem.rentSum) || 0;
       const price = Number(returnItem.price) || 0;
       if (price < -0.0001 || price - rentSum > 0.0001) {
-        return 'Скидка ижара суммасидан ошмаслиги керак';
+        return 'Скидка не должна превышать сумму аренды';
       }
       if (!returnItem.sourceTransferDocId || !returnItem.analiticId) continue;
       const remain = getReceiveToolsCopyRemainQty(returnItem, allItems);
       if (remain < -0.0001) {
-        return 'Брак/сотиш miqdori qaytarish miqdoridan oshib ketdi';
+        return 'Количество брака/продажи превышает количество возврата';
       }
     }
     const deliverySum = Number(body.docValues?.deliverySum || 0);
     if (deliverySum > 0 && !Number(body.docValues?.delivererId || 0)) {
-      return 'Доставка учун доставщикни танланг';
+      return 'Выберите доставщика для доставки';
     }
     for (const saleItem of getSaleItems(allItems)) {
       const price = Number(saleItem.price) || 0;
       const costPrice = Number(saleItem.costPrice) || 0;
       if (price < costPrice - 0.0001) {
-        return 'Мижозга сотиш: нарх себестоимостьдан паст бўлмаслиги керак';
+        return 'Продажа клиенту: цена не должна быть ниже себестоимости';
       }
     }
     for (const tovarItem of getTovarItems(allItems)) {
       if (Number(tovarItem.count) <= 0) {
-        return 'Товарлар жадвалида миқдор нотўғри';
+        return 'В таблице товаров некорректное количество';
       }
       if (Number(tovarItem.total) <= 0) {
-        return 'Товарлар жадвалида сотиш суммаси топилмади';
+        return 'В таблице товаров не найдена сумма продажи';
       }
       if (Number(tovarItem.costTotal) <= 0) {
-        return 'Товарлар жадвалида себестоимость топилмади';
+        return 'В таблице товаров не найдена себестоимость';
       }
     }
     return null;
@@ -218,22 +234,22 @@ export const getValidateBodyError = (body: DocumentModel): string | null => {
 
   if (documentType === DocumentType.TransferSubleaseToolsToClient) {
     if (!senderId || !receiverId) {
-      return 'Ҳамкор омбори ва мижозни танланг';
+      return 'Выберите склад партнёра и клиента';
     }
     if (!Number(body.docValues?.partnerId || 0)) {
-      return 'Омборда ҳамкор кўрсатилмаган';
+      return 'В складе не указан партнёр';
     }
     const settlementDate = Number(body.docValues?.settlementDate || 0);
     if (!settlementDate || settlementDate <= 0) {
-      return 'Ҳисоблаш санасини киритинг';
+      return 'Укажите дату расчёта';
     }
     const toolItems = getFilledDocTableItems(docTableItems);
     if (!toolItems.length) {
-      return 'Жадвалга ускуна қўшинг';
+      return 'Добавьте инструмент в таблицу';
     }
     for (const item of toolItems) {
       if (Number(item.count) <= 0) {
-        return 'Ускуналар жадвалида миқдор нотўғри';
+        return 'В таблице инструментов некорректное количество';
       }
     }
     return null;
@@ -241,43 +257,43 @@ export const getValidateBodyError = (body: DocumentModel): string | null => {
 
   if (documentType === DocumentType.ReceiveSubleaseToolsFromClient) {
     if (!senderId || !receiverId) {
-      return 'Мижоз ва ҳамкор омборини танланг';
+      return 'Выберите клиента и склад партнёра';
     }
     if (!Number(body.docValues?.partnerId || 0)) {
-      return 'Омборда ҳамкор кўрсатилмаган';
+      return 'В складе не указан партнёр';
     }
     const returnDateTime =
       Number(body.docValues?.returnDateTime) || Number(date);
     if (!returnDateTime || returnDateTime <= 0) {
-      return 'Дату и время возврата укажите';
+      return 'Укажите дату и время возврата';
     }
     const hasRows = getFilledDocTableItems(docTableItems).length > 0;
     if (!hasRows) {
-      return 'Жадвални тўлдиринг ёки «Тулдириш» тугмасини босинг';
+      return 'Заполните таблицу или нажмите «Заполнить»';
     }
     return null;
   }
 
   if (documentType === DocumentType.LeaveCash) {
     if (!senderId || !analiticId || analiticId <= 0 || !total || !receiverId) {
-      return 'Касса хужжати майдонларини тўлдиринг';
+      return 'Заполните поля кассового документа';
     }
   }
 
   if (documentType === DocumentType.SaleMaterial) {
     if (!senderId || !receiverId) {
-      return 'Жунатувчи склад ва олувчини танланг';
+      return 'Выберите склад-отправитель и получателя';
     }
     const filledItems = getFilledDocTableItems(docTableItems);
     if (!filledItems.length) {
-      return 'Жадвалга камида битта хом ашё қўшинг';
+      return 'Добавьте в таблицу хотя бы одно сырьё';
     }
     for (const item of filledItems) {
       if (Number(item.count) <= 0) {
-        return 'Жадвалда миқдор нотўғри (0 дан катта бўлиши керак)';
+        return 'В таблице некорректное количество (должно быть больше 0)';
       }
       if (Number(item.total) <= 0) {
-        return 'Жадвалда сотиш суммасини киритинг';
+        return 'Укажите сумму продажи в таблице';
       }
     }
   }

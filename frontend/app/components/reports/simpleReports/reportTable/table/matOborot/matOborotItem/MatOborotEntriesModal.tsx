@@ -87,7 +87,7 @@ export function MatOborotEntriesModal({
           <h2 id="mat-oborot-entries-title" className={styles.title}>
             {title}
           </h2>
-          <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Ёпиш">
+          <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Закрыть">
             ×
           </button>
         </div>
@@ -95,22 +95,22 @@ export function MatOborotEntriesModal({
 
         <div className={styles.body}>
           {loading ? (
-            <div className={styles.loading}>Маълумот юкланмокда...</div>
+            <div className={styles.loading}>Загрузка данных...</div>
           ) : entries.length === 0 ? (
-            <div className={styles.empty}>Маълумот топилмади</div>
+            <div className={styles.empty}>Данные не найдены</div>
           ) : (
             <div className={styles.tableWrap}>
               <table className={styles.table}>
                 <thead>
                   <tr>
                     <th className={styles.numCol}>№</th>
-                    <th className={styles.dateCol}>Сана</th>
-                    <th className={styles.docCol}>Хужжат</th>
+                    <th className={styles.dateCol}>Дата</th>
+                    <th className={styles.docCol}>Документ</th>
                     <th>Дебет</th>
                     <th>Кредит</th>
-                    <th className={styles.amountCol}>Сон</th>
+                    <th className={styles.amountCol}>Кол-во</th>
                     <th className={styles.amountCol}>Сумма</th>
-                    <th className={styles.commentCol}>Изох</th>
+                    <th className={styles.commentCol}>Комментарий</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -136,7 +136,7 @@ export function MatOborotEntriesModal({
                         className={styles.row}
                         role="button"
                         tabIndex={0}
-                        title="Хужжатни очиш"
+                        title="Открыть документ"
                         onClick={() => {
                           if (docId > 0) onSelectDocument(docId);
                         }}
@@ -188,7 +188,7 @@ export function MatOborotEntriesModal({
 
         {!loading && entries.length > 0 ? (
           <div className={styles.footer}>
-            <p className={styles.footerHint}>Қаторни босинг — хужжат очiladi</p>
+            <p className={styles.footerHint}>Нажмите на строку — откроется документ</p>
           </div>
         ) : null}
       </div>

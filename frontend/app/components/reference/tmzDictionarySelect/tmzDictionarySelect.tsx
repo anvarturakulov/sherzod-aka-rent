@@ -146,7 +146,7 @@ export const TmzDictionarySelect = ({
   const displaySelected = useMemo(() => {
     if (selectedItem?.name) return selectedItem.name;
     if (valueText?.trim()) return valueText.trim();
-    return 'Танланмаган';
+    return 'Не выбрано';
   }, [selectedItem, valueText]);
 
   const handleSelect = useCallback(
@@ -213,7 +213,7 @@ export const TmzDictionarySelect = ({
     if (!editableElement || isSaving) return;
     const trimmed = editName.trim();
     if (!trimmed) {
-      showMessage('Қийматни тулдиринг', 'error', setMainData);
+      showMessage('Заполните значение', 'error', setMainData);
       return;
     }
     if (trimmed === (editableElement.name ?? '').trim()) {
@@ -273,7 +273,7 @@ export const TmzDictionarySelect = ({
 
     if (!wasOpenRef.current) {
       wasOpenRef.current = true;
-      if (selectedItem === null || displaySelected === 'Танланмаган') {
+      if (selectedItem === null || displaySelected === 'Не выбрано') {
         setHighlightIndex(-1);
       } else {
         const idx = visibleOptions.findIndex((item) => item.id === selectedItem.id);
@@ -372,7 +372,7 @@ export const TmzDictionarySelect = ({
             className={selectStyles.inlineEditSave}
             onClick={() => void handleSaveEdit()}
             onMouseDown={(e) => e.preventDefault()}
-            title="Сақлаш"
+            title="Сохранить"
             disabled={isSaving}
             tabIndex={-1}
           >
@@ -383,7 +383,7 @@ export const TmzDictionarySelect = ({
             className={selectStyles.inlineEditCancel}
             onClick={handleCancelEdit}
             onMouseDown={(e) => e.preventDefault()}
-            title="Бекор қилиш"
+            title="Отмена"
             disabled={isSaving}
             tabIndex={-1}
           >
@@ -417,7 +417,7 @@ export const TmzDictionarySelect = ({
               ref={inputRef}
               type="text"
               className={cn(selectStyles.searchInput, {
-                [selectStyles.defaultSelected]: displaySelected === 'Танланмаган',
+                [selectStyles.defaultSelected]: displaySelected === 'Не выбрано',
               })}
               placeholder={displaySelected}
               value={isOpen ? searchTerm : displaySelected}
@@ -434,7 +434,7 @@ export const TmzDictionarySelect = ({
             <div className={selectStyles.dropdown}>
               <div className={selectStyles.optionsList}>
                 {isLoading ? (
-                  <div className={selectStyles.noResults}>Юкланмоқда...</div>
+                  <div className={selectStyles.noResults}>Загрузка...</div>
                 ) : (
                   <>
                     <div
@@ -444,7 +444,7 @@ export const TmzDictionarySelect = ({
                       })}
                       onClick={() => handleSelect(null)}
                     >
-                      Танланмаган
+                      Не выбрано
                     </div>
                     {filteredOptions.length === 0 ? (
                       <div className={selectStyles.noResults}>Топилмади</div>
@@ -465,7 +465,7 @@ export const TmzDictionarySelect = ({
                         ))}
                         {hiddenOptionsCount > 0 && (
                           <div className={selectStyles.noResults}>
-                            Яна {hiddenOptionsCount} та… қидирувдан фойдаланинг
+                            Ещё {hiddenOptionsCount}… воспользуйтесь поиском
                           </div>
                         )}
                       </>
@@ -482,7 +482,7 @@ export const TmzDictionarySelect = ({
             className={selectStyles.editButton}
             onClick={handleStartEdit}
             onMouseDown={(e) => e.preventDefault()}
-            title="Танланганни таҳрирлаш"
+            title="Редактировать выбранное"
             tabIndex={-1}
           >
             ✎
@@ -494,7 +494,7 @@ export const TmzDictionarySelect = ({
             className={selectStyles.plusButton}
             onClick={handleOpenInlineCreate}
             onMouseDown={(e) => e.preventDefault()}
-            title="Янги қўшиш"
+            title="Добавить новый"
             tabIndex={-1}
           >
             +

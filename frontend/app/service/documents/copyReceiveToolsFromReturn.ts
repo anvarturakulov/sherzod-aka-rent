@@ -14,7 +14,7 @@ export type ReceiveToolsCopyTarget = 'brak' | 'sale';
 
 export const getReceiveToolsItemBatchKey = (item: DocTableItem): string => {
   if (item.sourceTransferDocId && item.analiticId) {
-    return getBatchKey(item.sourceTransferDocId, item.analiticId);
+    return getBatchKey(item.sourceTransferDocId, item.analiticId, item.sourceBatchId);
   }
   return `a:${item.analiticId}`;
 };
@@ -59,6 +59,10 @@ const buildSectionRowFromReturn = (
     costTotal,
     balance: returnItem.balance ?? 0,
     sourceTransferDocId: returnItem.sourceTransferDocId,
+    sourceBatchId: returnItem.sourceBatchId,
+    billingRole: returnItem.billingRole === 'COLUMN' ? undefined : returnItem.billingRole,
+    assemblyRowKey: returnItem.assemblyRowKey,
+    normQty: returnItem.normQty,
     tableType: target,
   };
 };

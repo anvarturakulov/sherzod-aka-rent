@@ -29,10 +29,10 @@ export const ProductionMaterialVariance = ({
         return (
             <div className={styles.container} {...props}>
                 <div className={styles.title}>
-                    ИШЛАБ ЧИҚАРИШ: ФАКТ ВА НОРМА (МАТЕРИАЛЛАР)
+                    ПРОИЗВОДСТВО: ФАКТ И НОРМА (МАТЕРИАЛЫ)
                     {enterpriseName && <span> - {enterpriseName}</span>}
                 </div>
-                <div className={styles.emptyMessage}>Маълумотлар юкланмоқда</div>
+                <div className={styles.emptyMessage}>Загрузка данных</div>
             </div>
         );
     }
@@ -41,11 +41,11 @@ export const ProductionMaterialVariance = ({
         return (
             <div className={styles.container} {...props}>
                 <div className={styles.title}>
-                    ИШЛАБ ЧИҚАРИШ: ФАКТ ВА НОРМА (МАТЕРИАЛЛАР)
+                    ПРОИЗВОДСТВО: ФАКТ И НОРМА (МАТЕРИАЛЫ)
                     {enterpriseName && <span> - {enterpriseName}</span>}
                 </div>
                 <div className={styles.emptyMessage}>
-                    Танланган даврда маълумотлар топилмади
+                    За выбранный период данные не найдены
                 </div>
             </div>
         );
@@ -54,23 +54,23 @@ export const ProductionMaterialVariance = ({
     return (
         <div className={styles.container} {...props}>
             <div className={styles.title}>
-                ИШЛАБ ЧИҚАРИШ: ФАКТ ВА НОРМА (МАТЕРИАЛЛАР)
+                ПРОИЗВОДСТВО: ФАКТ И НОРМА (МАТЕРИАЛЫ)
                 {enterpriseName && <span> - {enterpriseName}</span>}
             </div>
 
             {hasProduction && (
                 <>
                     <div className={styles.sectionTitle}>
-                        Ишлаб чикарилган махсулотлар
+                        Произведённая продукция
                     </div>
                     <div className={styles.tableContainer}>
                         <table className={styles.table}>
                             <thead>
                                 <tr>
                                     <th className={styles.center}>№</th>
-                                    <th>Махсулот</th>
-                                    <th className={styles.center}>Ул. бирлик</th>
-                                    <th className={styles.center}>Миқдор</th>
+                                    <th>Продукция</th>
+                                    <th className={styles.center}>Ед. изм.</th>
+                                    <th className={styles.center}>Количество</th>
                                     <th className={styles.numeric}>
                                         Сумма (таннарх)
                                     </th>
@@ -94,7 +94,7 @@ export const ProductionMaterialVariance = ({
                                 ))}
                                 {values.productionTotals && (
                                     <tr className={styles.totalRow}>
-                                        <td className={styles.center} colSpan={2}>Жами</td>
+                                        <td className={styles.center} colSpan={2}>Итого</td>
                                         <td className={styles.center}></td>
                                         <td className={styles.numeric}>
                                             {numberValue(
@@ -117,7 +117,7 @@ export const ProductionMaterialVariance = ({
             {hasMaterials && (
                 <>
                     <div className={styles.sectionTitle}>
-                        Материаллар: факт ва норма
+                        Материалы: факт ва норма
                     </div>
                     <div className={styles.tableContainer}>
                         <table className={styles.table}>
@@ -125,24 +125,24 @@ export const ProductionMaterialVariance = ({
                                 <tr>
                                     <th className={styles.center}>№</th>
                                     <th>Материал</th>
-                                    <th className={styles.center}>Ул. бирлик</th>
+                                    <th className={styles.center}>Ед. изм.</th>
                                     <th className={styles.numeric}>
-                                        Факт (миқд.)
+                                        Факт (кол-во)
                                     </th>
                                     <th className={styles.numeric}>
                                         Факт (сумма)
                                     </th>
                                     <th className={styles.numeric}>
-                                        Норма (миқд.)
+                                        Норма (кол-во)
                                     </th>
                                     <th className={styles.numeric}>
                                         Норма (сумма)
                                     </th>
                                     <th className={styles.numeric}>
-                                        Фарқ (миқд.)
+                                        Откл. (кол-во)
                                     </th>
                                     <th className={styles.numeric}>
-                                        Фарқ (сумма)
+                                        Откл. (сумма)
                                     </th>
                                 </tr>
                             </thead>
@@ -192,7 +192,7 @@ export const ProductionMaterialVariance = ({
                                 ))}
                                 {values.totals && (
                                     <tr className={styles.totalRow}>
-                                        <td className={styles.center} colSpan={2}>Жами</td>
+                                        <td className={styles.center} colSpan={2}>Итого</td>
                                         <td className={styles.center}></td>
                                         <td className={styles.numeric}>
                                             {numberValue(

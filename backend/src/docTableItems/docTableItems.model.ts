@@ -31,6 +31,10 @@ export interface DocTableItemCreationAttrs {
   partnerRentSum?: number;
   rentHours?: number;
   settlementDate?: number;
+  billingRole?: "PLAIN" | "COLUMN" | "COLUMN_COMPONENT" | null;
+  assemblyRowKey?: string | null;
+  normQty?: number | null;
+  sourceBatchId?: number | null;
 }
 
 @Table({ tableName: "doctableitems" })
@@ -118,7 +122,7 @@ export class DocTableItems extends Model<
 
   @ApiProperty({
     example: 5000,
-    description: "Часовой тариф аренды",
+    description: "Дневной тариф аренды за 1 штуку",
     required: false,
   })
   @Column({ type: DataType.FLOAT, allowNull: true })
@@ -126,7 +130,7 @@ export class DocTableItems extends Model<
 
   @ApiProperty({
     example: 120000,
-    description: "Сумма аренды за сутки (тариф × кол-во × 24)",
+    description: "Сумма аренды за сутки (тариф × кол-во)",
     required: false,
   })
   @Column({ type: DataType.FLOAT, allowNull: true })
@@ -150,7 +154,7 @@ export class DocTableItems extends Model<
 
   @ApiProperty({
     example: 4000,
-    description: "Часовой тариф партнёра (субаренда)",
+    description: "Дневной тариф партнёра за 1 штуку (субаренда)",
     required: false,
   })
   @Column({ type: DataType.FLOAT, allowNull: true })
@@ -165,8 +169,8 @@ export class DocTableItems extends Model<
   partnerRentSum?: number;
 
   @ApiProperty({
-    example: 48,
-    description: "Часы аренды по строке",
+    example: 3,
+    description: "Дни аренды по строке (календарные, без дня отправки)",
     required: false,
   })
   @Column({ type: DataType.FLOAT, allowNull: true })
@@ -179,4 +183,20 @@ export class DocTableItems extends Model<
   })
   @Column({ type: DataType.BIGINT, allowNull: true })
   settlementDate?: number;
+
+  @ApiProperty({ required: false, example: "COLUMN" })
+  @Column({ type: DataType.STRING, allowNull: true })
+  billingRole?: "PLAIN" | "COLUMN" | "COLUMN_COMPONENT" | null;
+
+  @ApiProperty({ required: false })
+  @Column({ type: DataType.STRING, allowNull: true })
+  assemblyRowKey?: string | null;
+
+  @ApiProperty({ required: false, description: "Снимок нормы на 1 колонну" })
+  @Column({ type: DataType.DOUBLE, allowNull: true })
+  normQty?: number | null;
+
+  @ApiProperty({ required: false, description: "Партия аренды, которую закрывает строка возврата" })
+  @Column({ type: DataType.BIGINT, allowNull: true })
+  sourceBatchId?: number | null;
 }

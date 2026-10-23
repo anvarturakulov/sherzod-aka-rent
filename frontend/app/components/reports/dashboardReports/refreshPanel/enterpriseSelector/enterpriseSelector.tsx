@@ -69,13 +69,13 @@ export const EnterpriseSelector = ({ className, ...props }: { className?: string
 
   return (
     <div className={cn(styles.box, className)} {...props}>
-      <label className={styles.label}>Корхона:</label>
+      <label className={styles.label}>Предприятие:</label>
       <select
         className={styles.select}
         value={currentEnterpriseId === null || currentEnterpriseId === undefined ? 'all' : currentEnterpriseId.toString()}
         onChange={handleChange}
       >
-        <option value="all">Барча корхоналар</option>
+        <option value="all">Все предприятия</option>
         {enterprises
           .filter((enterprise: any) => !enterprise.markToDeleted)
           .map((enterprise: any) => (

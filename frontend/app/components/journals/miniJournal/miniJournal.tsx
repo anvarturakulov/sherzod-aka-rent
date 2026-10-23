@@ -57,7 +57,7 @@ export default function MiniJournal({ className, ...props}:MiniJournalProps):JSX
 
     return (
         <>
-            <div className={styles.title}>Хужжатлар руйхати</div>
+            <div className={styles.title}>Список документов</div>
             {
                 <div className={styles.container} >
                     <table className={styles.table}>
@@ -105,7 +105,7 @@ export default function MiniJournal({ className, ...props}:MiniJournalProps):JSX
                                         <td><button 
                                             className={cn(styles.receiveBtn)}
                                             onClick={()=>setProvodkaByReciever(item.id, item.docStatus == DocSTATUS.PROVEDEN , setMainData, mainData, item.date)}
-                                            >Кабул килиш</button></td>
+                                            >Принять</button></td>
                                     }
                                 </tr>
                             ))}

@@ -32,7 +32,7 @@ export const DOCUMENT_TYPE_REFERENCE_MAPPING = {
 } as const;
 
 export const DEFAULT_OPTION = {
-  value: 'Танланмаган',
+  value: 'Не выбрано',
   label: '=>',
   dataType: null,
   dataId: null

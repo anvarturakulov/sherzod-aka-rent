@@ -12,18 +12,18 @@ export const SelectOborot = ({ label, visible , className, ...props }: SelectObo
     const { reportOption } = mainData.report;
 
     let oborotTypeData = [
-        { title: 'Хом ашё', schet: Schet.S10 },
-        { title: 'Харажатлар', schet: Schet.S20 },
+        { title: 'Сырьё', schet: Schet.S10 },
+        { title: 'Затраты', schet: Schet.S20 },
         // { title: '23 счет', schet: Schet.S23 },
-        { title: 'Тайёр махсулот', schet: Schet.S28 },
-        { title: 'Мижозлар', schet: Schet.S40 },
-        { title: 'Ички корхоналар', schet: Schet.S41 },
-        { title: 'Таъминотчилар', schet: Schet.S60 },
+        { title: 'Готовая продукция', schet: Schet.S28 },
+        { title: 'Клиенты', schet: Schet.S40 },
+        { title: 'Внутренние предприятия', schet: Schet.S41 },
+        { title: 'Поставщики', schet: Schet.S60 },
         { title: 'Касса', schet: Schet.S50 },
-        { title: 'Ходимлар иш хакиси', schet: Schet.S67 },
-        { title: 'Доставщиклар', schet: Schet.S64 },
-        { title: 'Таъсисчилар', schet: Schet.S66 },
-        // { title: 'Хамёнлар', schet: Schet.S68 },
+        { title: 'Зарплата сотрудников', schet: Schet.S67 },
+        { title: 'Доставщики', schet: Schet.S64 },
+        { title: 'Учредители', schet: Schet.S66 },
+        // { title: 'Кошельки', schet: Schet.S68 },
     ]
     
     // if (isAdmins(user)) oborotTypeData.push({ title: 'Таъсисчилар', schet: Schet.S66 })

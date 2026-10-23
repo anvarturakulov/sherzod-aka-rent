@@ -20,23 +20,23 @@ type AccountOperationsResponse = {
 };
 
 const SCHET_LABELS: Record<string, string> = {
-  S10: 'Хом ашё',
-  S20: 'Ишлаб чикариш харажатлари',
-  S23: 'Ярим тайёр махсулотлар',
-  S28: 'Тайёр махсулотлар',
-  // S29: 'Товарлар',
-  S40: 'Мижозлар ',
-  S41: 'Ички корхоналар',
-  S50: 'Касса ва банк',
+  S10: 'Сырьё',
+  S20: 'Производственные расходы',
+  S23: 'Полуфабрикаты',
+  S28: 'Готовая продукция',
+  // S29: 'Товары',
+  S40: 'Клиенты ',
+  S41: 'Внутренние предприятия',
+  S50: 'Касса и банк',
   // S51: 'Банк',
-  S60: 'Таъминотчилар',
-  // S66: 'Иш хаки (S66)',
-  S67: 'Ходимлар иш хакиси',
-  S65: 'Воситачилар бонуси',
-  S64: 'Доставщиклар',
-  S68: 'Таъсисчилар',
-  S90: 'Даромад',
-  S91: 'Таннарх',
+  S60: 'Поставщики',
+  // S66: 'Зарплата (S66)',
+  S67: 'Зарплата сотрудников',
+  S65: 'Бонус посредников',
+  S64: 'Доставщики',
+  S68: 'Учредители',
+  S90: 'Доход',
+  S91: 'Себестоимость',
 };
 
 function resolveRefName(references: any[] | undefined, id: number | null | undefined): string {
@@ -53,9 +53,9 @@ function formatCountPriceForEntry(entry: any): string {
   const total = Number(entry?.total);
   const hasPrice = Number.isFinite(total) && total !== 0;
   if (hasPrice) {
-    return `( сон: ${numberValue(count)} x ${numberValue(total / count)} )`;
+    return `( кол-во: ${numberValue(count)} x ${numberValue(total / count)} )`;
   }
-  return `( сон: ${numberValue(count)} )`;
+  return `( кол-во: ${numberValue(count)} )`;
 }
 
 function buildIzohForAccountOperation(entry: any, references: any[] | undefined): string {
@@ -144,7 +144,7 @@ export const AccountOperations = (): JSX.Element => {
       );
       setReportData(data);
     } catch (e: any) {
-      setError(e?.message || 'Маълумот юклашда хатолик юз берди');
+      setError(e?.message || 'Ошибка при загрузке данных');
       setReportData(null);
     } finally {
       setLoading(false);
@@ -177,7 +177,7 @@ export const AccountOperations = (): JSX.Element => {
   return (
     <div className={styles.container}>
       <div className={styles.title}>
-        Хисоб карточкаси
+        Карточка счёта
         {enterpriseName && <span> - {enterpriseName}</span>}
       </div>
       <div className={styles.filters}>
@@ -201,12 +201,12 @@ export const AccountOperations = (): JSX.Element => {
           onClick={loadData}
           disabled={loading}
         >
-          {loading ? 'Юкланмокда...' : 'Янгилаш'}
+          {loading ? 'Загрузка...' : 'Обновить'}
         </button>
       </div>
 
       {error && <div className={styles.error}>{error}</div>}
-      {loading && <div className={styles.loading}>Маълумот юкланмокда...</div>}
+      {loading && <div className={styles.loading}>Загрузка данных...</div>}
 
       {!loading && !error && (
         <div className={styles.tableWrapper} data-report-scroll>
@@ -224,11 +224,11 @@ export const AccountOperations = (): JSX.Element => {
             <thead>
               <tr>
                 <th>№</th>
-                <th>Сана</th>
+                <th>Дата</th>
                 <th>Дт</th>
                 <th>Кт</th>
                 <th>Объект</th>
-                <th className={styles.izohCell}>Изох</th>
+                <th className={styles.izohCell}>Примечание</th>
                 <th className={styles.numberCell}>Дебет</th>
                 <th className={styles.numberCell}>Кредит</th>
               </tr>
@@ -270,7 +270,7 @@ export const AccountOperations = (): JSX.Element => {
             <tfoot>
               <tr>
                 <td colSpan={6} className={styles.totalLabel}>
-                  Жами
+                  Итого
                 </td>
                 <td className={styles.numberCell}>{numberValue(totals.kirim)}</td>
                 <td className={styles.numberCell}>{numberValue(totals.chikim)}</td>

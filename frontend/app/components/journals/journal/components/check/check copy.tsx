@@ -286,11 +286,11 @@ export const Check: React.FC<CheckProps> = ({
         {/* Итоги */}
         <div className={styles.totals}>
           <div className={styles.totalRow}>
-            <span>Жами сони:</span>
+            <span>Итого кол:</span>
             <span>{totalCount}</span>
           </div>
           <div className={styles.totalRow}>
-            <span>Жами сумма:</span>
+            <span>Итого сумма:</span>
             <span>{totalSum.toLocaleString()} сум</span>
           </div>
           {documentData.docValues?.cashFromPartner && (

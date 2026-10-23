@@ -36,16 +36,16 @@ export default function IndividualClientWarningModal({
       >
         <div className={styles.header}>
           <div className={styles.headerMain}>
-            <div className={styles.badge}>Диққат</div>
+            <div className={styles.badge}>Внимание</div>
             <h3 id="individual-client-warning-title" className={styles.title}>
-              Мижоз маълумотлари тўлиқ эмас
+              Данные клиента неполные
             </h3>
           </div>
           <button
             type="button"
             className={styles.closeBtn}
             onClick={onClose}
-            aria-label="Ёпиш"
+            aria-label="Закрыть"
           >
             ×
           </button>
@@ -56,7 +56,7 @@ export default function IndividualClientWarningModal({
             <p className={styles.partnerName}>{partnerName}</p>
           ) : null}
           <p className={styles.instruction}>
-            Қуйидаги маълумотларни тўлдиринг:
+            Заполните следующие данные:
           </p>
           <ul className={styles.errorList}>
             {errors.map((error) => (
@@ -67,7 +67,7 @@ export default function IndividualClientWarningModal({
 
         <div className={styles.footer}>
           <button type="button" className={styles.btnConfirm} onClick={onClose}>
-            Тушундим
+            Понятно
           </button>
         </div>
       </div>

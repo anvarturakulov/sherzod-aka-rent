@@ -8,12 +8,12 @@ import { getDocumentTypeByComeOut } from '@/app/components/documents/document/do
 import { getStorageIdForDocument } from '@/app/service/documents/getStorageIdForDocument';
 import { UserRoles } from '@/app/interfaces/user.interface';
 import {
-  clampRentHours,
+  clampRentDays,
   getReceiveToolsReturnDateTime,
   isReceiveToolsReturnRow,
-  MIN_RENT_HOURS,
   recalcReceiveToolsReturnRow,
 } from '@/app/service/documents/receiveToolsRent';
+import { recalcTransferToolsRowTotals } from '@/app/service/documents/buildTransferToolsRow';
 
 interface UseInputTableForNumbersDataProps {
   nameControl: keyof DocTableItem;
@@ -143,15 +143,8 @@ export const useInputTableForNumbersData = ({ nameControl, itemIndexInTable }: U
     // Обработка числовых полей (кроме price, count, countByBox и total, которые обрабатываются отдельно)
     if (NUMERIC_CONTROLS.includes(nameControl) && nameControl !== 'price' && nameControl !== 'count' && nameControl !== 'countByBox' && nameControl !== 'total') {
       if (isReceiveToolsReturn && nameControl === 'rentHours') {
-        if (value > 0 && value < MIN_RENT_HOURS) {
-          setValidationError({
-            hasError: true,
-            message: 'Ижара вақти камида 24 соат бўлиши керак',
-          });
-        } else {
-          setValidationError({ hasError: false });
-        }
-        currentItem.rentHours = clampRentHours(value);
+        currentItem.rentHours = clampRentDays(value);
+        setValidationError({ hasError: false });
       } else {
         (currentItem as any)[nameControl] = value;
       }
@@ -173,7 +166,7 @@ export const useInputTableForNumbersData = ({ nameControl, itemIndexInTable }: U
           newTotal = costTotal;
           setValidationError({
             hasError: true,
-            message: 'Сотиш суммаси себестоимостьдан паст бўлмаслиги керак',
+            message: 'Сумма продажи не должна быть ниже себестоимости',
           });
         } else {
           setValidationError({ hasError: false });
@@ -187,7 +180,7 @@ export const useInputTableForNumbersData = ({ nameControl, itemIndexInTable }: U
           setValidationError({ hasError: false });
         }
       } else if (value > 0) {
-        setValidationError({ hasError: true, message: 'Аввал миқдорни киритинг' });
+        setValidationError({ hasError: true, message: 'Сначала укажите количество' });
       }
     }
 
@@ -204,7 +197,7 @@ export const useInputTableForNumbersData = ({ nameControl, itemIndexInTable }: U
           priceValue = costPrice;
           setValidationError({
             hasError: true,
-            message: 'Нарх себестоимостьдан паст бўлмаслиги керак',
+            message: 'Цена не должна быть ниже себестоимости',
           });
         } else {
           setValidationError({ hasError: false });
@@ -230,7 +223,7 @@ export const useInputTableForNumbersData = ({ nameControl, itemIndexInTable }: U
       // Проверяем остатки только для расходных документов
       const typeDocumentByComeOut = currentDocument.documentType ? getDocumentTypeByComeOut(currentDocument.documentType as DocumentType) : 'out';
       
-      if (typeDocumentByComeOut === 'out' && value > 0 && currentDocument.documentType !== DocumentType.OrderToolsToClient) {
+      if (typeDocumentByComeOut === 'out' && value > 0 && currentDocument.documentType !== DocumentType.OrderToolsToClient && currentDocument.documentType !== DocumentType.SaleEquipment) {
         const stockCheck = checkStockAvailability(
           currentItem.analiticId,
           value,
@@ -281,7 +274,7 @@ export const useInputTableForNumbersData = ({ nameControl, itemIndexInTable }: U
       // Проверяем остатки только для расходных документов
       const typeDocumentByComeOut = currentDocument.documentType ? getDocumentTypeByComeOut(currentDocument.documentType as DocumentType) : 'out';
       
-      if (typeDocumentByComeOut === 'out' && newTotalQuantity > 0 && currentDocument.documentType !== DocumentType.OrderToolsToClient) {
+      if (typeDocumentByComeOut === 'out' && newTotalQuantity > 0 && currentDocument.documentType !== DocumentType.OrderToolsToClient && currentDocument.documentType !== DocumentType.SaleEquipment) {
         const stockCheck = checkStockAvailability(
           currentItem.analiticId,
           newTotalQuantity,
@@ -351,7 +344,7 @@ export const useInputTableForNumbersData = ({ nameControl, itemIndexInTable }: U
         currentDocument.documentType === DocumentType.TransferSubleaseToolsToClient
       ) {
         const tariff = currentItem.hourlyTariff || 0;
-        currentItem.dailyRent = roundToTwoDecimals(tariff * count * 24);
+        currentItem.dailyRent = roundToTwoDecimals(tariff * count);
       }
       
       console.log(`🧮 Пересчет: ${count} × ${price} = ${currentItem.total} (${nameControl})`);
@@ -373,12 +366,39 @@ export const useInputTableForNumbersData = ({ nameControl, itemIndexInTable }: U
     ) {
       const count = currentItem.count || 0;
       const tariff = currentItem.hourlyTariff || 0;
-      currentItem.dailyRent = roundToTwoDecimals(tariff * count * 24);
+      currentItem.dailyRent = roundToTwoDecimals(tariff * count);
     }
 
     // Обновление состояния
     const newItems = [...currentDocument.docTableItems];
     newItems[itemIndexInTable] = { ...currentItem };
+
+    if (
+      nameControl === 'count' &&
+      currentItem.billingRole === 'COLUMN' &&
+      currentItem.assemblyRowKey
+    ) {
+      const columnCount = Number(currentItem.count) || 0;
+      const returnDateTime = getReceiveToolsReturnDateTime(currentDocument);
+      for (let i = 0; i < newItems.length; i++) {
+        const row = newItems[i];
+        if (
+          row.assemblyRowKey !== currentItem.assemblyRowKey ||
+          row.billingRole !== 'COLUMN_COMPONENT'
+        ) {
+          continue;
+        }
+        const nextCount = roundToTwoDecimals(columnCount * (Number(row.normQty) || 0));
+        if (isReceiveToolsReturn) {
+          newItems[i] = recalcReceiveToolsReturnRow(
+            { ...row, count: nextCount, hourlyTariff: 0 },
+            returnDateTime,
+          );
+        } else {
+          newItems[i] = recalcTransferToolsRowTotals({ ...row, hourlyTariff: 0 }, nextCount);
+        }
+      }
+    }
     
     const newObj = {
       ...currentDocument,

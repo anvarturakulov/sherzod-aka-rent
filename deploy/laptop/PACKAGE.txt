@@ -1,0 +1,29 @@
+Папка для ноутбука клиента. Исходников TypeScript здесь нет.
+
+На ноутбуке заранее установите Node.js LTS и PostgreSQL.
+
+1. Скопируйте backend\.production.env.example в backend\.production.env и впишите пароль базы и PRIVATE_KEY.
+2. Создайте базу kord. Из папки backend выполните:
+   set NODE_ENV=production&& node other-files\scripts\run-migrations.js
+3. На ноутбуке узнайте MachineGuid:
+   reg query HKLM\SOFTWARE\Microsoft\Cryptography /v MachineGuid
+4. На своём компьютере, в исходном проекте, выпишите лицензию и положите файл в backend\license.lic этой папки:
+   cd backend
+   npm run license:issue -- --guid MACHINE_GUID --client "Имя"
+5. Запуск без службы: start-kord.bat
+   Службы Windows: положите nssm.exe рядом с bat-файлами и запустите install-services.bat от администратора.
+6. Браузер: http://127.0.0.1:3008
+
+Не копируйте сюда backend\license-keys. Файл license.lic привязан к MachineGuid и на другом компьютере не запустит программу.
+
+Обновление уже установленной папки D:\kord-laptop
+
+На своём компьютере, в исходном проекте:
+  powershell -ExecutionPolicy Bypass -File deploy\laptop\package-update.ps1
+Получится папка release\kord-laptop-update. Её целиком скопируйте на ноутбук, например в D:\kord-laptop-update.
+Там от администратора:
+  cd /d D:\kord-laptop-update
+  apply-update.bat
+Батник останавливает службы, подкладывает новый код поверх D:\kord-laptop, при новом package-lock.json выполняет npm ci --omit=dev, прогоняет новые миграции и снова запускает службы.
+Не затираются backend\.production.env, backend\license.lic, backend\uploads и база PostgreSQL.
+Лицензию заново выписывать не нужно.

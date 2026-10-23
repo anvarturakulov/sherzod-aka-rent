@@ -127,40 +127,40 @@ export const ContractFulfillment = ({
   return (
     <div className={className} {...props}>
       <div className={styles.title}>
-        Шартномалар ижроси
+        Исполнение договоров
         {enterpriseName ? ` — ${enterpriseName}` : ''}
       </div>
 
       <div className={styles.summary}>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Жами шартнома</div>
+          <div className={styles.summaryLabel}>Всего договоров</div>
           <div className={styles.summaryValue}>{values.summary.contractsTotal}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Бажарилган</div>
+          <div className={styles.summaryLabel}>Выполнено</div>
           <div className={styles.summaryValue}>{values.summary.fullyFulfilled}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Жараёнда</div>
+          <div className={styles.summaryLabel}>В процессе</div>
           <div className={styles.summaryValue}>{values.summary.inProgress}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Бошланмаган</div>
+          <div className={styles.summaryLabel}>Не начато</div>
           <div className={styles.summaryValue}>{values.summary.notStarted}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Қаторлар</div>
+          <div className={styles.summaryLabel}>Строки</div>
           <div className={styles.summaryValue}>
             {values.summary.linesDone}/{values.summary.linesTotal}
           </div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Сумма / ижро</div>
+          <div className={styles.summaryLabel}>Сумма / исполнение</div>
           <div className={styles.summaryValue}>
             {numberValue(values.summary.amountFulfilled)}
           </div>
           <div className={styles.summaryHint}>
-            жами {numberValue(values.summary.amountTotal)}
+            итого {numberValue(values.summary.amountTotal)}
           </div>
         </div>
       </div>
@@ -170,13 +170,13 @@ export const ContractFulfillment = ({
           className={styles.search}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Рақам ёки мижоз бўйича қидириш"
+          placeholder="Поиск по номеру или клиенту"
         />
         <button type="button" className={styles.filterBtn} onClick={expandAll}>
-          Очиш ҳаммаси
+          Раскрыть все
         </button>
         <button type="button" className={styles.filterBtn} onClick={collapseAll}>
-          Ёпиш ҳаммаси
+          Свернуть все
         </button>
       </div>
 
@@ -186,7 +186,7 @@ export const ContractFulfillment = ({
           className={`${styles.filterBtn} ${statusFilter == null ? styles.filterBtnActive : ''}`}
           onClick={() => setStatusFilter(null)}
         >
-          Барча статус
+          Все статусы
         </button>
         {CONTRACT_STATUS_OPTIONS.map((status) => (
           <button
@@ -208,7 +208,7 @@ export const ContractFulfillment = ({
           className={`${styles.filterBtn} ${stateFilter == null ? styles.filterBtnActive : ''}`}
           onClick={() => setStateFilter(null)}
         >
-          Барча ижро
+          Все исполнения
         </button>
         {FULFILLMENT_OPTIONS.map((state) => (
           <button
@@ -227,8 +227,8 @@ export const ContractFulfillment = ({
       {filteredContracts.length === 0 ? (
         <div className={styles.empty}>
           {values.contracts.length === 0
-            ? 'Давр бўйича шартномалар йўқ'
-            : 'Танланган фильтр бўйича шартномалар йўқ'}
+            ? 'За период договоров нет'
+            : 'По выбранному фильтру договоров нет'}
         </div>
       ) : (
         <div className={styles.list} data-report-scroll>

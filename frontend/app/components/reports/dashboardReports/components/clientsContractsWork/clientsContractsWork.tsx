@@ -181,39 +181,39 @@ export const ClientsContractsWork = ({
   return (
     <div className={className} {...props}>
       <div className={styles.title}>
-        Мижозлар ва шартномалар
+        Клиенты и договоры
         {enterpriseName ? ` — ${enterpriseName}` : ''}
       </div>
 
       <div className={styles.summary}>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Жами мижоз</div>
+          <div className={styles.summaryLabel}>Всего клиентов</div>
           <div className={styles.summaryValue}>{values.summary.clientsTotal}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Шартномаси бор</div>
+          <div className={styles.summaryLabel}>Есть договор</div>
           <div className={styles.summaryValue}>{values.summary.withContract}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Шартномаси йўқ</div>
+          <div className={styles.summaryLabel}>Нет договора</div>
           <div className={styles.summaryValue}>{values.summary.withoutContract}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Қарз бошида</div>
+          <div className={styles.summaryLabel}>Долг на начало</div>
           <div className={styles.summaryValue}>
             {numberValue(values.summary.startBalanceTotal)}
           </div>
           <div className={styles.summaryHint}>
-            {values.summary.withStartDebt} мижоз
+            {values.summary.withStartDebt} клиент
           </div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.summaryLabel}>Қарз охирида</div>
+          <div className={styles.summaryLabel}>Долг на конец</div>
           <div className={styles.summaryValue}>
             {numberValue(values.summary.endBalanceTotal)}
           </div>
           <div className={styles.summaryHint}>
-            {values.summary.withEndDebt} мижоз
+            {values.summary.withEndDebt} клиент
           </div>
         </div>
         <div className={styles.summaryCard}>
@@ -232,30 +232,30 @@ export const ClientsContractsWork = ({
           className={styles.search}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Мижоз бўйича қидириш"
+          placeholder="Поиск по клиенту"
         />
         <button type="button" className={styles.filterBtn} onClick={expandAll}>
-          Очиш ҳаммаси
+          Раскрыть все
         </button>
         <button type="button" className={styles.filterBtn} onClick={collapseAll}>
-          Ёпиш ҳаммаси
+          Свернуть все
         </button>
       </div>
 
       <div className={styles.filters}>
-        {filterBtn('all', 'Барчаси')}
-        {filterBtn('withContract', 'Шартномаси бор')}
-        {filterBtn('withoutContract', 'Шартномаси йўқ')}
-        {filterBtn('startDebt', 'Қарз бошида')}
-        {filterBtn('endDebt', 'Қарз охирида')}
-        {filterBtn('turnover', 'Обороти бор')}
+        {filterBtn('all', 'Все')}
+        {filterBtn('withContract', 'Есть договор')}
+        {filterBtn('withoutContract', 'Нет договора')}
+        {filterBtn('startDebt', 'Долг на начало')}
+        {filterBtn('endDebt', 'Долг на конец')}
+        {filterBtn('turnover', 'Есть оборот')}
       </div>
 
       {filteredClients.length === 0 ? (
         <div className={styles.empty}>
           {values.clients.length === 0
-            ? 'Давр бўйича мижозлар йўқ'
-            : 'Танланган фильтр бўйича мижозлар йўқ'}
+            ? 'За период клиентов нет'
+            : 'По выбранному фильтру клиентов нет'}
         </div>
       ) : (
         <div className={styles.list} data-report-scroll>
@@ -273,7 +273,7 @@ export const ClientsContractsWork = ({
                     {client.clientName || `#${client.clientId}`}
                   </span>
                   <span className={styles.money}>
-                    <span className={styles.moneyLabel}>Бошланғич</span>
+                    <span className={styles.moneyLabel}>Начальный</span>
                     {numberValue(client.startBalance)}
                   </span>
                   <span className={styles.money}>
@@ -285,7 +285,7 @@ export const ClientsContractsWork = ({
                     {numberValue(client.creditTurnover)}
                   </span>
                   <span className={styles.money}>
-                    <span className={styles.moneyLabel}>Охирги</span>
+                    <span className={styles.moneyLabel}>Конечный</span>
                     {numberValue(client.endBalance)}
                   </span>
                   <span className={`${styles.badge} ${contractStyles.badge} ${
@@ -294,8 +294,8 @@ export const ClientsContractsWork = ({
                       : contractStyles.statusDraft
                   }`}>
                     {client.contracts.length
-                      ? `${client.contracts.length} шартнома`
-                      : 'Шартнома йўқ'}
+                      ? `${client.contracts.length} договор`
+                      : 'Нет договора'}
                   </span>
                   <span className={styles.amount}>
                     {client.linesTotal
@@ -358,7 +358,7 @@ export const ClientsContractsWork = ({
                       );
                     })
                   ) : (
-                    <div className={styles.emptyNested}>Шартномалар йўқ</div>
+                    <div className={styles.emptyNested}>Нет договоров</div>
                   )}
                 </div>
               </div>

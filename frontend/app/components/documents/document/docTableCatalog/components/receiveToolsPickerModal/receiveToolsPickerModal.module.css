@@ -78,6 +78,17 @@
     min-width: 180px;
 }
 
+.colComment {
+    text-align: left !important;
+    min-width: 220px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.partyRow {
+    cursor: pointer;
+}
+
 .colNum {
     text-align: right !important;
     white-space: nowrap;

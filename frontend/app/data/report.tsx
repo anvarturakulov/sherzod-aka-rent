@@ -6,13 +6,14 @@ export const INFORM_REPORTS_AUTO_GRANT: readonly string[] = [
     'ContractFulfillment',
     'ClientsContractsWork',
     'RentalUnfulfilledOrders',
+    'RentalOpenTransfers',
     // 'RentalExpectedIncome',
 ];
 
 export const DashboardReportData:Array<DashboardReportItem> = [
     
     {
-        title: 'Умум жамланма',
+        title: 'Общая сводка',
         code: 'SvodBYCompany',
         id: 15,
     },
@@ -23,51 +24,51 @@ export const DashboardReportData:Array<DashboardReportItem> = [
         code: 'DebitorKreditor',
     },
     {
-        title: 'Пул окими - умум корхона буйича',
+        title: 'Движение денег — по предприятию',
         code: 'Financial',
         id: 1,
     },
     {
         id: 4,
-        title: 'Касса жадвал',
+        title: 'Касса, таблица',
         code: 'Cash',
     },
     
     {
         id: 7,
-        title: 'Касса карточка',
+        title: 'Касса, карточка',
         code: 'Section-buxgalter',
     },
     {
         id: 31,
-        title: 'Хисоб карточкаси',
+        title: 'Карточка счёта',
         code: 'ACCOUNTOPERATIONS',
     },
     {
-        title: 'Касса операциялар',
+        title: 'Кассовые операции',
         code: 'CASHOPERATIONS',
         id: 1
     },
     {
         id: 3,
-        title: 'Фойда хисоби ',
+        title: 'Расчёт прибыли',
         code: 'FoydaByProduction',
     },
 
     {
         id: 36,
-        title: 'Фойда хисоби (заказлар буйича)',
+        title: 'Расчёт прибыли (по заказам)',
         code: 'FoydaByOrder',
     },
 
     {
         id: 10,
-        title: 'Омборхона',
+        title: 'Склад',
         code: 'Sklad',    
     },
     {
         id: 22,
-        title: 'Материаллар нормалари',
+        title: 'Нормы материалов',
         code: 'TmcMaterialNorms',
     },  
     {
@@ -77,82 +78,87 @@ export const DashboardReportData:Array<DashboardReportItem> = [
     },
     {
         id: 29,
-        title: 'Материаллар чикими - цехлар буйича',
+        title: 'Расход материалов по цехам',
         code: 'MaterialByDepartment',
     },
     {
         id: 30,
-        title: 'Ишлаб чикариш: факт ва норма (материаллар)',
+        title: 'Производство: факт и норма (материалы)',
         code: 'ProductionMaterialVariance',
     },
     {
         id: 32,
-        title: 'Материаллар режалаштириш',
+        title: 'Планирование материалов',
         code: 'MaterialPlanning',
     },
     {
         id: 33,
-        title: 'Материал приходи (артикул)',
+        title: 'Приход материалов (артикул)',
         code: 'ComeMaterialTmzByArticle',
     },
     {
         id: 34,
-        title: 'Солиштирма далолатнома',
+        title: 'Акт сверки',
         code: 'AktSverka',
     },
     {
         id: 35,
-        title: 'Таъминотчи — товар ва материаллар',
+        title: 'Поставщик — товар и материалы',
         code: 'SupplierGoods',
     },
     {
         id: 37,
-        title: 'Асосий омбор — ТМЗ қолдиқлари',
+        title: 'Основной склад — остатки ТМЦ',
         code: 'TmzMainWarehouseBalance',
     },
     {
         id: 38,
-        title: 'Заявкалар (хужжатлар)',
+        title: 'Заявки (документы)',
         code: 'FurnitureOrders',
     },
     {
         id: 39,
-        title: 'Ижара — кутилаётган даромад',
+        title: 'Аренда — ожидаемый доход',
         code: 'RentalExpectedIncome',
     },
     {
         id: 40,
-        title: 'Ускуналар — жорий қолдиқ',
+        title: 'Инструменты — текущий остаток',
         code: 'ToolsCurrentBalance',
     },
     {
         id: 41,
-        title: 'Ижара соф фойдаси',
+        title: 'Чистая прибыль аренды',
         code: 'RentalNetProfit',
     },
     {
         id: 42,
-        title: 'Субаренда — ҳамкор бўйича',
+        title: 'Субаренда — по партнёру',
         code: 'SubleasePartnerMargin',
     },
     {
         id: 43,
-        title: 'Субаренда — кутилаётган даромад',
+        title: 'Субаренда — ожидаемый доход',
         code: 'SubleaseExpectedIncome',
     },
     {
         id: 44,
-        title: 'Шартномалар ижроси',
+        title: 'Исполнение договоров',
         code: 'ContractFulfillment',
     },
     {
         id: 45,
-        title: 'Мижозлар ва шартномалар',
+        title: 'Клиенты и договоры',
         code: 'ClientsContractsWork',
     },
     {
         id: 46,
-        title: 'Ижара — бажарилмаган буюртмалар',
+        title: 'Аренда — невыполненные заказы',
         code: 'RentalUnfulfilledOrders',
+    },
+    {
+        id: 47,
+        title: 'Аренда — незакрытые накладные',
+        code: 'RentalOpenTransfers',
     },
 ]

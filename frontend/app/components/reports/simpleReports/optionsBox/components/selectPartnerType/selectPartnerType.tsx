@@ -25,42 +25,42 @@ export const SelectPartnerType = ({ className, visible = true, ...props }: Selec
     
     return (
         <div className={styles.box}>
-            <label className={styles.label}>Хамкор тури</label>
+            <label className={styles.label}>Тип контрагента</label>
             <select
                 className={styles.select}
                 {...props}
                 onChange={(e) => changeElements(e, setMainData, mainData)}
             >   
                 <option 
-                    value={'Танланмаган'}
+                    value={'Не выбрано'}
                     key={-1}
                     data-type={null} 
                     className={styles.chooseMe}
-                    >{'Тангланг =>>>>'}
+                    >{'Выберите =>>>>'}
                 </option>
                 <option
                     key={1}
-                    value={'Клиентлар'}
+                    value={'Клиенты'}
                     data-type={'CLIENTS'}
                     className={styles.option}
                 >
-                    Мижозлар
+                    Клиенты
                 </option>
                 <option
                     key={2}
-                    value={'Клиентлар'}
+                    value={'Подразделения'}
                     data-type={'DEPARTMENTS'}
                     className={styles.option}
                 >
-                    Булимлар
+                    Подразделения
                 </option>
                 <option
                     key={3}
-                    value={'Таъминловчилар'}
+                    value={'Поставщики'}
                     data-type={'SUPPLIERS'}
                     className={styles.option}
                 >
-                    Таъминотчилар
+                    Поставщики
                 </option>
             </select>
         </div>

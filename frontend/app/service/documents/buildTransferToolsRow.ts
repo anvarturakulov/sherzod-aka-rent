@@ -48,11 +48,11 @@ export const buildTransferToolsRow = (params: {
     costPrice,
     costTotal,
     hourlyTariff,
-    dailyRent: round2(hourlyTariff * count * 24),
+    dailyRent: round2(hourlyTariff * count),
   };
 };
 
-/** Enrich row with hourly tariff — periodic by rentTariffType, else fallback. */
+/** Enrich row with daily tariff — periodic by rentTariffType, else fallback. */
 export const enrichTransferToolsRow = async (
   item: DocTableItem,
   documentDate: number,
@@ -61,6 +61,20 @@ export const enrichTransferToolsRow = async (
   fallbackPrice?: number | null,
   rentTariffType?: string | null,
 ): Promise<DocTableItem> => {
+  if (item.billingRole === 'COLUMN_COMPONENT') {
+    const count = Number(item.count) || 0;
+    const costPrice = Number(item.costPrice) || 0;
+    const costTotal = round2(costPrice * count);
+    return {
+      ...item,
+      costPrice,
+      costTotal,
+      hourlyTariff: 0,
+      dailyRent: 0,
+      total: costTotal,
+      price: costPrice,
+    };
+  }
   const priceName = getRentTariffPriceName(rentTariffType);
   const hourlyTariff = await resolveToolHourlyTariff(
     item.analiticId,
@@ -79,7 +93,7 @@ export const enrichTransferToolsRow = async (
     costPrice,
     costTotal,
     hourlyTariff,
-    dailyRent: round2(hourlyTariff * count * 24),
+    dailyRent: round2(hourlyTariff * count),
     total: costTotal,
     price: costPrice,
   };
@@ -102,7 +116,7 @@ export const recalcTransferToolsRowTotals = (
     price: costPrice,
     total: costTotal,
     hourlyTariff,
-    dailyRent: round2(hourlyTariff * count * 24),
+    dailyRent: round2(hourlyTariff * count),
   };
 };
 

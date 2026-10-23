@@ -153,7 +153,7 @@ export const SelectDeliverer = ({
       {error && !isLoading && <option>Ошибка загрузки</option>}
       {!isLoading && !error && (
         <>
-          <option value="">Танланмаган</option>
+          <option value="">Не выбрано</option>
           {options.map((item: ReferenceModel) => (
             <option key={item.id} value={item.id}>
               {item.name}
@@ -175,7 +175,7 @@ export const SelectDeliverer = ({
             className={docSelectStyles.editButton}
             onClick={handleOpenInlineEdit}
             onMouseDown={(e) => e.preventDefault()}
-            title="Танланганни таҳрирлаш"
+            title="Редактировать выбранное"
             tabIndex={-1}
           >
             ✎
@@ -187,7 +187,7 @@ export const SelectDeliverer = ({
             className={docSelectStyles.plusButton}
             onClick={handleOpenInlineCreate}
             onMouseDown={(e) => e.preventDefault()}
-            title="Янги доставщик кушиш"
+            title="Добавить доставщика"
             tabIndex={-1}
           >
             +

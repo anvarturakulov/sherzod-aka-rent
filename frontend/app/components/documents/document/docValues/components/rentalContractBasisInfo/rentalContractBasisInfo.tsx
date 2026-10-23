@@ -3,10 +3,7 @@
 import useSWR from 'swr';
 import { useAppContext } from '@/app/context/app.context';
 import { DocumentType } from '@/app/interfaces/document.interface';
-import {
-  formatRentalContractBasis,
-  formatRentalContractBasisUz,
-} from '@/app/interfaces/rentalContract.interface';
+import { formatRentalContractBasisUz } from '@/app/interfaces/rentalContract.interface';
 import { rentalContractsApi } from '@/app/service/rentalContracts/rentalContracts.service';
 import styles from './rentalContractBasisInfo.module.css';
 
@@ -15,14 +12,10 @@ export const RentalContractBasisInfo = (): JSX.Element | null => {
   const { currentDocument, contentName } = mainData.document;
   const token = mainData.users.user?.token;
 
-  const isTransfer = contentName === DocumentType.TransferToolsToClient
-    || contentName === DocumentType.OrderToolsToClient;
-  const isReceive = contentName === DocumentType.ReceiveToolsFromClient;
-  if (!isTransfer && !isReceive) return null;
+  const isOrder = contentName === DocumentType.OrderToolsToClient;
+  if (!isOrder) return null;
 
-  const clientId = isTransfer
-    ? Number(currentDocument?.docValues?.receiverId) || 0
-    : Number(currentDocument?.docValues?.senderId) || 0;
+  const clientId = Number(currentDocument?.docValues?.receiverId) || 0;
   const asOf = Number(currentDocument?.date) || Date.now();
 
   const { data: activeContract, isLoading } = useSWR(
@@ -30,9 +23,7 @@ export const RentalContractBasisInfo = (): JSX.Element | null => {
     () => rentalContractsApi.getActiveByClient(token!, clientId, asOf),
   );
 
-  const basis = isTransfer
-    ? formatRentalContractBasisUz(activeContract)
-    : formatRentalContractBasis(activeContract);
+  const basis = formatRentalContractBasisUz(activeContract);
 
   let text = '—';
   if (clientId <= 0) {
@@ -42,12 +33,12 @@ export const RentalContractBasisInfo = (): JSX.Element | null => {
   } else if (basis) {
     text = basis;
   } else {
-    text = 'Шартнома топилмади';
+    text = 'Договор не найден';
   }
 
   return (
     <div className={styles.box}>
-      <strong className={styles.label}>Асос:</strong>
+      <strong className={styles.label}>Основание:</strong>
       <span className={styles.value}>{text}</span>
     </div>
   );

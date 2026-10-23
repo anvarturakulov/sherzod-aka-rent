@@ -8,7 +8,7 @@ export const DEFAULT_PRINT_COPIES = 2;
 
 /** Спрашивает число копий для печати. null — отмена / невалидное значение. */
 export function askPrintCopyCount(): number | null {
-  const raw = window.prompt('Нусхалар сони:', String(DEFAULT_PRINT_COPIES));
+  const raw = window.prompt('Число копий:', String(DEFAULT_PRINT_COPIES));
   if (raw == null) return null;
   const n = Number.parseInt(raw.trim(), 10);
   if (!Number.isFinite(n) || n < MIN_PRINT_COPIES || n > MAX_PRINT_COPIES) {
